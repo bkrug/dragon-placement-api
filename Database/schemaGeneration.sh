@@ -1,0 +1,1 @@
+sqlite3 ./Database/DragonPlacement.db '.schema' > ./Database/schemaDragonPlacement.sql
