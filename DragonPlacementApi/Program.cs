@@ -5,8 +5,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
     .AddEntityFrameworkSqlite()
-    .AddDbContext<DragonPlacementContext>((options) =>
-        options.UseSqlite("Data Source=../Database/DragonPlacement.db"));
+    .AddDbContext<DragonPlacementContext>(options =>
+        options.UseSqlite(builder.Configuration.GetConnectionString("DragonPlacementDb")));
 
 var app = builder.Build();
 
