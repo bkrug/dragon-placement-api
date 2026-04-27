@@ -20,4 +20,6 @@ public partial class Dragon
     public int? LengthInMeters { get; set; }
 
     public string? FightingSkills { get; set; }
+
+    public virtual ICollection<Assignment> Assignments { get; set; } = new List<Assignment>();
 }
