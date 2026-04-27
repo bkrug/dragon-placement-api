@@ -4,7 +4,26 @@ CREATE TABLE Dragon (
 	FamilyName TEXT,
 	CanBreathFire INTEGER DEFAULT (0) NOT NULL,
 	CanTakePassengers INTEGER DEFAULT (0) NOT NULL,
-	Weight NUMERIC,
-	LengthInMeters NUMERIC,
-	CONSTRAINT PK_PokemonWorker PRIMARY KEY (DragonId)
+	WeightInKg NUMERIC,
+	LengthInMeters NUMERIC, FightingSkills TEXT,
+	CONSTRAINT PK_Dragon PRIMARY KEY (DragonId)
+);
+CREATE TABLE Job (
+	JobId INTEGER NOT NULL,
+	JobTitle TEXT NOT NULL,
+	EmployerName TEXT,
+	NumberOfPositions INTEGER DEFAULT (1) NOT NULL,
+	StartDate INTEGER NOT NULL,
+	EndDate INTEGER NOT NULL,
+	CONSTRAINT PK_Job PRIMARY KEY (JobId)
+);
+CREATE TABLE Assignment (
+	AssignmentId INTEGER NOT NULL,
+	DragonId INTEGER NOT NULL,
+	JobId INTEGER NOT NULL,
+	StartDate INTEGER NOT NULL,
+	EndDate INTEGER,
+	CONSTRAINT PK_Assignments PRIMARY KEY (AssignmentId),
+	CONSTRAINT FK_Assignments_Dragon FOREIGN KEY (DragonId) REFERENCES Dragon(DragonId),
+	CONSTRAINT FK_Assignments_Job FOREIGN KEY (JobId) REFERENCES Job(JobId)
 );
