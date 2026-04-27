@@ -10,6 +10,7 @@
             "request": "launch",
             "projectPath": "${workspaceFolder}/DragonPlacementApi/DragonPlacementApi.csproj",
             "launchConfigurationId": "TargetFramework=;http",
+            "preLaunchTask": "Build"
         }
     ]
 }
