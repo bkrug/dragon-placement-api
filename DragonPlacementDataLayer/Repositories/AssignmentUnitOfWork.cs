@@ -7,7 +7,7 @@ public interface IAssignmentUnitOfWork
 {
     IGenericRepository<Dragon> DragonRepository { get; }
     IGenericRepository<Job> JobRepository { get; }
-    IGenericRepository<Assignment> AssignmentRepository { get; }
+    IAssignmentRepository AssignmentRepository { get; }
 
     void Dispose();
     Task SaveAsync();
@@ -18,7 +18,7 @@ public class AssignmentUnitOfWork(DragonPlacementContext context) : IDisposable,
     private readonly DragonPlacementContext _context = context;
     public IGenericRepository<Dragon> DragonRepository { get; } = new GenericRepository<Dragon>(context);
     public IGenericRepository<Job> JobRepository { get; } = new GenericRepository<Job>(context);
-    public IGenericRepository<Assignment> AssignmentRepository { get; } = new GenericRepository<Assignment>(context);
+    public IAssignmentRepository AssignmentRepository { get; } = new AssignmentRepository(context);
 
     public async Task SaveAsync()
     {

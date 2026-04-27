@@ -21,10 +21,6 @@ public partial class DragonPlacementContext : DbContext
 
     public virtual DbSet<Job> Jobs { get; set; }
 
-//     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-// #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-//         => optionsBuilder.UseSqlite("Data Source=../Database/DragonPlacement.db");
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Assignment>(entity =>
@@ -32,6 +28,14 @@ public partial class DragonPlacementContext : DbContext
             entity.ToTable("Assignment");
 
             entity.Property(e => e.AssignmentId).ValueGeneratedNever();
+            entity.Property(e => e.StartDate).HasConversion(
+                modelVal => new DateTimeOffset(modelVal).ToUnixTimeSeconds(),
+                dbVal => DateTimeOffset.FromUnixTimeSeconds(dbVal).DateTime
+            );
+            entity.Property(e => e.EndDate).HasConversion(
+                modelVal => modelVal == null ? (long?)null : new DateTimeOffset(modelVal.Value).ToUnixTimeSeconds(),
+                dbVal => dbVal == null ? null : DateTimeOffset.FromUnixTimeSeconds(dbVal.Value).DateTime
+            );
 
             entity.HasOne(d => d.Dragon).WithMany(p => p.Assignments)
                 .HasForeignKey(d => d.DragonId)
@@ -57,6 +61,14 @@ public partial class DragonPlacementContext : DbContext
 
             entity.Property(e => e.JobId).ValueGeneratedNever();
             entity.Property(e => e.NumberOfPositions).HasDefaultValue(1);
+            entity.Property(e => e.StartDate).HasConversion(
+                modelVal => new DateTimeOffset(modelVal).ToUnixTimeSeconds(),
+                dbVal => DateTimeOffset.FromUnixTimeSeconds(dbVal).DateTime
+            );
+            entity.Property(e => e.EndDate).HasConversion(
+                modelVal => new DateTimeOffset(modelVal).ToUnixTimeSeconds(),
+                dbVal => DateTimeOffset.FromUnixTimeSeconds(dbVal).DateTime
+            );            
         });
 
         OnModelCreatingPartial(modelBuilder);
