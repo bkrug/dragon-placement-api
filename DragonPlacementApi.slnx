@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="DragonPlacementApi/DragonPlacementApi.csproj" />
+  <Project Path="DragonPlacementDataLayer/DragonPlacementDataLayer.csproj" />
 </Solution>
