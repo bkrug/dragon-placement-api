@@ -1,6 +1,6 @@
 namespace DragonPlacementApi.Endpoints;
 
-public class PagedData<T> where T : new()
+public class PagedData<T> where T : class
 {
     public int Offset {get;set;}
     public int Limit {get;set;}

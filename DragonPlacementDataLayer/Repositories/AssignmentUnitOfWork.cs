@@ -10,7 +10,7 @@ public interface IAssignmentUnitOfWork
     IGenericRepository<Assignment> AssignmentRepository { get; }
 
     void Dispose();
-    void Save();
+    Task SaveAsync();
 }
 
 public class AssignmentUnitOfWork(DragonPlacementContext context) : IDisposable, IAssignmentUnitOfWork
@@ -20,9 +20,9 @@ public class AssignmentUnitOfWork(DragonPlacementContext context) : IDisposable,
     public IGenericRepository<Job> JobRepository { get; } = new GenericRepository<Job>(context);
     public IGenericRepository<Assignment> AssignmentRepository { get; } = new GenericRepository<Assignment>(context);
 
-    public void Save()
+    public async Task SaveAsync()
     {
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
     private bool disposed = false;

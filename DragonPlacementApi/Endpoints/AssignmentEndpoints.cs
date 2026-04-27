@@ -1,0 +1,30 @@
+using DragonPlacementDataLayer.Models;
+using DragonPlacementDataLayer.Repositories;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
+
+namespace DragonPlacementApi.Endpoints;
+
+public class AssignmentEndpoints
+{
+    public static async Task<Results<Ok<ValidatedResponse>, BadRequest<ValidatedResponse>>> AssignDragonToJobAsync(IAssignmentUnitOfWork unitOfWork, [FromQuery(Name="dragonId")] int dragonId, [FromQuery(Name="jobId")] int jobId)
+    {
+        var assignmentRecord = new Assignment
+        {
+            DragonId = dragonId,
+            JobId = jobId
+        };
+        unitOfWork.AssignmentRepository.Insert(assignmentRecord);
+        await unitOfWork.SaveAsync().ConfigureAwait(false);
+        return TypedResults.Ok(new ValidatedResponse
+        {
+            IsSuccess = true
+        });
+        // return TypedResults.BadRequest(new ValidatedResponse()
+        // {
+        //     IsInternalError = false,
+        //     IsSuccess = false,
+        //     ValidationFailures = ["test error"]
+        // });
+    }
+}
