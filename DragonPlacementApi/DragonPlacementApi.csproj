@@ -18,4 +18,9 @@
     <ProjectReference Include="../DragonPlacementDataLayer/DragonPlacementDataLayer.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Endpoints/" />
+    <Folder Include="Poco/" />
+  </ItemGroup>
+
 </Project>

@@ -1,3 +1,4 @@
+using DragonPlacementApi.Endpoints;
 using DragonPlacementDataLayer.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +12,7 @@ builder.Services
 var app = builder.Build();
 
 app.MapGet("/", () => "Dragon Placement API!");
-app.MapGet("/dragons", (DragonPlacementContext context) => context.Dragons.Take(20).ToList());
+app.MapGet("/dragons", DragonEndpoints.GetDragons);
+app.MapGet("/jobs", JobEndpoints.GetJobs);
 
 app.Run();
