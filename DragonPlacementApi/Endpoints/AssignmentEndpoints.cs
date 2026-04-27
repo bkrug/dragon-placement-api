@@ -9,22 +9,40 @@ public class AssignmentEndpoints
 {
     public static async Task<Results<Ok<ValidatedResponse>, BadRequest<ValidatedResponse>>> AssignDragonToJobAsync(IAssignmentUnitOfWork unitOfWork, [FromQuery(Name="dragonId")] int dragonId, [FromQuery(Name="jobId")] int jobId)
     {
-        var assignmentRecord = new Assignment
+        var newJob = await unitOfWork.JobRepository.GetByID(jobId).ConfigureAwait(false);
+        if (newJob == null)
         {
-            DragonId = dragonId,
-            JobId = jobId
-        };
-        unitOfWork.AssignmentRepository.Insert(assignmentRecord);
-        await unitOfWork.SaveAsync().ConfigureAwait(false);
-        return TypedResults.Ok(new ValidatedResponse
-        {
-            IsSuccess = true
-        });
-        // return TypedResults.BadRequest(new ValidatedResponse()
-        // {
-        //     IsInternalError = false,
-        //     IsSuccess = false,
-        //     ValidationFailures = ["test error"]
-        // });
+            return TypedResults.BadRequest(new ValidatedResponse
+            {
+               IsSuccess = false,
+               IsInternalError = false,
+               ValidationFailures = [ "Job does not exist" ]
+            });
+        }
+        var existingJobs = unitOfWork.AssignmentRepository.GetOverlappingAssignments(dragonId, newJob.StartDate, newJob.EndDate);
+        var firstConflict = existingJobs.FirstOrDefault();
+        if (firstConflict == null) {
+            var assignmentRecord = new Assignment
+            {
+                DragonId = dragonId,
+                JobId = jobId
+            };
+            unitOfWork.AssignmentRepository.Insert(assignmentRecord);
+            await unitOfWork.SaveAsync().ConfigureAwait(false);
+            return TypedResults.Ok(new ValidatedResponse
+            {
+                IsSuccess = true
+            });
+        }
+        else {
+            var periodStart = firstConflict.StartDate.ToShortDateString();
+            var periodEnd = firstConflict.EndDate.HasValue ? firstConflict.EndDate.Value.ToShortDateString() : "undetermined end date";
+            return TypedResults.BadRequest(new ValidatedResponse()
+            {
+                IsInternalError = false,
+                IsSuccess = false,
+                ValidationFailures = [ $"Overlaps with at least one job which has period of {periodStart} to {periodEnd}" ]
+            });
+        }
     }
 }
