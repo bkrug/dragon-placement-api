@@ -6,6 +6,8 @@ namespace DragonPlacementTests;
 /// <summary>
 /// These tests make certain that our code can avoid the 2038 problem.
 /// If Unix epoc times are stored as 32-bit signed integers, some dates will be outside of the range of what is possible.
+/// If an iteration of this test ever fails, we probably are representing a date as "int" instead of "long".
+/// SUGGESTION: If I ever make time to rewrite this test, use reflection instead of delegates. The failure message will be more meaningful.
 /// </summary>
 public class DateTimeTests
 {
@@ -58,7 +60,6 @@ public class DateTimeTests
         for (int i = 0; i < delegates.Count; ++i)
         {
             var testDelagate = delegates[i];
-            var name = testDelagate.GetType().Name;
             var calculatedDate = testDelagate(targetDate);
             calculatedDate.ShouldBe(targetDate, TimeSpan.FromSeconds(1), $"Failure happend running delegate at index {i}.");
         }
