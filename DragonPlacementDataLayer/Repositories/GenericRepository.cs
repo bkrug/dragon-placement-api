@@ -14,7 +14,11 @@ public interface IGenericRepository<TEntity> where TEntity : class
 {
     DeleteResult Delete(object id);
     void Delete(TEntity entityToDelete);
-    Task<IEnumerable<TEntity>> Get(Expression<Func<TEntity, bool>> filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null, string includeProperties = "");
+    IEnumerable<TEntity> Get(
+        Expression<Func<TEntity, bool>> filter = null,
+        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+        string includeProperties = ""
+    );
     Task<TEntity?> GetByID(object id);
     void Insert(TEntity entity);
     Task<int> SaveChangesAsync();
@@ -26,7 +30,7 @@ public class GenericRepository<TEntity>(DragonPlacementContext context) : IGener
     internal readonly DragonPlacementContext _context = context;
     internal readonly DbSet<TEntity> _dbSet = context.Set<TEntity>();
 
-    public virtual async Task<IEnumerable<TEntity>> Get(
+    public virtual IEnumerable<TEntity> Get(
         Expression<Func<TEntity, bool>> filter = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
         string includeProperties = "")
@@ -44,8 +48,8 @@ public class GenericRepository<TEntity>(DragonPlacementContext context) : IGener
         }
 
         return orderBy == null
-            ? await query.ToListAsync()
-            : await orderBy(query).ToListAsync();
+            ? query
+            : orderBy(query);
     }
 
     public virtual async Task<TEntity?> GetByID(object id)

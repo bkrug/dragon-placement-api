@@ -7,7 +7,9 @@ namespace DragonPlacementApi.Endpoints;
 
 public class AssignmentEndpoints
 {
-    public static async Task<Results<Ok<ValidatedResponse>, BadRequest<ValidatedResponse>, NotFound<ValidatedResponse>>> AssignDragonToJobAsync(IAssignmentUnitOfWork unitOfWork, [FromQuery(Name="dragonId")] int dragonId, [FromQuery(Name="jobId")] int jobId)
+    public static async Task<Results<Ok<ValidatedResponse>, BadRequest<ValidatedResponse>, NotFound<ValidatedResponse>>> 
+        AssignDragonToJobAsync(IAssignmentUnitOfWork unitOfWork, [FromQuery(Name="dragonId")] int dragonId, [FromQuery(Name="jobId")] int jobId)
+
     {
         var newJob = await unitOfWork.JobRepository.GetByID(jobId).ConfigureAwait(false);
         if (newJob == null)
