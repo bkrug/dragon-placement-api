@@ -30,11 +30,11 @@ public partial class DragonPlacementContext : DbContext
             entity.Property(e => e.AssignmentId).ValueGeneratedNever();
             entity.Property(e => e.StartDate).HasConversion(
                 modelVal => new DateTimeOffset(modelVal).ToUnixTimeSeconds(),
-                dbVal => DateTimeOffset.FromUnixTimeSeconds(dbVal).DateTime
+                dbVal => DateTimeOffset.FromUnixTimeSeconds(dbVal).UtcDateTime
             );
             entity.Property(e => e.EndDate).HasConversion(
                 modelVal => modelVal == null ? (long?)null : new DateTimeOffset(modelVal.Value).ToUnixTimeSeconds(),
-                dbVal => dbVal == null ? null : DateTimeOffset.FromUnixTimeSeconds(dbVal.Value).DateTime
+                dbVal => dbVal == null ? null : DateTimeOffset.FromUnixTimeSeconds(dbVal.Value).UtcDateTime
             );
 
             entity.HasOne(d => d.Dragon).WithMany(p => p.Assignments)
@@ -63,11 +63,11 @@ public partial class DragonPlacementContext : DbContext
             entity.Property(e => e.NumberOfPositions).HasDefaultValue(1);
             entity.Property(e => e.StartDate).HasConversion(
                 modelVal => new DateTimeOffset(modelVal).ToUnixTimeSeconds(),
-                dbVal => DateTimeOffset.FromUnixTimeSeconds(dbVal).DateTime
+                dbVal => DateTimeOffset.FromUnixTimeSeconds(dbVal).UtcDateTime
             );
             entity.Property(e => e.EndDate).HasConversion(
                 modelVal => new DateTimeOffset(modelVal).ToUnixTimeSeconds(),
-                dbVal => DateTimeOffset.FromUnixTimeSeconds(dbVal).DateTime
+                dbVal => DateTimeOffset.FromUnixTimeSeconds(dbVal).UtcDateTime
             );            
         });
 

@@ -7,12 +7,12 @@ namespace DragonPlacementApi.Endpoints;
 
 public class AssignmentEndpoints
 {
-    public static async Task<Results<Ok<ValidatedResponse>, BadRequest<ValidatedResponse>>> AssignDragonToJobAsync(IAssignmentUnitOfWork unitOfWork, [FromQuery(Name="dragonId")] int dragonId, [FromQuery(Name="jobId")] int jobId)
+    public static async Task<Results<Ok<ValidatedResponse>, BadRequest<ValidatedResponse>, NotFound<ValidatedResponse>>> AssignDragonToJobAsync(IAssignmentUnitOfWork unitOfWork, [FromQuery(Name="dragonId")] int dragonId, [FromQuery(Name="jobId")] int jobId)
     {
         var newJob = await unitOfWork.JobRepository.GetByID(jobId).ConfigureAwait(false);
         if (newJob == null)
         {
-            return TypedResults.BadRequest(new ValidatedResponse
+            return TypedResults.NotFound(new ValidatedResponse
             {
                IsSuccess = false,
                IsInternalError = false,
@@ -25,7 +25,9 @@ public class AssignmentEndpoints
             var assignmentRecord = new Assignment
             {
                 DragonId = dragonId,
-                JobId = jobId
+                JobId = jobId,
+                StartDate = newJob.StartDate.Date,
+                EndDate = newJob.EndDate.Date
             };
             unitOfWork.AssignmentRepository.Insert(assignmentRecord);
             await unitOfWork.SaveAsync().ConfigureAwait(false);
