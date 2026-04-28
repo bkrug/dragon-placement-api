@@ -16,7 +16,8 @@ builder.Services.AddScoped<IAssignmentUnitOfWork, AssignmentUnitOfWork>();
 var app = builder.Build();
 
 app.MapGet("/", () => "Dragon Placement API!");
-app.MapGet("/dragons", DragonEndpoints.GetDragons);
-app.MapGet("/jobs", JobEndpoints.GetJobs);
+app.MapGet("/dragon", DragonEndpoints.GetDragons);
+app.MapGet("/job", JobEndpoints.GetJobs);
+app.MapPost("/assignment", AssignmentEndpoints.AssignDragonToJobAsync);
 
 app.Run();
