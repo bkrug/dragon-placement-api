@@ -14,27 +14,29 @@ public class AssignmentTests
     {
         const int DRAGON_ID = 5002;
         const int JOB_ID = 6002;
-        Job jobModel = new() { JobTitle = "Commercial Spokesperson", StartDate = DateTime.UtcNow.AddMonths(3), EndDate = DateTime.UtcNow.AddMonths(9) };
-        Immutable<Assignment> actualAssignmentRecord = new();
+        Job jobModel = new() { JobTitle = "Commercial Spokesperson" };
+        jobModel.SetStartDate(DateTime.UtcNow.AddMonths(3));
+        jobModel.SetEndDate(DateTime.UtcNow.AddMonths(9));
+        Immutable<Assignment> actualInsertedAssignmentRecord = new();
 
         var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
         unitOfWorkMock.Setup(m => m.DragonRepository.GetByID(DRAGON_ID)).ReturnsAsync(new Dragon { DragonId = DRAGON_ID, GivenName = "Fred" });
         unitOfWorkMock.Setup(m => m.JobRepository.GetByID(JOB_ID)).ReturnsAsync(jobModel);
-        unitOfWorkMock.Setup(m => m.AssignmentRepository.GetOverlappingAssignments(DRAGON_ID, jobModel.StartDate, jobModel.EndDate))
+        unitOfWorkMock.Setup(m => m.AssignmentRepository.GetOverlappingAssignments(DRAGON_ID, jobModel.StartDateUnix, jobModel.EndDateUnix))
             .Returns([]);
-        unitOfWorkMock.Setup(m => m.AssignmentRepository.Insert(It.IsAny<Assignment>())).Callback((Assignment a) => actualAssignmentRecord.Set(a));
+        unitOfWorkMock.Setup(m => m.AssignmentRepository.Insert(It.IsAny<Assignment>())).Callback((Assignment a) => actualInsertedAssignmentRecord.Set(a));
 
         //Act
         var response = await AssignmentEndpoints.AssignDragonToJobAsync(unitOfWorkMock.Object, DRAGON_ID, JOB_ID);
 
         //Assert
         response.Result.ShouldBeOfType<Ok<ValidatedResponse>>();
-        actualAssignmentRecord.Get().ShouldBeEquivalentTo(new Assignment
+        actualInsertedAssignmentRecord.Get().ShouldBeEquivalentTo(new Assignment
         {
             DragonId = DRAGON_ID,
             JobId = JOB_ID,
-            StartDate = jobModel.StartDate.Date,
-            EndDate = jobModel.EndDate.Date
+            StartDateUnix = jobModel.StartDateUnix,
+            EndDateUnix = jobModel.EndDateUnix
         });
         unitOfWorkMock.Verify(m => m.SaveAsync(), Times.Once);
     }
@@ -44,16 +46,21 @@ public class AssignmentTests
     {
         const int DRAGON_ID = 5003;
         const int JOB_ID = 6003;
-        Job jobModel = new() { JobTitle = "Commercial Spokesperson", StartDate = DateTime.UtcNow.AddMonths(3), EndDate = DateTime.UtcNow.AddMonths(9) };
+
+        Job jobModel = new() { JobTitle = "Commercial Spokesperson" };
+        jobModel.SetStartDate(DateTime.UtcNow.AddMonths(3));
+        jobModel.SetEndDate(DateTime.UtcNow.AddMonths(9));
+        Assignment overlappingAssignment = new ();
+        overlappingAssignment.SetStartDate(jobModel.GetStartDate().AddMonths(-1));
+        overlappingAssignment.SetEndDate(jobModel.GetEndDate().AddMonths(1));
+
         Immutable<Assignment> actualAssignmentRecord = new();
 
         var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
         unitOfWorkMock.Setup(m => m.DragonRepository.GetByID(DRAGON_ID)).ReturnsAsync(new Dragon { DragonId = DRAGON_ID, GivenName = "Fred" });
         unitOfWorkMock.Setup(m => m.JobRepository.GetByID(JOB_ID)).ReturnsAsync(jobModel);
-        unitOfWorkMock.Setup(m => m.AssignmentRepository.GetOverlappingAssignments(DRAGON_ID, jobModel.StartDate, jobModel.EndDate))
-            .Returns([
-               new Assignment { StartDate = jobModel.StartDate.AddMonths(-1), EndDate = jobModel.EndDate.AddMonths(1) }
-            ]);
+        unitOfWorkMock.Setup(m => m.AssignmentRepository.GetOverlappingAssignments(DRAGON_ID, jobModel.StartDateUnix, jobModel.EndDateUnix))
+            .Returns([ overlappingAssignment ]);
         unitOfWorkMock.Setup(m => m.AssignmentRepository.Insert(It.IsAny<Assignment>())).Callback((Assignment a) => actualAssignmentRecord.Set(a));
 
         //Act

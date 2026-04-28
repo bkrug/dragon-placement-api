@@ -5,17 +5,17 @@ namespace DragonPlacementDataLayer.Repositories;
 
 public interface IAssignmentRepository : IGenericRepository<Assignment>
 {
-    IEnumerable<Assignment> GetOverlappingAssignments(int dragonId, DateTime periodStart, DateTime periodEnd);
+    IEnumerable<Assignment> GetOverlappingAssignments(int dragonId, long periodStartUnix, long periodEndUnix);
     IEnumerable<Dragon> GetDragonsWithoutOverlappingAssignments(int jobId);
 }
 
 public class AssignmentRepository(DragonPlacementContext context) : GenericRepository<Assignment>(context), IAssignmentRepository
 {
-    public IEnumerable<Assignment> GetOverlappingAssignments(int dragonId, DateTime periodStart, DateTime periodEnd)
+    public IEnumerable<Assignment> GetOverlappingAssignments(int dragonId, long periodStartUnix, long periodEndUnix)
     {
         return _context.Assignments
             .Where(a => a.DragonId == dragonId)
-            .Where(a => (!a.EndDate.HasValue || periodStart.Date <= a.EndDate.Value.Date) && periodEnd >= a.StartDate.Date);
+            .Where(a => (!a.EndDateUnix.HasValue || periodStartUnix <= a.EndDateUnix.Value) && periodEndUnix >= a.StartDateUnix);
     }
 
     public IEnumerable<Dragon> GetDragonsWithoutOverlappingAssignments(int jobId)
@@ -23,13 +23,13 @@ public class AssignmentRepository(DragonPlacementContext context) : GenericRepos
         var job = _context.Jobs.Find(jobId);
         if (job == null)
             return [];
-        var periodStart = job.StartDate;
-        var periodEnd = job.EndDate;
+        var periodStart = job.StartDateUnix;
+        var periodEnd = job.EndDateUnix;
         return _context.Dragons
             .Where(d => d.Assignments
                 .Count(a =>
-                    (!a.EndDate.HasValue || periodStart.Date <= a.EndDate.Value.Date)
-                    && periodEnd >= a.StartDate.Date
+                    (!a.EndDateUnix.HasValue || periodStart <= a.EndDateUnix.Value)
+                    && periodEnd >= a.StartDateUnix
                 ) == 0
             );
     }    

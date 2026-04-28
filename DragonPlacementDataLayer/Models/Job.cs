@@ -13,9 +13,9 @@ public partial class Job
 
     public int NumberOfPositions { get; set; }
 
-    public DateTime StartDate { get; set; }
+    public long StartDateUnix { get; set; }
 
-    public DateTime EndDate { get; set; }
+    public long EndDateUnix { get; set; }
 
     public virtual ICollection<Assignment> Assignments { get; set; } = new List<Assignment>();
 }

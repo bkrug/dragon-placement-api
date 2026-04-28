@@ -13,16 +13,16 @@ CREATE TABLE Job (
 	JobTitle TEXT NOT NULL,
 	EmployerName TEXT,
 	NumberOfPositions INTEGER DEFAULT (1) NOT NULL,
-	StartDate INTEGER NOT NULL,
-	EndDate INTEGER NOT NULL,
+	StartDateUnix INTEGER NOT NULL,
+	EndDateUnix INTEGER NOT NULL,
 	CONSTRAINT PK_Job PRIMARY KEY (JobId)
 );
 CREATE TABLE Assignment (
 	AssignmentId INTEGER NOT NULL,
 	DragonId INTEGER NOT NULL,
 	JobId INTEGER NOT NULL,
-	StartDate INTEGER NOT NULL,
-	EndDate INTEGER,
+	StartDateUnix INTEGER NOT NULL,
+	EndDateUnix INTEGER,
 	CONSTRAINT PK_Assignments PRIMARY KEY (AssignmentId),
 	CONSTRAINT FK_Assignments_Dragon FOREIGN KEY (DragonId) REFERENCES Dragon(DragonId),
 	CONSTRAINT FK_Assignments_Job FOREIGN KEY (JobId) REFERENCES Job(JobId)

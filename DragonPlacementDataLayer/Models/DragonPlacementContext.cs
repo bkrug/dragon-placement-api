@@ -28,14 +28,6 @@ public partial class DragonPlacementContext : DbContext
             entity.ToTable("Assignment");
 
             entity.Property(e => e.AssignmentId).ValueGeneratedNever();
-            entity.Property(e => e.StartDate).HasConversion(
-                modelVal => new DateTimeOffset(modelVal).ToUnixTimeSeconds(),
-                dbVal => DateTimeOffset.FromUnixTimeSeconds(dbVal).UtcDateTime
-            );
-            entity.Property(e => e.EndDate).HasConversion(
-                modelVal => modelVal == null ? (long?)null : new DateTimeOffset(modelVal.Value).ToUnixTimeSeconds(),
-                dbVal => dbVal == null ? null : DateTimeOffset.FromUnixTimeSeconds(dbVal.Value).UtcDateTime
-            );
 
             entity.HasOne(d => d.Dragon).WithMany(p => p.Assignments)
                 .HasForeignKey(d => d.DragonId)
@@ -61,14 +53,6 @@ public partial class DragonPlacementContext : DbContext
 
             entity.Property(e => e.JobId).ValueGeneratedNever();
             entity.Property(e => e.NumberOfPositions).HasDefaultValue(1);
-            entity.Property(e => e.StartDate).HasConversion(
-                modelVal => new DateTimeOffset(modelVal).ToUnixTimeSeconds(),
-                dbVal => DateTimeOffset.FromUnixTimeSeconds(dbVal).UtcDateTime
-            );
-            entity.Property(e => e.EndDate).HasConversion(
-                modelVal => new DateTimeOffset(modelVal).ToUnixTimeSeconds(),
-                dbVal => DateTimeOffset.FromUnixTimeSeconds(dbVal).UtcDateTime
-            );            
         });
 
         OnModelCreatingPartial(modelBuilder);

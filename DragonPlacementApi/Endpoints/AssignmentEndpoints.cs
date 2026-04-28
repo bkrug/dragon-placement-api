@@ -21,15 +21,15 @@ public class AssignmentEndpoints
                ValidationFailures = [ "Job does not exist" ]
             });
         }
-        var existingJobs = unitOfWork.AssignmentRepository.GetOverlappingAssignments(dragonId, newJob.StartDate, newJob.EndDate);
+        var existingJobs = unitOfWork.AssignmentRepository.GetOverlappingAssignments(dragonId, newJob.StartDateUnix, newJob.EndDateUnix);
         var firstConflict = existingJobs.FirstOrDefault();
         if (firstConflict == null) {
             var assignmentRecord = new Assignment
             {
                 DragonId = dragonId,
                 JobId = jobId,
-                StartDate = newJob.StartDate.Date,
-                EndDate = newJob.EndDate.Date
+                StartDateUnix = newJob.StartDateUnix,
+                EndDateUnix = newJob.EndDateUnix
             };
             unitOfWork.AssignmentRepository.Insert(assignmentRecord);
             await unitOfWork.SaveAsync().ConfigureAwait(false);
@@ -39,8 +39,8 @@ public class AssignmentEndpoints
             });
         }
         else {
-            var periodStart = firstConflict.StartDate.ToShortDateString();
-            var periodEnd = firstConflict.EndDate.HasValue ? firstConflict.EndDate.Value.ToShortDateString() : "undetermined end date";
+            var periodStart = firstConflict.GetStartDate().ToShortDateString();
+            var periodEnd = firstConflict.GetEndDate()?.ToShortDateString() ?? "undetermined end date";
             return TypedResults.BadRequest(new ValidatedResponse()
             {
                 IsInternalError = false,

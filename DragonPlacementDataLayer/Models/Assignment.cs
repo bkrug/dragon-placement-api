@@ -11,9 +11,9 @@ public partial class Assignment
 
     public int JobId { get; set; }
 
-    public DateTime StartDate { get; set; }
+    public long StartDateUnix { get; set; }
 
-    public DateTime? EndDate { get; set; }
+    public long? EndDateUnix { get; set; }
 
     public virtual Dragon Dragon { get; set; } = null!;
 
