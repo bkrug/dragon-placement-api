@@ -7,6 +7,7 @@ public interface IAssignmentRepository : IGenericRepository<Assignment>
 {
     IEnumerable<Assignment> GetOverlappingAssignments(int dragonId, long periodStartUnix, long periodEndUnix);
     IEnumerable<Dragon> GetDragonsWithoutOverlappingAssignments(int jobId);
+    IEnumerable<Dragon> GetAssignedDragons(int jobId);
 }
 
 public class AssignmentRepository(DragonPlacementContext context) : GenericRepository<Assignment>(context), IAssignmentRepository
@@ -32,5 +33,12 @@ public class AssignmentRepository(DragonPlacementContext context) : GenericRepos
                     && periodEnd >= a.StartDateUnix
                 ) == 0
             );
+    }
+
+    public IEnumerable<Dragon> GetAssignedDragons(int jobId)
+    {
+        return _context.Assignments
+            .Where(a => a.JobId == jobId)
+            .Select(a => a.Dragon);
     }    
 }

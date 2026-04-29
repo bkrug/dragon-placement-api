@@ -27,7 +27,8 @@ public partial class DragonPlacementContext : DbContext
         {
             entity.ToTable("Assignment");
 
-            entity.Property(e => e.AssignmentId).ValueGeneratedNever();
+            entity.HasKey(e => e.AssignmentId);
+            //entity.Property(e => e.AssignmentId).ValueGeneratedNever();
 
             entity.HasOne(d => d.Dragon).WithMany(p => p.Assignments)
                 .HasForeignKey(d => d.DragonId)
@@ -42,7 +43,8 @@ public partial class DragonPlacementContext : DbContext
         {
             entity.ToTable("Dragon");
 
-            entity.Property(e => e.DragonId).ValueGeneratedNever();
+            entity.HasKey(e => e.DragonId);
+            //entity.Property(e => e.DragonId).ValueGeneratedNever();
             entity.Property(e => e.LengthInMeters).HasColumnType("NUMERIC");
             entity.Property(e => e.WeightInKg).HasColumnType("NUMERIC");
         });
@@ -51,7 +53,8 @@ public partial class DragonPlacementContext : DbContext
         {
             entity.ToTable("Job");
 
-            entity.Property(e => e.JobId).ValueGeneratedNever();
+            entity.HasKey(e => e.JobId);
+            //entity.Property(e => e.JobId).ValueGeneratedNever();
             entity.Property(e => e.NumberOfPositions).HasDefaultValue(1);
         });
 

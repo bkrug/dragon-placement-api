@@ -29,6 +29,7 @@ app.UseCors(allowedOriginsPolicy);
 app.MapGet("/", () => "Dragon Placement API!");
 app.MapGet("/dragon", DragonEndpoints.GetDragons);
 app.MapGet("/job", JobEndpoints.GetJobs);
+app.MapGet("/job/{jobId}/assigned-dragon", JobEndpoints.GetAssignedDragons);
 app.MapPost("/assignment", AssignmentEndpoints.AssignDragonToJobAsync);
 
 app.Run();

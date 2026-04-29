@@ -41,7 +41,7 @@ public class AssignmentEndpoints
         else {
             var periodStart = firstConflict.GetStartDate().ToShortDateString();
             var periodEnd = firstConflict.GetEndDate()?.ToShortDateString() ?? "undetermined end date";
-            return TypedResults.BadRequest(new ValidatedResponse()
+            return TypedResults.BadRequest(new ValidatedResponse
             {
                 IsInternalError = false,
                 IsSuccess = false,
