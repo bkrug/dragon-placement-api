@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <Folder Include="ModelExtensions/" />
+    <Folder Include="Poco/" />
   </ItemGroup>
 
 </Project>

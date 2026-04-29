@@ -1,4 +1,5 @@
 using DragonPlacementDataLayer.Models;
+using DragonPlacementDataLayer.Poco;
 using DragonPlacementDataLayer.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,14 +7,16 @@ namespace DragonPlacementApi.Endpoints;
 
 public class JobEndpoints
 {
-    public static PagedData<Job> GetJobs(DragonPlacementContext context, [FromQuery(Name="offset")] int offset = 0, [FromQuery(Name="limit")] int limit = 20) =>
-        new()
+    public static PagedData<JobWithCapacity> GetJobs(IAssignmentUnitOfWork unitOfWork, [FromQuery(Name="offset")] int offset = 0, [FromQuery(Name="limit")] int limit = 20) {
+        var jobEnumerable = unitOfWork.AssignmentRepository.GetJobsWithCapacity();
+        return new()
         {
             Offset = offset,
             Limit = limit,
-            TotalRecords = context.Jobs.Count(),
-            Data = context.Jobs.Skip(offset).Take(limit).ToList()
-        };
+            TotalRecords = jobEnumerable.Count(),
+            Data = jobEnumerable.Skip(offset).Take(limit).ToList()
+        };        
+    }
 
     public static PagedData<Dragon> GetAssignedDragons(
         IAssignmentUnitOfWork unitOfWork,
