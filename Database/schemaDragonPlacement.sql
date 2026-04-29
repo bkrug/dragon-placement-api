@@ -27,3 +27,4 @@ CREATE TABLE Assignment (
 	CONSTRAINT FK_Assignments_Dragon FOREIGN KEY (DragonId) REFERENCES Dragon(DragonId),
 	CONSTRAINT FK_Assignments_Job FOREIGN KEY (JobId) REFERENCES Job(JobId)
 );
+CREATE UNIQUE INDEX Assignment_UK_JobId_DragonId ON Assignment(JobId, DragonId);
