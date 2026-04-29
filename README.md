@@ -4,7 +4,7 @@ This is a project to practice Angular developement. It is to be used by an imagi
 
 The companion Angular code can be found at: https://github.com/bkrug/dragon-placement-ui
 
-**Helpful Commands**
+## Helpful Commands
 
 Run this command from the DragonPlacementDataLayer folder to update the models
 `dotnet ef dbcontext scaffold "Data Source=../Database/DragonPlacement.db" Microsoft.EntityFrameworkCore.Sqlite -o Models --force`
