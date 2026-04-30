@@ -30,7 +30,7 @@ app.MapGet("/", () => "Dragon Placement API!");
 app.MapGet("/dragon", DragonEndpoints.GetDragons);
 app.MapGet("/job", JobEndpoints.GetJobs);
 app.MapGet("/job/{jobId}/assigned-dragon", JobEndpoints.GetAssignedDragons);
-app.MapDelete("/job/{jobId}/assigned-dragon/{dragonId}", JobEndpoints.UnassignDragon);
 app.MapPost("/job/{jobId}/assigned-dragon/{dragonId}", JobEndpoints.AssignDragonToJobAsync);
+app.MapDelete("/job/{jobId}/assigned-dragon/{dragonId}", JobEndpoints.UnassignDragon);
 
 app.Run();
