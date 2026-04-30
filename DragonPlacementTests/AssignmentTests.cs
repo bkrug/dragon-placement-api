@@ -27,7 +27,7 @@ public class AssignmentTests
         unitOfWorkMock.Setup(m => m.AssignmentRepository.Insert(It.IsAny<Assignment>())).Callback((Assignment a) => actualInsertedAssignmentRecord.Set(a));
 
         //Act
-        var response = await AssignmentEndpoints.AssignDragonToJobAsync(unitOfWorkMock.Object, DRAGON_ID, JOB_ID);
+        var response = await JobEndpoints.AssignDragonToJobAsync(unitOfWorkMock.Object, DRAGON_ID, JOB_ID);
 
         //Assert
         response.Result.ShouldBeOfType<Ok<ValidatedResponse>>();
@@ -64,7 +64,7 @@ public class AssignmentTests
         unitOfWorkMock.Setup(m => m.AssignmentRepository.Insert(It.IsAny<Assignment>())).Callback((Assignment a) => actualAssignmentRecord.Set(a));
 
         //Act
-        var response = await AssignmentEndpoints.AssignDragonToJobAsync(unitOfWorkMock.Object, DRAGON_ID, JOB_ID);
+        var response = await JobEndpoints.AssignDragonToJobAsync(unitOfWorkMock.Object, DRAGON_ID, JOB_ID);
 
         //Assert
         response.Result.ShouldBeOfType<BadRequest<ValidatedResponse>>();
