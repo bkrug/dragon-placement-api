@@ -22,7 +22,7 @@ public class AssignmentTests
         var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
         unitOfWorkMock.Setup(m => m.DragonRepository.GetByID(DRAGON_ID)).ReturnsAsync(new Dragon { DragonId = DRAGON_ID, GivenName = "Fred" });
         unitOfWorkMock.Setup(m => m.JobRepository.GetByID(JOB_ID)).ReturnsAsync(jobModel);
-        unitOfWorkMock.Setup(m => m.AssignmentRepository.GetOverlappingAssignments(DRAGON_ID, jobModel.StartDateUnix, jobModel.EndDateUnix))
+        unitOfWorkMock.Setup(m => m.GetOverlappingAssignments(DRAGON_ID, jobModel.StartDateUnix, jobModel.EndDateUnix))
             .Returns([]);
         unitOfWorkMock.Setup(m => m.AssignmentRepository.Insert(It.IsAny<Assignment>())).Callback((Assignment a) => actualInsertedAssignmentRecord.Set(a));
 
@@ -59,7 +59,7 @@ public class AssignmentTests
         var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
         unitOfWorkMock.Setup(m => m.DragonRepository.GetByID(DRAGON_ID)).ReturnsAsync(new Dragon { DragonId = DRAGON_ID, GivenName = "Fred" });
         unitOfWorkMock.Setup(m => m.JobRepository.GetByID(JOB_ID)).ReturnsAsync(jobModel);
-        unitOfWorkMock.Setup(m => m.AssignmentRepository.GetOverlappingAssignments(DRAGON_ID, jobModel.StartDateUnix, jobModel.EndDateUnix))
+        unitOfWorkMock.Setup(m => m.GetOverlappingAssignments(DRAGON_ID, jobModel.StartDateUnix, jobModel.EndDateUnix))
             .Returns([ overlappingAssignment ]);
         unitOfWorkMock.Setup(m => m.AssignmentRepository.Insert(It.IsAny<Assignment>())).Callback((Assignment a) => actualAssignmentRecord.Set(a));
 

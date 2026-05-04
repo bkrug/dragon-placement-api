@@ -26,7 +26,7 @@ public class DragonEndpoints
     {
         var dataAsEnumerable = jobId == null
             ? unitOfWork.DragonRepository.Get()
-            : unitOfWork.AssignmentRepository.GetDragonsWithoutOverlappingAssignments(jobId.Value);
+            : unitOfWork.GetDragonsWithoutOverlappingAssignments(jobId.Value);
         var pagedData = new PagedData<Dragon>
         {
             Offset = offset,

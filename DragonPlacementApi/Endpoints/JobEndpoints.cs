@@ -9,7 +9,7 @@ namespace DragonPlacementApi.Endpoints;
 public class JobEndpoints
 {
     public static PagedData<JobWithCapacity> GetJobs(IAssignmentUnitOfWork unitOfWork, [FromQuery(Name="offset")] int offset = 0, [FromQuery(Name="limit")] int limit = 20) {
-        var jobEnumerable = unitOfWork.AssignmentRepository.GetJobsWithCapacity();
+        var jobEnumerable = unitOfWork.GetJobsWithCapacity();
         return new()
         {
             Offset = offset,
@@ -25,7 +25,7 @@ public class JobEndpoints
         [FromQuery(Name="offset")] int offset = 0,
         [FromQuery(Name="limit")] int limit = 20)
     {
-        var dragonEnumerable = unitOfWork.AssignmentRepository.GetAssignedDragons(jobId);
+        var dragonEnumerable = unitOfWork.GetAssignedDragons(jobId);
         return new()
         {
             Offset = offset,
@@ -49,7 +49,7 @@ public class JobEndpoints
                ValidationFailures = [ "Job does not exist" ]
             });
         }
-        var existingJobs = unitOfWork.AssignmentRepository.GetOverlappingAssignments(dragonId, newJob.StartDateUnix, newJob.EndDateUnix);
+        var existingJobs = unitOfWork.GetOverlappingAssignments(dragonId, newJob.StartDateUnix, newJob.EndDateUnix);
         var firstConflict = existingJobs.FirstOrDefault();
         if (firstConflict == null) {
             var assignmentRecord = new Assignment
