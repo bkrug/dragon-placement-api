@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using DragonPlacementApi.Endpoints;
 using DragonPlacementDataLayer.Models;
 using DragonPlacementDataLayer.Repositories;
@@ -19,6 +20,7 @@ builder.Services
     .AddEntityFrameworkSqlite()
     .AddDbContext<DragonPlacementContext>(options =>
         options.UseSqlite(builder.Configuration.GetConnectionString("DragonPlacementDb")));
+builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(o => o.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IAssignmentUnitOfWork, AssignmentUnitOfWork>();
@@ -28,9 +30,10 @@ app.UseCors(allowedOriginsPolicy);
 
 app.MapGet("/", () => "Dragon Placement API!");
 app.MapGet("/dragon", DragonEndpoints.GetDragons);
+app.MapGet("/dragon/{dragonId}", DragonEndpoints.GetDragonAsync);
 app.MapGet("/job", JobEndpoints.GetJobs);
 app.MapGet("/job/{jobId}/assigned-dragon", JobEndpoints.GetAssignedDragons);
 app.MapPost("/job/{jobId}/assigned-dragon/{dragonId}", JobEndpoints.AssignDragonToJobAsync);
-app.MapDelete("/job/{jobId}/assigned-dragon/{dragonId}", JobEndpoints.UnassignDragon);
+app.MapDelete("/job/{jobId}/assigned-dragon/{dragonId}", JobEndpoints.UnassignDragonFromJobAsync);
 
 app.Run();

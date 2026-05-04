@@ -78,7 +78,7 @@ public class JobEndpoints
         }
     }    
 
-    public async static Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>, InternalServerError<ValidatedResponse>>> UnassignDragon(
+    public async static Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>, InternalServerError<ValidatedResponse>>> UnassignDragonFromJobAsync(
         IAssignmentUnitOfWork unitOfWork,
         [FromRoute(Name="jobId")] int jobId,
         [FromRoute(Name="dragonId")] int dragonId)

@@ -1,3 +1,4 @@
+using DragonPlacementDataLayer.Enum;
 using DragonPlacementDataLayer.Models;
 using DragonPlacementDataLayer.Repositories;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -35,4 +36,18 @@ public class DragonEndpoints
         };
         return TypedResults.Ok(pagedData);
     }
+
+    public static async Task<Results<Ok<ValidatedPayload<Dragon>>, NotFound<ValidatedResponse>>>
+        GetDragonAsync(
+            HttpContext context,
+            IAssignmentUnitOfWork unitOfWork,
+            [FromRoute(Name="dragonId")] int dragonId,
+            [FromQuery(Name="jobInclusions")] JobInclusions jobInclusions = JobInclusions.None
+        )
+    {
+        var dragon = await unitOfWork.GetDragonWithJobAsync(dragonId, jobInclusions).ConfigureAwait(false);
+        return dragon == null
+            ? TypedResults.NotFound(ValidatedResponse.NotFound)
+            : TypedResults.Ok(ValidatedPayload<Dragon>.FromPayload(dragon));
+    }    
 }

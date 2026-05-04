@@ -5,14 +5,14 @@ namespace DragonPlacementDataLayer.Models;
 
 public partial class Job
 {
-    public DateTime StartDate => DateTimeOffset.FromUnixTimeSeconds(StartDateUnix).UtcDateTime;
+    //public DateTime StartDate => DateTimeOffset.FromUnixTimeSeconds(StartDateUnix).UtcDateTime;
     public DateTime GetStartDate() => DateTimeOffset.FromUnixTimeSeconds(StartDateUnix).UtcDateTime;
     public void SetStartDate(DateTime value)
     {
         StartDateUnix = new DateTimeOffset(value).ToUnixTimeSeconds();
     }
 
-    public DateTime EndDate => DateTimeOffset.FromUnixTimeSeconds(EndDateUnix).UtcDateTime;
+    //public DateTime EndDate => DateTimeOffset.FromUnixTimeSeconds(EndDateUnix).UtcDateTime;
     public DateTime GetEndDate() => DateTimeOffset.FromUnixTimeSeconds(EndDateUnix).UtcDateTime;
     public void SetEndDate(DateTime value)
     {
