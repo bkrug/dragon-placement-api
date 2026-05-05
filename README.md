@@ -7,8 +7,8 @@ The companion Angular code can be found at: https://github.com/bkrug/dragon-plac
 ## Running this application for the first time
 
 1. Create an empty SQLite database in the "Database" folder.
-1. Run the code in `./Database/schemaGeneration.sh` in the new database, creating the schema.
-1. Write some insert statements to populate the 'Job' and 'Dragon' tables. The application currently only edits records in the 'Assignments' table.
+1. Run the SQL in `./Database/schemaDragonPlacement.sql` in the new database, creating the schema.
+1. Run the SQL in `./Database/insertTestData.sql` to populate the 'Job' and 'Dragon' tables. The application currently only edits records in the 'Assignments' table.
 
 ## Helpful Commands
 
