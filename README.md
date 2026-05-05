@@ -4,6 +4,12 @@ This is a project to practice Angular developement. It is to be used by an imagi
 
 The companion Angular code can be found at: https://github.com/bkrug/dragon-placement-ui
 
+## Running this application for the first time
+
+1. Create an empty SQLite database in the "Database" folder.
+1. Run the code in `./Database/schemaGeneration.sh` in the new database, creating the schema.
+1. Write some insert statements to populate the 'Job' and 'Dragon' tables. The application currently only edits records in the 'Assignments' table.
+
 ## Helpful Commands
 
 Run this command from the DragonPlacementDataLayer folder to update the models
