@@ -49,5 +49,60 @@ public class DragonEndpoints
         return dragon == null
             ? TypedResults.NotFound(ValidatedResponse.NotFound)
             : TypedResults.Ok(ValidatedPayload<Dragon>.FromPayload(dragon));
-    }    
+    }
+
+    public static async Task<Results<Ok<ValidatedPayload<Dragon>>, BadRequest<ValidatedResponse>>>
+        CreateDragonAsync(
+            IAssignmentUnitOfWork unitOfWork,
+            [FromBody] Dragon dragon)
+    {
+        if (string.IsNullOrWhiteSpace(dragon.GivenName))
+        {
+            return TypedResults.BadRequest(new ValidatedResponse
+            {
+                IsSuccess = false,
+                IsInternalError = false,
+                ValidationFailures = ["GivenName is required"]
+            });
+        }
+        unitOfWork.DragonRepository.Insert(dragon);
+        await unitOfWork.SaveAsync().ConfigureAwait(false);
+        return TypedResults.Ok(ValidatedPayload<Dragon>.FromPayload(dragon));
+    }
+
+    public static async Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>>>
+        UpdateDragonAsync(
+            IAssignmentUnitOfWork unitOfWork,
+            [FromRoute(Name="dragonId")] int dragonId,
+            [FromBody] Dragon dragon)
+    {
+        var existing = await unitOfWork.DragonRepository.GetByID(dragonId).ConfigureAwait(false);
+        if (existing == null)
+        {
+            return TypedResults.NotFound(ValidatedResponse.NotFound);
+        }
+        existing.GivenName = dragon.GivenName;
+        existing.FamilyName = dragon.FamilyName;
+        existing.CanBreathFire = dragon.CanBreathFire;
+        existing.CanTakePassengers = dragon.CanTakePassengers;
+        existing.WeightInKg = dragon.WeightInKg;
+        existing.LengthInMeters = dragon.LengthInMeters;
+        existing.FightingSkills = dragon.FightingSkills;
+        await unitOfWork.SaveAsync().ConfigureAwait(false);
+        return TypedResults.Ok(ValidatedResponse.Success);
+    }
+
+    public static async Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>>>
+        DeleteDragonAsync(
+            IAssignmentUnitOfWork unitOfWork,
+            [FromRoute(Name="dragonId")] int dragonId)
+    {
+        var deleteResult = unitOfWork.DragonRepository.Delete(dragonId);
+        if (deleteResult == DeleteResult.NotFound)
+        {
+            return TypedResults.NotFound(ValidatedResponse.NotFound);
+        }
+        await unitOfWork.SaveAsync().ConfigureAwait(false);
+        return TypedResults.Ok(ValidatedResponse.Success);
+    }
 }
