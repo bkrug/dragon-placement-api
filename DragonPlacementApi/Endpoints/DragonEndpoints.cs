@@ -57,6 +57,17 @@ public class DragonEndpoints
             IAssignmentUnitOfWork unitOfWork,
             [FromBody] Dragon dragon)
     {
+        var validationFailures = NewMethod(dragon);
+        if (validationFailures != null)
+            return TypedResults.BadRequest(validationFailures);
+
+        unitOfWork.DragonRepository.Insert(dragon);
+        await unitOfWork.SaveAsync().ConfigureAwait(false);
+        return TypedResults.Ok(ValidatedPayload<Dragon>.FromPayload(dragon));
+    }
+
+    private static ValidatedForm<DragonValidationFailures>? NewMethod(Dragon dragon)
+    {
         var failures = new DragonValidationFailures();
 
         if (string.IsNullOrWhiteSpace(dragon.GivenName))
@@ -75,17 +86,15 @@ public class DragonEndpoints
         if (failures.GivenName != null || failures.CanBreathFire != null || failures.CanTakePassengers != null
             || failures.WeightInKg != null || failures.LengthInMeters != null || failures.FightingSkills != null)
         {
-            return TypedResults.BadRequest(new ValidatedForm<DragonValidationFailures>
+            return new ValidatedForm<DragonValidationFailures>
             {
                 IsSuccess = false,
                 IsInternalError = false,
                 ValidationFailures = failures
-            });
+            };
         }
 
-        unitOfWork.DragonRepository.Insert(dragon);
-        await unitOfWork.SaveAsync().ConfigureAwait(false);
-        return TypedResults.Ok(ValidatedPayload<Dragon>.FromPayload(dragon));
+        return null;
     }
 
     public static async Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<DragonValidationFailures>>>>
