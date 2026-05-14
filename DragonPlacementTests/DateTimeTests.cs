@@ -24,7 +24,7 @@ public class DateTimeTests
     {
         var assignment = new Assignment();
         assignment.SetEndDate(targetDate);
-        return assignment.GetEndDate()!.Value;
+        return assignment.GetEndDate();
     }
 
     private DateTime JobStartDate(DateTime targetDate)

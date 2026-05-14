@@ -13,7 +13,7 @@ public partial class Assignment
 
     public long StartDateUnix { get; set; }
 
-    public long? EndDateUnix { get; set; }
+    public long EndDateUnix { get; set; }
 
     public virtual Dragon Dragon { get; set; } = null!;
 

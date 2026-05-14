@@ -68,7 +68,7 @@ public class JobEndpoints
         }
         else {
             var periodStart = firstConflict.GetStartDate().ToShortDateString();
-            var periodEnd = firstConflict.GetEndDate()?.ToShortDateString() ?? "undetermined end date";
+            var periodEnd = firstConflict.GetEndDate().ToShortDateString();
             return TypedResults.BadRequest(new ValidatedResponse
             {
                 IsInternalError = false,

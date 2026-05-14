@@ -17,14 +17,14 @@ CREATE TABLE Job (
 	EndDateUnix INTEGER NOT NULL,
 	CONSTRAINT PK_Job PRIMARY KEY (JobId)
 );
-CREATE TABLE Assignment (
-	AssignmentId INTEGER NOT NULL,
-	DragonId INTEGER NOT NULL,
-	JobId INTEGER NOT NULL,
-	StartDateUnix INTEGER NOT NULL,
-	EndDateUnix INTEGER,
-	CONSTRAINT PK_Assignments PRIMARY KEY (AssignmentId),
-	CONSTRAINT FK_Assignments_Dragon FOREIGN KEY (DragonId) REFERENCES Dragon(DragonId),
-	CONSTRAINT FK_Assignments_Job FOREIGN KEY (JobId) REFERENCES Job(JobId)
+CREATE TABLE IF NOT EXISTS "Assignment" (
+    AssignmentId INTEGER NOT NULL,
+    DragonId     INTEGER NOT NULL,
+    JobId        INTEGER NOT NULL,
+    StartDateUnix INTEGER NOT NULL,
+    EndDateUnix  INTEGER NOT NULL,
+    CONSTRAINT PK_Assignments PRIMARY KEY (AssignmentId),
+    CONSTRAINT FK_Assignments_Dragon FOREIGN KEY (DragonId) REFERENCES Dragon(DragonId),
+    CONSTRAINT FK_Assignments_Job    FOREIGN KEY (JobId)    REFERENCES Job(JobId)
 );
 CREATE UNIQUE INDEX Assignment_UK_JobId_DragonId ON Assignment(JobId, DragonId);

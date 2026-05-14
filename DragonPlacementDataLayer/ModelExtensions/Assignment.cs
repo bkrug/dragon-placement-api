@@ -9,10 +9,10 @@ public partial class Assignment
         StartDateUnix = new DateTimeOffset(value).ToUnixTimeSeconds();
     }
 
-    //public DateTime? EndDate => EndDateUnix == null ? null : DateTimeOffset.FromUnixTimeSeconds(EndDateUnix.Value).UtcDateTime;
-    public DateTime? GetEndDate() => EndDateUnix == null ? null : DateTimeOffset.FromUnixTimeSeconds(EndDateUnix.Value).UtcDateTime;
-    public void SetEndDate(DateTime? value)
+    //public DateTime EndDate => DateTimeOffset.FromUnixTimeSeconds(EndDateUnix).UtcDateTime;
+    public DateTime GetEndDate() => DateTimeOffset.FromUnixTimeSeconds(EndDateUnix).UtcDateTime;
+    public void SetEndDate(DateTime value)
     {
-        EndDateUnix = value == null ? null : new DateTimeOffset(value.Value).ToUnixTimeSeconds();
+        EndDateUnix = new DateTimeOffset(value).ToUnixTimeSeconds();
     }
 }

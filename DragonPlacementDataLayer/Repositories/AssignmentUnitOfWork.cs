@@ -59,7 +59,7 @@ public class AssignmentUnitOfWork(DragonPlacementContext context) : IDisposable,
     {
         return _context.Assignments
             .Where(a => a.DragonId == dragonId)
-            .Where(a => (!a.EndDateUnix.HasValue || periodStartUnix <= a.EndDateUnix.Value) && periodEndUnix >= a.StartDateUnix);
+            .Where(a => periodStartUnix <= a.EndDateUnix && periodEndUnix >= a.StartDateUnix);
     }
 
     public IEnumerable<Dragon> GetDragonsWithoutOverlappingAssignments(int jobId)
@@ -72,7 +72,7 @@ public class AssignmentUnitOfWork(DragonPlacementContext context) : IDisposable,
         return _context.Dragons
             .Where(d => d.Assignments
                 .Count(a =>
-                    (!a.EndDateUnix.HasValue || periodStart <= a.EndDateUnix.Value)
+                    periodStart <= a.EndDateUnix
                     && periodEnd >= a.StartDateUnix
                 ) == 0
             );
@@ -106,7 +106,7 @@ public class AssignmentUnitOfWork(DragonPlacementContext context) : IDisposable,
         IQueryable<Dragon> dragonEnumerable = jobInclusions switch
         {
             JobInclusions.Past => _context.Dragons
-                .Include(d => d.Assignments.Where(a => a.EndDateUnix.HasValue && a.EndDateUnix < todayUnix))
+                .Include(d => d.Assignments.Where(a => a.EndDateUnix < todayUnix))
                     .ThenInclude(a => a.Job),
             JobInclusions.CurrentAndFuture => _context.Dragons
                 .Include(d => d.Assignments.Where(a => a.StartDateUnix >= todayUnix))
