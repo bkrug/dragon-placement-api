@@ -174,6 +174,7 @@ public class DragonTests
         string expectedFailureField,
         string expectedFailureMessage)
     {
+        const int DRAGON_ID = 3792;
         var dragon = new Dragon
         {
             GivenName = "Thunderclaw",
@@ -185,10 +186,10 @@ public class DragonTests
         };
         typeof(Dragon).GetProperty(expectedFailureField)!.SetValue(dragon, invalidValue);
         var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
-        unitOfWorkMock.Setup(m => m.DragonRepository).Returns(new Mock<IGenericRepository<Dragon>>().Object);
+        unitOfWorkMock.Setup(m => m.DragonRepository.GetByID(DRAGON_ID)).ReturnsAsync(dragon);
 
         //Act
-        var response = await DragonEndpoints.UpdateDragonAsync(unitOfWorkMock.Object, 1, dragon);
+        var response = await DragonEndpoints.UpdateDragonAsync(unitOfWorkMock.Object, DRAGON_ID, dragon);
 
         //Assert
         response.Result.ShouldBeOfType<BadRequest<ValidatedForm<DragonValidationFailures>>>();
@@ -203,6 +204,7 @@ public class DragonTests
     [Fact]
     public async Task UpdateDragon_AllFieldsInvalid_ExpectBadRequestWithAllValidationFailures()
     {
+        const int DRAGON_ID = 278;
         var dragon = new Dragon
         {
             GivenName = " ",
@@ -213,10 +215,10 @@ public class DragonTests
             FightingSkills = "c"
         };
         var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
-        unitOfWorkMock.Setup(m => m.DragonRepository).Returns(new Mock<IGenericRepository<Dragon>>().Object);
+        unitOfWorkMock.Setup(m => m.DragonRepository.GetByID(DRAGON_ID)).ReturnsAsync(dragon);
 
         //Act
-        var response = await DragonEndpoints.UpdateDragonAsync(unitOfWorkMock.Object, 1, dragon);
+        var response = await DragonEndpoints.UpdateDragonAsync(unitOfWorkMock.Object, DRAGON_ID, dragon);
 
         //Assert
         response.Result.ShouldBeOfType<BadRequest<ValidatedForm<DragonValidationFailures>>>();

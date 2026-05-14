@@ -57,7 +57,7 @@ public class DragonEndpoints
             IAssignmentUnitOfWork unitOfWork,
             [FromBody] Dragon dragon)
     {
-        var validationFailures = NewMethod(dragon);
+        var validationFailures = ValidateDragon(dragon);
         if (validationFailures != null)
             return TypedResults.BadRequest(validationFailures);
 
@@ -66,7 +66,34 @@ public class DragonEndpoints
         return TypedResults.Ok(ValidatedPayload<Dragon>.FromPayload(dragon));
     }
 
-    private static ValidatedForm<DragonValidationFailures>? NewMethod(Dragon dragon)
+    public static async Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<DragonValidationFailures>>>>
+        UpdateDragonAsync(
+            IAssignmentUnitOfWork unitOfWork,
+            [FromRoute(Name="dragonId")] int dragonId,
+            [FromBody] Dragon inputDragon)
+    {
+        var existing = await unitOfWork.DragonRepository.GetByID(dragonId).ConfigureAwait(false);
+        if (existing == null)
+        {
+            return TypedResults.NotFound(ValidatedResponse.NotFound);
+        }
+
+        existing.GivenName = inputDragon.GivenName;
+        existing.FamilyName = inputDragon.FamilyName;
+        existing.CanBreathFire = inputDragon.CanBreathFire;
+        existing.CanTakePassengers = inputDragon.CanTakePassengers;
+        existing.WeightInKg = inputDragon.WeightInKg;
+        existing.LengthInMeters = inputDragon.LengthInMeters;
+        existing.FightingSkills = inputDragon.FightingSkills;
+        var validationFailures = ValidateDragon(existing);
+        if (validationFailures != null)
+            return TypedResults.BadRequest(validationFailures);
+
+        await unitOfWork.SaveAsync().ConfigureAwait(false);
+        return TypedResults.Ok(ValidatedResponse.Success);
+    }
+
+    private static ValidatedForm<DragonValidationFailures>? ValidateDragon(Dragon dragon)
     {
         var failures = new DragonValidationFailures();
 
@@ -95,28 +122,6 @@ public class DragonEndpoints
         }
 
         return null;
-    }
-
-    public static async Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<DragonValidationFailures>>>>
-        UpdateDragonAsync(
-            IAssignmentUnitOfWork unitOfWork,
-            [FromRoute(Name="dragonId")] int dragonId,
-            [FromBody] Dragon dragon)
-    {
-        var existing = await unitOfWork.DragonRepository.GetByID(dragonId).ConfigureAwait(false);
-        if (existing == null)
-        {
-            return TypedResults.NotFound(ValidatedResponse.NotFound);
-        }
-        existing.GivenName = dragon.GivenName;
-        existing.FamilyName = dragon.FamilyName;
-        existing.CanBreathFire = dragon.CanBreathFire;
-        existing.CanTakePassengers = dragon.CanTakePassengers;
-        existing.WeightInKg = dragon.WeightInKg;
-        existing.LengthInMeters = dragon.LengthInMeters;
-        existing.FightingSkills = dragon.FightingSkills;
-        await unitOfWork.SaveAsync().ConfigureAwait(false);
-        return TypedResults.Ok(ValidatedResponse.Success);
     }
 
     public static async Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>>>
