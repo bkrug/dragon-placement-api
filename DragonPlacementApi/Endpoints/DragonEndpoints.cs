@@ -1,3 +1,4 @@
+using DragonPlacementApi.Poco;
 using DragonPlacementDataLayer.Enum;
 using DragonPlacementDataLayer.Models;
 using DragonPlacementDataLayer.Repositories;
@@ -51,18 +52,20 @@ public class DragonEndpoints
             : TypedResults.Ok(ValidatedPayload<Dragon>.FromPayload(dragon));
     }
 
-    public static async Task<Results<Ok<ValidatedPayload<Dragon>>, BadRequest<ValidatedResponse>>>
+    public static async Task<Results<Ok<ValidatedPayload<Dragon>>, BadRequest<ValidatedForm<DragonValidationFailures>>>>
         CreateDragonAsync(
             IAssignmentUnitOfWork unitOfWork,
             [FromBody] Dragon dragon)
     {
         if (string.IsNullOrWhiteSpace(dragon.GivenName))
         {
-            return TypedResults.BadRequest(new ValidatedResponse
+            return TypedResults.BadRequest(new ValidatedForm<DragonValidationFailures>
             {
                 IsSuccess = false,
                 IsInternalError = false,
-                ValidationFailures = ["GivenName is required"]
+                ValidationFailures = new DragonValidationFailures {
+                    GivenName = "is required"
+                }
             });
         }
         unitOfWork.DragonRepository.Insert(dragon);
@@ -70,7 +73,7 @@ public class DragonEndpoints
         return TypedResults.Ok(ValidatedPayload<Dragon>.FromPayload(dragon));
     }
 
-    public static async Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>>>
+    public static async Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<DragonValidationFailures>>>>
         UpdateDragonAsync(
             IAssignmentUnitOfWork unitOfWork,
             [FromRoute(Name="dragonId")] int dragonId,
