@@ -57,17 +57,32 @@ public class DragonEndpoints
             IAssignmentUnitOfWork unitOfWork,
             [FromBody] Dragon dragon)
     {
+        var failures = new DragonValidationFailures();
+
         if (string.IsNullOrWhiteSpace(dragon.GivenName))
+            failures.GivenName = "is required";
+        if (dragon.CanBreathFire != 0 && dragon.CanBreathFire != 1)
+            failures.CanBreathFire = "must be 0 or 1";
+        if (dragon.CanTakePassengers != 0 && dragon.CanTakePassengers != 1)
+            failures.CanTakePassengers = "must be 0 or 1";
+        if (dragon.WeightInKg <= 0)
+            failures.WeightInKg = "must be a positive number";
+        if (dragon.LengthInMeters <= 0)
+            failures.LengthInMeters = "must be a positive number";
+        if (dragon.FightingSkills != null && dragon.FightingSkills is not ("b" or "m" or "a"))
+            failures.FightingSkills = "must be 'b', 'm', or 'a'";
+
+        if (failures.GivenName != null || failures.CanBreathFire != null || failures.CanTakePassengers != null
+            || failures.WeightInKg != null || failures.LengthInMeters != null || failures.FightingSkills != null)
         {
             return TypedResults.BadRequest(new ValidatedForm<DragonValidationFailures>
             {
                 IsSuccess = false,
                 IsInternalError = false,
-                ValidationFailures = new DragonValidationFailures {
-                    GivenName = "is required"
-                }
+                ValidationFailures = failures
             });
         }
+
         unitOfWork.DragonRepository.Insert(dragon);
         await unitOfWork.SaveAsync().ConfigureAwait(false);
         return TypedResults.Ok(ValidatedPayload<Dragon>.FromPayload(dragon));

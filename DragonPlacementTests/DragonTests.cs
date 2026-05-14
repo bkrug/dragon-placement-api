@@ -31,7 +31,7 @@ public class DragonTests
         await DragonEndpoints.CreateDragonAsync(unitOfWorkMock.Object, dragon);
 
         //Assert
-        insertedDragon.ShouldBeEquivalentTo(dragon);
+        insertedDragon.Get().ShouldBeEquivalentTo(dragon);
         unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Once);
     }
 
