@@ -10,6 +10,31 @@ namespace DragonPlacementTests;
 
 public class DragonTests
 {
+    [Fact]
+    public async Task CreateDragon_ValidInput_ExpectInsertionOfRecordAndSavesOnce()
+    {
+        var dragon = new Dragon
+        {
+            GivenName = "Fluffy",
+            CanBreathFire = 1,
+            CanTakePassengers = 0,
+            WeightInKg = 10,
+            LengthInMeters = 5,
+            FightingSkills = "b"
+        };
+        var insertedDragon = new Immutable<Dragon>();
+        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        unitOfWorkMock.Setup(u => u.DragonRepository.Insert(It.IsAny<Dragon>()))
+            .Callback<Dragon>(insertedDragon.Set);
+
+        //Act
+        await DragonEndpoints.CreateDragonAsync(unitOfWorkMock.Object, dragon);
+
+        //Assert
+        insertedDragon.ShouldBeEquivalentTo(dragon);
+        unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Once);
+    }
+
     [Theory]
     [InlineData(null, "GivenName",         "is required")]
     [InlineData("",   "GivenName",         "is required")]
@@ -52,27 +77,35 @@ public class DragonTests
     }
 
     [Fact]
-    public async Task CreateDragon_ValidInput_ExpectInsertionOfRecordAndSavesOnce()
+    public async Task CreateDragon_AllFieldsInvalid_ExpectBadRequestWithAllValidationFailures()
     {
         var dragon = new Dragon
         {
-            GivenName = "Fluffy",
-            CanBreathFire = 1,
-            CanTakePassengers = 0,
-            WeightInKg = 10,
-            LengthInMeters = 5,
-            FightingSkills = "b"
+            GivenName = null!,
+            CanBreathFire = 2,
+            CanTakePassengers = -1,
+            WeightInKg = -1,
+            LengthInMeters = -1,
+            FightingSkills = "x"
         };
-        var insertedDragon = new Immutable<Dragon>();
         var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
-        unitOfWorkMock.Setup(u => u.DragonRepository.Insert(It.IsAny<Dragon>()))
-            .Callback<Dragon>(insertedDragon.Set);
+        unitOfWorkMock.Setup(m => m.DragonRepository).Returns(new Mock<IGenericRepository<Dragon>>().Object);
 
         //Act
-        await DragonEndpoints.CreateDragonAsync(unitOfWorkMock.Object, dragon);
+        var response = await DragonEndpoints.CreateDragonAsync(unitOfWorkMock.Object, dragon);
 
         //Assert
-        insertedDragon.ShouldBeEquivalentTo(dragon);
-        unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Once);
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<DragonValidationFailures>>>();
+        var badResult = (BadRequest<ValidatedForm<DragonValidationFailures>>)response.Result;
+        var failures = badResult.Value!.ValidationFailures;
+        failures.ShouldBeEquivalentTo(new DragonValidationFailures
+        {
+            GivenName = "is required",
+            CanBreathFire = "must be 0 or 1",
+            CanTakePassengers = "must be 0 or 1",
+            WeightInKg = "must be a positive number",
+            LengthInMeters = "must be a positive number",
+            FightingSkills = "must be 'b', 'm', or 'a'"
+        });
     }
 }
