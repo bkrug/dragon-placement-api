@@ -66,7 +66,7 @@ public class DragonEndpoints
         return TypedResults.Ok(ValidatedPayload<Dragon>.FromPayload(dragon));
     }
 
-    public static async Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<DragonValidationFailures>>>>
+    public static async Task<Results<Ok<ValidatedPayload<Dragon>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<DragonValidationFailures>>>>
         UpdateDragonAsync(
             IAssignmentUnitOfWork unitOfWork,
             [FromRoute(Name="dragonId")] int dragonId,
@@ -90,7 +90,7 @@ public class DragonEndpoints
             return TypedResults.BadRequest(validationFailures);
 
         await unitOfWork.SaveAsync().ConfigureAwait(false);
-        return TypedResults.Ok(ValidatedResponse.Success);
+        return TypedResults.Ok(ValidatedPayload<Dragon>.FromPayload(existing));
     }
 
     private static ValidatedForm<DragonValidationFailures>? ValidateDragon(Dragon dragon)
