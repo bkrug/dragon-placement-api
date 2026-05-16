@@ -28,7 +28,7 @@ public class DragonTests
             .Callback<Dragon>(insertedDragon.Set);
 
         //Act
-        await DragonEndpoints.CreateDragonAsync(unitOfWorkMock.Object, dragon);
+        await DragonEndpoints.CreateDragonAsync(unitOfWorkMock.Object, dragon.Clone());
 
         //Assert
         insertedDragon.Get().ShouldBeEquivalentTo(dragon);
