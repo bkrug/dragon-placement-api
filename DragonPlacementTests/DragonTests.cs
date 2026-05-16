@@ -16,8 +16,8 @@ public class DragonTests
         var dragon = new Dragon
         {
             GivenName = "Fluffy",
-            CanBreathFire = 1,
-            CanTakePassengers = 0,
+            CanBreathFire = true,
+            CanTakePassengers = false,
             WeightInKg = 10,
             LengthInMeters = 5,
             FightingSkills = "b"
@@ -38,10 +38,6 @@ public class DragonTests
     [Theory]
     [InlineData(null, "GivenName",         "is required")]
     [InlineData("",   "GivenName",         "is required")]
-    [InlineData(2,    "CanBreathFire",     "must be 0 or 1")]
-    [InlineData(-1,   "CanBreathFire",     "must be 0 or 1")]
-    [InlineData(2,    "CanTakePassengers", "must be 0 or 1")]
-    [InlineData(-1,   "CanTakePassengers", "must be 0 or 1")]
     [InlineData(-1,   "WeightInKg",        "must be a positive number")]
     [InlineData(-1,   "LengthInMeters",    "must be a positive number")]
     [InlineData("x",  "FightingSkills",    "must be 'b', 'm', or 'a'")]
@@ -53,8 +49,8 @@ public class DragonTests
         var dragon = new Dragon
         {
             GivenName = "Fluffy",
-            CanBreathFire = 1,
-            CanTakePassengers = 0,
+            CanBreathFire = true,
+            CanTakePassengers = false,
             WeightInKg = 10,
             LengthInMeters = 5,
             FightingSkills = "b"
@@ -82,8 +78,8 @@ public class DragonTests
         var dragon = new Dragon
         {
             GivenName = null!,
-            CanBreathFire = 2,
-            CanTakePassengers = -1,
+            CanBreathFire = false,
+            CanTakePassengers = false,
             WeightInKg = -1,
             LengthInMeters = -1,
             FightingSkills = "x"
@@ -101,8 +97,6 @@ public class DragonTests
         failures.ShouldBeEquivalentTo(new DragonValidationFailures
         {
             GivenName = "is required",
-            CanBreathFire = "must be 0 or 1",
-            CanTakePassengers = "must be 0 or 1",
             WeightInKg = "must be a positive number",
             LengthInMeters = "must be a positive number",
             FightingSkills = "must be 'b', 'm', or 'a'"
@@ -118,8 +112,8 @@ public class DragonTests
             DragonId = dragonId,
             GivenName = "Old Name",
             FamilyName = "Old Family",
-            CanBreathFire = 0,
-            CanTakePassengers = 0,
+            CanBreathFire = false,
+            CanTakePassengers = false,
             WeightInKg = 5,
             LengthInMeters = 3,
             FightingSkills = "b"
@@ -129,8 +123,8 @@ public class DragonTests
             DragonId = dragonId,
             GivenName = "New Name",
             FamilyName = "New Family",
-            CanBreathFire = 1,
-            CanTakePassengers = 1,
+            CanBreathFire = true,
+            CanTakePassengers = true,
             WeightInKg = 20,
             LengthInMeters = 10,
             FightingSkills = "a"
@@ -162,10 +156,6 @@ public class DragonTests
 
     [Theory]
     [InlineData(" ",  "GivenName",         "is required")]
-    [InlineData(5,    "CanBreathFire",     "must be 0 or 1")]
-    [InlineData(-3,   "CanBreathFire",     "must be 0 or 1")]
-    [InlineData(3,    "CanTakePassengers", "must be 0 or 1")]
-    [InlineData(-2,   "CanTakePassengers", "must be 0 or 1")]
     [InlineData(-5,   "WeightInKg",        "must be a positive number")]
     [InlineData(-10,  "LengthInMeters",    "must be a positive number")]
     [InlineData("c",  "FightingSkills",    "must be 'b', 'm', or 'a'")]
@@ -178,8 +168,8 @@ public class DragonTests
         var dragon = new Dragon
         {
             GivenName = "Thunderclaw",
-            CanBreathFire = 1,
-            CanTakePassengers = 0,
+            CanBreathFire = true,
+            CanTakePassengers = false,
             WeightInKg = 50,
             LengthInMeters = 8,
             FightingSkills = "m"
@@ -208,8 +198,8 @@ public class DragonTests
         var dragon = new Dragon
         {
             GivenName = " ",
-            CanBreathFire = 5,
-            CanTakePassengers = -2,
+            CanBreathFire = false,
+            CanTakePassengers = false,
             WeightInKg = -5,
             LengthInMeters = -10,
             FightingSkills = "c"
@@ -227,8 +217,6 @@ public class DragonTests
         failures.ShouldBeEquivalentTo(new DragonValidationFailures
         {
             GivenName = "is required",
-            CanBreathFire = "must be 0 or 1",
-            CanTakePassengers = "must be 0 or 1",
             WeightInKg = "must be a positive number",
             LengthInMeters = "must be a positive number",
             FightingSkills = "must be 'b', 'm', or 'a'"

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace DragonPlacementDataLayer.Models;
 
@@ -11,9 +12,9 @@ public partial class Dragon
 
     public string? FamilyName { get; set; }
 
-    public int CanBreathFire { get; set; }
+    public bool CanBreathFire { get; set; }
 
-    public int CanTakePassengers { get; set; }
+    public bool CanTakePassengers { get; set; }
 
     public int? WeightInKg { get; set; }
 

@@ -99,10 +99,6 @@ public class DragonEndpoints
 
         if (string.IsNullOrWhiteSpace(dragon.GivenName))
             failures.GivenName = "is required";
-        if (dragon.CanBreathFire != 0 && dragon.CanBreathFire != 1)
-            failures.CanBreathFire = "must be 0 or 1";
-        if (dragon.CanTakePassengers != 0 && dragon.CanTakePassengers != 1)
-            failures.CanTakePassengers = "must be 0 or 1";
         if (dragon.WeightInKg <= 0)
             failures.WeightInKg = "must be a positive number";
         if (dragon.LengthInMeters <= 0)
@@ -110,7 +106,7 @@ public class DragonEndpoints
         if (dragon.FightingSkills != null && dragon.FightingSkills is not ("b" or "m" or "a"))
             failures.FightingSkills = "must be 'b', 'm', or 'a'";
 
-        if (failures.GivenName != null || failures.CanBreathFire != null || failures.CanTakePassengers != null
+        if (failures.GivenName != null
             || failures.WeightInKg != null || failures.LengthInMeters != null || failures.FightingSkills != null)
         {
             return new ValidatedForm<DragonValidationFailures>
