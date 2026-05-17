@@ -252,4 +252,6 @@ public class DragonTests
         response.Result.ShouldBeOfType<NotFound<ValidatedResponse>>();
         unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Never);
     }
+
+    //TODO: Assert attempting to delete a dragon with at least one assignment, will result in a 400 response.
 }
