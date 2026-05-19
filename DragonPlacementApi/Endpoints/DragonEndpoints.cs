@@ -120,11 +120,15 @@ public class DragonEndpoints
         return null;
     }
 
-    public static async Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>>>
+    public static async Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>, Conflict<ValidatedResponse>>>
         DeleteDragonAsync(
             IAssignmentUnitOfWork unitOfWork,
             [FromRoute(Name="dragonId")] int dragonId)
     {
+        if (await unitOfWork.DragonHasAnAssignment(dragonId).ConfigureAwait(false))
+        {
+            return TypedResults.Conflict(new ValidatedResponse { ValidationFailures = ["Dragon has an existing assignment"] });
+        }
         var deleteResult = unitOfWork.DragonRepository.Delete(dragonId);
         if (deleteResult == DeleteResult.NotFound)
         {
