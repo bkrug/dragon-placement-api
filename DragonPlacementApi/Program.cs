@@ -22,6 +22,7 @@ builder.Services
         options.UseSqlite(builder.Configuration.GetConnectionString("DragonPlacementDb")));
 builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(o => o.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
+builder.Services.AddLogging();
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IAssignmentUnitOfWork, AssignmentUnitOfWork>();
 

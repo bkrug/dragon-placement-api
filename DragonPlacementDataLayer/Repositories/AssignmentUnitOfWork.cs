@@ -4,6 +4,7 @@ using DragonPlacementDataLayer.Enum;
 using DragonPlacementDataLayer.Models;
 using DragonPlacementDataLayer.Poco;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace DragonPlacementDataLayer.Repositories;
 
@@ -23,12 +24,13 @@ public interface IAssignmentUnitOfWork
     IEnumerable<JobWithCapacity> GetJobsWithCapacity();    
 }
 
-public class AssignmentUnitOfWork(DragonPlacementContext context) : IDisposable, IAssignmentUnitOfWork
+public class AssignmentUnitOfWork(DragonPlacementContext context, ILogger<AssignmentUnitOfWork> logger) : IDisposable, IAssignmentUnitOfWork
 {
     private readonly DragonPlacementContext _context = context;
     public IGenericRepository<Dragon> DragonRepository { get; } = new GenericRepository<Dragon>(context);
     public IGenericRepository<Job> JobRepository { get; } = new GenericRepository<Job>(context);
     public IGenericRepository<Assignment> AssignmentRepository { get; } = new GenericRepository<Assignment>(context);
+    private readonly ILogger<AssignmentUnitOfWork> _logger = logger;
 
     public async Task SaveAsync()
     {
