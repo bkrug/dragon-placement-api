@@ -23,6 +23,7 @@ public interface IAssignmentUnitOfWork
     IEnumerable<Dragon> GetAssignedDragons(int jobId);
     IEnumerable<JobWithCapacity> GetJobsWithCapacity();
     Task<bool> DragonHasAnAssignment(int dragonId);
+    Task<bool> JobHasAnAssignment(int jobId);
 }
 
 public class AssignmentUnitOfWork(DragonPlacementContext context, ILogger<AssignmentUnitOfWork> logger) : IDisposable, IAssignmentUnitOfWork
@@ -125,5 +126,10 @@ public class AssignmentUnitOfWork(DragonPlacementContext context, ILogger<Assign
     public async Task<bool> DragonHasAnAssignment(int dragonId)
     {
         return await _context.Assignments.AnyAsync(a => a.DragonId == dragonId);
+    }
+
+    public Task<bool> JobHasAnAssignment(int jobId)
+    {
+        throw new NotImplementedException();
     }
 }

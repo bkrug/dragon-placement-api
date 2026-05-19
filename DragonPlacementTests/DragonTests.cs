@@ -28,9 +28,10 @@ public class DragonTests
             .Callback<Dragon>(insertedDragon.Set);
 
         //Act
-        await DragonEndpoints.CreateDragonAsync(unitOfWorkMock.Object, dragon.Clone());
+        var response = await DragonEndpoints.CreateDragonAsync(unitOfWorkMock.Object, dragon.Clone());
 
         //Assert
+        response.Result.ShouldBeOfType<Ok<ValidatedPayload<Dragon>>>();
         insertedDragon.Get().ShouldBeEquivalentTo(dragon);
         unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Once);
     }
@@ -133,9 +134,10 @@ public class DragonTests
         unitOfWorkMock.Setup(u => u.DragonRepository.GetByID(dragonId)).ReturnsAsync(existingDragon);
 
         //Act
-        await DragonEndpoints.UpdateDragonAsync(unitOfWorkMock.Object, dragonId, updatedDragon);
+        var response = await DragonEndpoints.UpdateDragonAsync(unitOfWorkMock.Object, dragonId, updatedDragon);
 
         //Assert
+        response.Result.ShouldBeOfType<Ok<ValidatedPayload<Dragon>>>();
         existingDragon.ShouldBeEquivalentTo(updatedDragon);
         unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Once);
     }
