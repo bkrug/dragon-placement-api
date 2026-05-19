@@ -1,3 +1,4 @@
+using DragonPlacementApi.Poco;
 using DragonPlacementDataLayer.Models;
 using DragonPlacementDataLayer.Poco;
 using DragonPlacementDataLayer.Repositories;
@@ -77,6 +78,31 @@ public class JobEndpoints
             });
         }
     }    
+
+    public static async Task<Results<Ok<ValidatedPayload<Job>>, BadRequest<ValidatedForm<JobValidationFailures>>>>
+        CreateJobAsync(
+            IAssignmentUnitOfWork unitOfWork,
+            [FromBody] Job job)
+    {
+        throw new NotImplementedException();
+    }
+
+    public static async Task<Results<Ok<ValidatedPayload<Job>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<JobValidationFailures>>>>
+        UpdateJobAsync(
+            IAssignmentUnitOfWork unitOfWork,
+            [FromRoute(Name="jobId")] int jobId,
+            [FromBody] Job inputJob)
+    {
+        throw new NotImplementedException();
+    }
+
+    public static async Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>, Conflict<ValidatedResponse>>>
+        DeleteJobAsync(
+            IAssignmentUnitOfWork unitOfWork,
+            [FromRoute(Name="jobId")] int jobId)
+    {
+        throw new NotImplementedException();
+    }
 
     public async static Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>, InternalServerError<ValidatedResponse>>> UnassignDragonFromJobAsync(
         IAssignmentUnitOfWork unitOfWork,
