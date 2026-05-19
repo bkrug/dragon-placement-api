@@ -38,7 +38,7 @@ public class DragonEndpoints
         return TypedResults.Ok(pagedData);
     }
 
-    public static async Task<Results<Ok<ValidatedPayload<Dragon>>, NotFound<ValidatedResponse>>>
+    public static async Task<Results<Ok<ValidatedPayload<Dragon>>, NotFound<ValidatedResponse>, InternalServerError<ValidatedResponse>>>
         GetDragonAsync(
             HttpContext context,
             IAssignmentUnitOfWork unitOfWork,
@@ -46,10 +46,13 @@ public class DragonEndpoints
             [FromQuery(Name="jobInclusions")] JobInclusions jobInclusions = JobInclusions.None
         )
     {
-        var dragon = await unitOfWork.GetDragonWithJobAsync(dragonId, jobInclusions).ConfigureAwait(false);
-        return dragon == null
-            ? TypedResults.NotFound(ValidatedResponse.NotFound)
-            : TypedResults.Ok(ValidatedPayload<Dragon>.FromPayload(dragon));
+        var dragons = await unitOfWork.GetDragonWithJobAsync(dragonId, jobInclusions).ConfigureAwait(false);
+        return dragons.Count switch
+        {
+            0 => TypedResults.NotFound(ValidatedResponse.NotFound),
+            1 => TypedResults.Ok(ValidatedPayload<Dragon>.FromPayload(dragons.First())),
+            _ => TypedResults.InternalServerError(ValidatedResponse.ExpectedOneFoundMultiple),
+        };
     }
 
     public static async Task<Results<Ok<ValidatedPayload<Dragon>>, BadRequest<ValidatedForm<DragonValidationFailures>>>>

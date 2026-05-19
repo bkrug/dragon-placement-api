@@ -158,19 +158,16 @@ public class JobEndpoints
         [FromRoute(Name="dragonId")] int dragonId)
     {
         var foundAssignments = unitOfWork.AssignmentRepository.Get(asgn => asgn.JobId == jobId && asgn.DragonId == dragonId).ToList();
-        if (foundAssignments.Count == 0)
+        switch(foundAssignments.Count)
         {
-            return TypedResults.NotFound(ValidatedResponse.NotFound);
-        }
-        else if (foundAssignments.Count == 1)
-        {
-            unitOfWork.AssignmentRepository.Delete(foundAssignments[0]);
-            await unitOfWork.SaveAsync().ConfigureAwait(false);
-            return TypedResults.Ok(ValidatedResponse.Success);
-        }
-        else
-        {
-            return TypedResults.InternalServerError(ValidatedResponse.ExpectedOneFoundMultiple);
+            case 0:
+                return TypedResults.NotFound(ValidatedResponse.NotFound);
+            case 1:
+                unitOfWork.AssignmentRepository.Delete(foundAssignments[0]);
+                await unitOfWork.SaveAsync().ConfigureAwait(false);
+                return TypedResults.Ok(ValidatedResponse.Success);
+            default:
+                return TypedResults.InternalServerError(ValidatedResponse.ExpectedOneFoundMultiple);
         }
     }
 }

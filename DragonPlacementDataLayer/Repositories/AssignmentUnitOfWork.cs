@@ -17,7 +17,7 @@ public interface IAssignmentUnitOfWork
     void Dispose();
     Task SaveAsync();
 
-    Task<Dragon?> GetDragonWithJobAsync(int dragonId, JobInclusions jobInclusions);
+    Task<IList<Dragon>> GetDragonWithJobAsync(int dragonId, JobInclusions jobInclusions);
     IEnumerable<Assignment> GetOverlappingAssignments(int dragonId, long periodStartUnix, long periodEndUnix);
     IEnumerable<Dragon> GetDragonsWithoutOverlappingAssignments(int jobId);
     IEnumerable<Dragon> GetAssignedDragons(int jobId);
@@ -104,7 +104,7 @@ public class AssignmentUnitOfWork(DragonPlacementContext context, ILogger<Assign
             });
     }    
 
-    public async Task<Dragon?> GetDragonWithJobAsync(int dragonId, JobInclusions jobInclusions)
+    public async Task<IList<Dragon>> GetDragonWithJobAsync(int dragonId, JobInclusions jobInclusions)
     {
         var todayUnix = new DateTimeOffset(DateTime.UtcNow.Date).ToUnixTimeSeconds();
         IQueryable<Dragon> dragonEnumerable = jobInclusions switch
@@ -119,7 +119,8 @@ public class AssignmentUnitOfWork(DragonPlacementContext context, ILogger<Assign
         };
         return await dragonEnumerable
             .Where(d => d.DragonId == dragonId)
-            .FirstOrDefaultAsync()
+            .Take(2)
+            .ToListAsync()
             .ConfigureAwait(false);
     }
 
