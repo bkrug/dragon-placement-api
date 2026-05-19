@@ -21,7 +21,8 @@ public interface IAssignmentUnitOfWork
     IEnumerable<Assignment> GetOverlappingAssignments(int dragonId, long periodStartUnix, long periodEndUnix);
     IEnumerable<Dragon> GetDragonsWithoutOverlappingAssignments(int jobId);
     IEnumerable<Dragon> GetAssignedDragons(int jobId);
-    IEnumerable<JobWithCapacity> GetJobsWithCapacity();    
+    IEnumerable<JobWithCapacity> GetJobsWithCapacity();
+    Task<bool> DragonHasAnAssignment(int dragonId);
 }
 
 public class AssignmentUnitOfWork(DragonPlacementContext context, ILogger<AssignmentUnitOfWork> logger) : IDisposable, IAssignmentUnitOfWork
@@ -119,5 +120,10 @@ public class AssignmentUnitOfWork(DragonPlacementContext context, ILogger<Assign
             .Where(d => d.DragonId == dragonId)
             .FirstOrDefaultAsync()
             .ConfigureAwait(false);
+    }
+
+    public async Task<bool> DragonHasAnAssignment(int dragonId)
+    {
+        return await _context.Assignments.AnyAsync(a => a.DragonId == dragonId);
     }
 }
