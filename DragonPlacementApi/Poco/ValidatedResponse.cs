@@ -11,13 +11,6 @@ public class ValidatedResponse
     public static ValidatedResponse ExpectedOneFoundMultiple => new() { IsInternalError = true, ValidationFailures = [ "Expected exactly one result, but found multiple."] };
 }
 
-public class ValidatedForm<T> where T : new()
-{
-    public bool IsSuccess {get;set;}
-    public bool IsInternalError {get;set;}
-    public T ValidationFailures {get;set;} = new T();
-}
-
 public class ValidatedPayload<T> : ValidatedResponse where T : new()
 {
     public T Payload {get;set;} = new T();
@@ -29,6 +22,13 @@ public class ValidatedPayload<T> : ValidatedResponse where T : new()
             ValidationFailures = [],
             Payload = payload
         };
+}
+
+public class ValidatedForm<T> where T : new()
+{
+    public bool IsSuccess {get;set;}
+    public bool IsInternalError {get;set;}
+    public T ValidationFailures {get;set;} = new T();
 }
 
 public class PagedData<T> where T : class
