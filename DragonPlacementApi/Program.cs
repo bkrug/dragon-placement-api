@@ -37,6 +37,7 @@ app.MapPost("/dragon", DragonEndpoints.CreateDragonAsync);
 app.MapPut("/dragon/{dragonId}", DragonEndpoints.UpdateDragonAsync);
 app.MapDelete("/dragon/{dragonId}", DragonEndpoints.DeleteDragonAsync);
 app.MapGet("/job", JobEndpoints.GetJobs);
+app.MapGet("/job/{jobId}", JobEndpoints.GetJob);
 app.MapPost("/job", JobEndpoints.CreateJobAsync);
 app.MapPut("/job/{jobId}", JobEndpoints.UpdateJobAsync);
 app.MapDelete("/job/{jobId}", JobEndpoints.DeleteJobAsync);

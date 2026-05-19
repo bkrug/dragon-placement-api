@@ -9,6 +9,18 @@ namespace DragonPlacementApi.Endpoints;
 
 public class JobEndpoints
 {
+    public static async Task<Results<Ok<ValidatedPayload<Job>>, NotFound<ValidatedResponse>>> GetJob(IAssignmentUnitOfWork unitOfWork, [FromRoute(Name="jobId")] int jobId = 0)
+    {
+        var job = await unitOfWork.JobRepository.GetByID(jobId);
+        return job == null
+            ? TypedResults.NotFound(ValidatedResponse.NotFound)
+            : TypedResults.Ok(new ValidatedPayload<Job>
+            {
+                IsSuccess = true,
+                Payload = job
+            });
+    }
+
     public static PagedData<JobWithCapacity> GetJobs(IAssignmentUnitOfWork unitOfWork, [FromQuery(Name="offset")] int offset = 0, [FromQuery(Name="limit")] int limit = 20) {
         var jobEnumerable = unitOfWork.GetJobsWithCapacity();
         return new()
