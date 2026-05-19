@@ -28,7 +28,7 @@ builder.Services.AddScoped<IAssignmentUnitOfWork, AssignmentUnitOfWork>();
 
 var app = builder.Build();
 app.UseCors(allowedOriginsPolicy);
-app.UseExceptionHandler(exceptionHandlerApp => exceptionHandlerApp.Run(async context => await Results.Problem().ExecuteAsync(context)));
+app.UseExceptionHandler(appBuilder => appBuilder.Run(async context => await Results.Problem().ExecuteAsync(context)));
 
 app.MapGet("/", () => "Dragon Placement API!");
 app.MapGet("/dragon", DragonEndpoints.GetDragons);
