@@ -84,15 +84,13 @@ public class JobEndpoints
             IAssignmentUnitOfWork unitOfWork,
             [FromBody] Job job)
     {
-        return TypedResults.Ok(new ValidatedPayload<Job>
-        {
-           IsSuccess = true,
-           Payload = new Job
-           {
-               JobTitle = "",
-               NumberOfPositions = 0
-           } 
-        });
+        var validationFailures = ValidateJob(job);
+        if (validationFailures != null)
+            return TypedResults.BadRequest(validationFailures);
+
+        unitOfWork.JobRepository.Insert(job);
+        await unitOfWork.SaveAsync().ConfigureAwait(false);
+        return TypedResults.Ok(ValidatedPayload<Job>.FromPayload(job));
     }
 
     public static async Task<Results<Ok<ValidatedPayload<Job>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<JobValidationFailures>>>>
@@ -101,15 +99,21 @@ public class JobEndpoints
             [FromRoute(Name="jobId")] int jobId,
             [FromBody] Job inputJob)
     {
-        return TypedResults.Ok(new ValidatedPayload<Job>
-        {
-           IsSuccess = true,
-           Payload = new Job
-           {
-               JobTitle = "",
-               NumberOfPositions = 0
-           } 
-        });
+        var existing = await unitOfWork.JobRepository.GetByID(jobId).ConfigureAwait(false);
+        if (existing == null)
+            return TypedResults.NotFound(ValidatedResponse.NotFound);
+
+        existing.JobTitle = inputJob.JobTitle;
+        existing.EmployerName = inputJob.EmployerName;
+        existing.NumberOfPositions = inputJob.NumberOfPositions;
+        existing.StartDateUnix = inputJob.StartDateUnix;
+        existing.EndDateUnix = inputJob.EndDateUnix;
+        var validationFailures = ValidateJob(existing);
+        if (validationFailures != null)
+            return TypedResults.BadRequest(validationFailures);
+
+        await unitOfWork.SaveAsync().ConfigureAwait(false);
+        return TypedResults.Ok(ValidatedPayload<Job>.FromPayload(existing));
     }
 
     public static async Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>, Conflict<ValidatedResponse>>>
@@ -117,10 +121,35 @@ public class JobEndpoints
             IAssignmentUnitOfWork unitOfWork,
             [FromRoute(Name="jobId")] int jobId)
     {
-        return TypedResults.Ok(new ValidatedResponse
-        {
-           IsSuccess = true
-        });
+        if (await unitOfWork.JobHasAnAssignment(jobId).ConfigureAwait(false))
+            return TypedResults.Conflict(new ValidatedResponse { ValidationFailures = ["Job has an existing assignment"] });
+
+        var deleteResult = unitOfWork.JobRepository.Delete(jobId);
+        if (deleteResult == DeleteResult.NotFound)
+            return TypedResults.NotFound(ValidatedResponse.NotFound);
+
+        await unitOfWork.SaveAsync().ConfigureAwait(false);
+        return TypedResults.Ok(ValidatedResponse.Success);
+    }
+
+    private static ValidatedForm<JobValidationFailures>? ValidateJob(Job job)
+    {
+        var failures = new JobValidationFailures();
+
+        if (string.IsNullOrWhiteSpace(job.JobTitle))
+            failures.JobTitle = "is required";
+        if (job.NumberOfPositions <= 0)
+            failures.NumberOfPositions = "must be a positive number";
+
+        if (failures.JobTitle != null || failures.NumberOfPositions != null)
+            return new ValidatedForm<JobValidationFailures>
+            {
+                IsSuccess = false,
+                IsInternalError = false,
+                ValidationFailures = failures
+            };
+
+        return null;
     }
 
     public async static Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>, InternalServerError<ValidatedResponse>>> UnassignDragonFromJobAsync(
