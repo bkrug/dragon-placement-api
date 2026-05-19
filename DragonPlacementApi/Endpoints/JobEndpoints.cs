@@ -84,7 +84,15 @@ public class JobEndpoints
             IAssignmentUnitOfWork unitOfWork,
             [FromBody] Job job)
     {
-        throw new NotImplementedException();
+        return TypedResults.Ok(new ValidatedPayload<Job>
+        {
+           IsSuccess = true,
+           Payload = new Job
+           {
+               JobTitle = "",
+               NumberOfPositions = 0
+           } 
+        });
     }
 
     public static async Task<Results<Ok<ValidatedPayload<Job>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<JobValidationFailures>>>>
@@ -93,7 +101,15 @@ public class JobEndpoints
             [FromRoute(Name="jobId")] int jobId,
             [FromBody] Job inputJob)
     {
-        throw new NotImplementedException();
+        return TypedResults.Ok(new ValidatedPayload<Job>
+        {
+           IsSuccess = true,
+           Payload = new Job
+           {
+               JobTitle = "",
+               NumberOfPositions = 0
+           } 
+        });
     }
 
     public static async Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>, Conflict<ValidatedResponse>>>
@@ -101,7 +117,10 @@ public class JobEndpoints
             IAssignmentUnitOfWork unitOfWork,
             [FromRoute(Name="jobId")] int jobId)
     {
-        throw new NotImplementedException();
+        return TypedResults.Ok(new ValidatedResponse
+        {
+           IsSuccess = true
+        });
     }
 
     public async static Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>, InternalServerError<ValidatedResponse>>> UnassignDragonFromJobAsync(
