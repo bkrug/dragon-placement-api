@@ -16,8 +16,8 @@ public interface IGenericRepository<TEntity> where TEntity : class
     DeleteResult Delete(object id);
     void Delete(TEntity entityToDelete);
     IEnumerable<TEntity> Get(
-        Expression<Func<TEntity, bool>> filter = null,
-        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+        Expression<Func<TEntity, bool>>? filter = null,
+        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
         string includeProperties = ""
     );
     Task<TEntity?> GetByID(object id);
@@ -32,8 +32,8 @@ public class GenericRepository<TEntity>(DragonPlacementContext context) : IGener
     internal readonly DbSet<TEntity> _dbSet = context.Set<TEntity>();
 
     public virtual IEnumerable<TEntity> Get(
-        Expression<Func<TEntity, bool>> filter = null,
-        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+        Expression<Func<TEntity, bool>>? filter = null,
+        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
         string includeProperties = "")
     {
         IQueryable<TEntity> query = _dbSet;
