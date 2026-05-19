@@ -1,4 +1,4 @@
-namespace DragonPlacementApi.Endpoints;
+namespace DragonPlacementApi.Poco;
 
 public class ValidatedResponse
 {
@@ -29,4 +29,12 @@ public class ValidatedPayload<T> : ValidatedResponse where T : new()
             ValidationFailures = [],
             Payload = payload
         };
+}
+
+public class PagedData<T> where T : class
+{
+    public int Offset {get;set;}
+    public int Limit {get;set;}
+    public int TotalRecords {get;set;}
+    public IList<T> Data {get;set;} = [];
 }

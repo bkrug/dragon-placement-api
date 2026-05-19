@@ -4,6 +4,7 @@ using DragonPlacementApi.Endpoints;
 using Moq;
 using Shouldly;
 using Microsoft.AspNetCore.Http.HttpResults;
+using DragonPlacementApi.Poco;
 
 namespace DragonPlacementTests;
 
