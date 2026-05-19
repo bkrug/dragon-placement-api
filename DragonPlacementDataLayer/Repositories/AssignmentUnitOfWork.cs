@@ -128,8 +128,8 @@ public class AssignmentUnitOfWork(DragonPlacementContext context, ILogger<Assign
         return await _context.Assignments.AnyAsync(a => a.DragonId == dragonId);
     }
 
-    public Task<bool> JobHasAnAssignment(int jobId)
+    public async Task<bool> JobHasAnAssignment(int jobId)
     {
-        throw new NotImplementedException();
+        return await _context.Assignments.AnyAsync(a => a.JobId == jobId);
     }
 }
