@@ -57,15 +57,30 @@ public class DragonEndpoints
     public static async Task<Results<Ok<ValidatedPayload<Dragon>>, BadRequest<ValidatedForm<DragonValidationFailures>>>>
         CreateDragonAsync(
             IAssignmentUnitOfWork unitOfWork,
-            [FromBody] Dragon dragon)
+            [FromBody] Dragon inputDragon)
     {
-        var validationFailures = ValidateDragon(dragon);
+        var validationFailures = ValidateDragon(inputDragon);
         if (validationFailures != null)
             return TypedResults.BadRequest(validationFailures);
 
-        unitOfWork.DragonRepository.Insert(dragon);
+        var selectedSkillTagIds = inputDragon.SkillTags.Select(st => st.SkillTagId).ToList();
+        var newDragon = new Dragon
+        {
+            GivenName = inputDragon.GivenName,
+            FamilyName = inputDragon.FamilyName,
+            CanBreathFire = inputDragon.CanBreathFire,
+            CanTakePassengers = inputDragon.CanTakePassengers,
+            WeightInKg = inputDragon.WeightInKg,
+            LengthInMeters = inputDragon.LengthInMeters,
+            FightingSkills = inputDragon.FightingSkills,
+            SkillTags = unitOfWork.SkillTagRespository
+                .Get(st => selectedSkillTagIds.Contains(st.SkillTagId))
+                .ToList()
+        };
+        unitOfWork.DragonRepository.Insert(newDragon);
+
         await unitOfWork.SaveAsync().ConfigureAwait(false);
-        return TypedResults.Ok(ValidatedPayload<Dragon>.FromPayload(dragon));
+        return TypedResults.Ok(ValidatedPayload<Dragon>.FromPayload(newDragon));
     }
 
     public static async Task<Results<Ok<ValidatedPayload<Dragon>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<DragonValidationFailures>>>>

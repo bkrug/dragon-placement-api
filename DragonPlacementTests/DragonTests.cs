@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using DragonPlacementApi.Endpoints;
 using DragonPlacementApi.Poco;
 using DragonPlacementDataLayer.Models;
@@ -26,6 +27,8 @@ public class DragonTests
         var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
         unitOfWorkMock.Setup(u => u.DragonRepository.Insert(It.IsAny<Dragon>()))
             .Callback<Dragon>(insertedDragon.Set);
+        unitOfWorkMock.Setup(u => u.SkillTagRespository.Get(It.IsAny<Expression<Func<SkillTag, bool>>>(), null, ""))
+            .Returns([]);
 
         //Act
         var response = await DragonEndpoints.CreateDragonAsync(unitOfWorkMock.Object, dragon.Clone());
