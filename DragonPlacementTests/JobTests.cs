@@ -13,18 +13,25 @@ public class JobTests
     [Fact]
     public async Task CreateJob_ValidInput_ExpectInsertionOfRecordAndSavesOnce()
     {
+        List<SkillTag> skills = [
+            new SkillTag { SkillTagId = 2001, SkillName = "Fire Safety" },
+            new SkillTag { SkillTagId = 2012, SkillName = "Crowd Control" },
+        ];
+        var skillIds = skills.Select(s => s.SkillTagId).ToList();
         var job = new Job
         {
             JobTitle = "Dragon Wrangler",
             EmployerName = "Dragonscale Inc.",
             NumberOfPositions = 3,
             StartDateUnix = 1000000,
-            EndDateUnix = 2000000
+            EndDateUnix = 2000000,
+            SkillTags = skills
         };
         var insertedJob = new Immutable<Job>();
         var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
         unitOfWorkMock.Setup(u => u.JobRepository.Insert(It.IsAny<Job>()))
             .Callback<Job>(insertedJob.Set);
+        unitOfWorkMock.Setup(u => u.GetSkillTagsById(skillIds)).Returns(skills.Clone());
 
         //Act
         var response = await JobEndpoints.CreateJobAsync(unitOfWorkMock.Object, job.Clone());
@@ -100,6 +107,16 @@ public class JobTests
     public async Task UpdateJob_ValidInput_ExpectUpdateOfRecordAndSavesOnce()
     {
         const int JOB_ID = 1;
+        List<SkillTag> oldSkills = [
+            new SkillTag { SkillTagId = 2001, SkillName = "Fire Safety" },
+            new SkillTag { SkillTagId = 2012, SkillName = "Crowd Control" },
+        ];
+        List<SkillTag> newSkills = [
+            new SkillTag { SkillTagId = 2002, SkillName = "Dragon Taming" },
+            new SkillTag { SkillTagId = 2012, SkillName = "Crowd Control" },
+            new SkillTag { SkillTagId = 2020, SkillName = "Emergency Response" },
+        ];
+        var skillIds = newSkills.Select(s => s.SkillTagId).ToList();
         var existingJob = new Job
         {
             JobId = JOB_ID,
@@ -107,7 +124,8 @@ public class JobTests
             EmployerName = "Old Employer",
             NumberOfPositions = 1,
             StartDateUnix = 1000000,
-            EndDateUnix = 2000000
+            EndDateUnix = 2000000,
+            SkillTags = oldSkills
         };
         var updatedJob = new Job
         {
@@ -116,10 +134,12 @@ public class JobTests
             EmployerName = "New Employer",
             NumberOfPositions = 5,
             StartDateUnix = 3000000,
-            EndDateUnix = 4000000
+            EndDateUnix = 4000000,
+            SkillTags = newSkills
         };
         var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
         unitOfWorkMock.Setup(u => u.GetJobWithSkillsAsync(JOB_ID)).ReturnsAsync([existingJob]);
+        unitOfWorkMock.Setup(u => u.GetSkillTagsById(skillIds)).Returns(newSkills.Clone());
 
         //Act
         var response = await JobEndpoints.UpdateJobAsync(unitOfWorkMock.Object, JOB_ID, updatedJob);
