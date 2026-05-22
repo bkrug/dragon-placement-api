@@ -14,6 +14,11 @@ public class DragonTests
     [Fact]
     public async Task CreateDragon_ValidInput_ExpectInsertionOfRecordAndSavesOnce()
     {
+        List<SkillTag> skills = [
+            new SkillTag { SkillTagId = 1001, SkillName = "Paints" },
+            new SkillTag { SkillTagId = 1012, SkillName = "Ballet" },
+        ];
+        var skillIds = skills.Select(s => s.SkillTagId).ToList();
         var dragon = new Dragon
         {
             GivenName = "Fluffy",
@@ -21,14 +26,14 @@ public class DragonTests
             CanTakePassengers = false,
             WeightInKg = 10,
             LengthInMeters = 5,
-            FightingSkills = "b"
+            FightingSkills = "b",
+            SkillTags = skills
         };
         var insertedDragon = new Immutable<Dragon>();
         var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
         unitOfWorkMock.Setup(u => u.DragonRepository.Insert(It.IsAny<Dragon>()))
             .Callback<Dragon>(insertedDragon.Set);
-        unitOfWorkMock.Setup(u => u.SkillTagRespository.Get(It.IsAny<Expression<Func<SkillTag, bool>>>(), null, ""))
-            .Returns([]);
+        unitOfWorkMock.Setup(u => u.GetSkillTagsById(skillIds)).Returns(skills.Clone());
 
         //Act
         var response = await DragonEndpoints.CreateDragonAsync(unitOfWorkMock.Object, dragon.Clone());
@@ -62,6 +67,7 @@ public class DragonTests
         typeof(Dragon).GetProperty(expectedFailureField)!.SetValue(dragon, invalidValue);
         var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
         unitOfWorkMock.Setup(m => m.DragonRepository).Returns(new Mock<IGenericRepository<Dragon>>().Object);
+        unitOfWorkMock.Setup(u => u.GetSkillTagsById(It.IsAny<IList<int>>())).Returns([]);
 
         //Act
         var response = await DragonEndpoints.CreateDragonAsync(unitOfWorkMock.Object, dragon);
@@ -90,6 +96,7 @@ public class DragonTests
         };
         var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
         unitOfWorkMock.Setup(m => m.DragonRepository).Returns(new Mock<IGenericRepository<Dragon>>().Object);
+        unitOfWorkMock.Setup(u => u.GetSkillTagsById(It.IsAny<IList<int>>())).Returns([]);
 
         //Act
         var response = await DragonEndpoints.CreateDragonAsync(unitOfWorkMock.Object, dragon);
@@ -111,6 +118,16 @@ public class DragonTests
     public async Task UpdateDragon_ValidInput_ExpectUpdateOfRecordAndSavesOnce()
     {
         var dragonId = 1;
+        List<SkillTag> oldSkills = [
+            new SkillTag { SkillTagId = 1001, SkillName = "Paints" },
+            new SkillTag { SkillTagId = 1012, SkillName = "Ballet" },
+        ];
+        List<SkillTag> newSkills = [
+            new SkillTag { SkillTagId = 1002, SkillName = "Cartography" },
+            new SkillTag { SkillTagId = 1012, SkillName = "Ballet" },
+            new SkillTag { SkillTagId = 1020, SkillName = "Swim Coaching" },
+        ];        
+        var skillIds = newSkills.Select(s => s.SkillTagId).ToList();        
         var existingDragon = new Dragon
         {
             DragonId = dragonId,
@@ -120,7 +137,8 @@ public class DragonTests
             CanTakePassengers = false,
             WeightInKg = 5,
             LengthInMeters = 3,
-            FightingSkills = "b"
+            FightingSkills = "b",
+            SkillTags = oldSkills
         };
         var updatedDragon = new Dragon
         {
@@ -131,10 +149,12 @@ public class DragonTests
             CanTakePassengers = true,
             WeightInKg = 20,
             LengthInMeters = 10,
-            FightingSkills = "a"
+            FightingSkills = "a",
+            SkillTags = newSkills
         };
         var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
         unitOfWorkMock.Setup(u => u.DragonRepository.GetByID(dragonId)).ReturnsAsync(existingDragon);
+        unitOfWorkMock.Setup(u => u.GetSkillTagsById(skillIds)).Returns(newSkills.Clone());
 
         //Act
         var response = await DragonEndpoints.UpdateDragonAsync(unitOfWorkMock.Object, dragonId, updatedDragon);
@@ -150,6 +170,7 @@ public class DragonTests
     {
         var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
         unitOfWorkMock.Setup(u => u.DragonRepository.GetByID(It.IsAny<object>())).ReturnsAsync((Dragon?)null);
+        unitOfWorkMock.Setup(u => u.GetSkillTagsById(It.IsAny<IList<int>>())).Returns([]);
 
         //Act
         var response = await DragonEndpoints.UpdateDragonAsync(unitOfWorkMock.Object, 999, new Dragon());
@@ -182,6 +203,7 @@ public class DragonTests
         typeof(Dragon).GetProperty(expectedFailureField)!.SetValue(dragon, invalidValue);
         var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
         unitOfWorkMock.Setup(m => m.DragonRepository.GetByID(DRAGON_ID)).ReturnsAsync(dragon);
+        unitOfWorkMock.Setup(u => u.GetSkillTagsById(It.IsAny<IList<int>>())).Returns([]);
 
         //Act
         var response = await DragonEndpoints.UpdateDragonAsync(unitOfWorkMock.Object, DRAGON_ID, dragon);
@@ -211,6 +233,7 @@ public class DragonTests
         };
         var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
         unitOfWorkMock.Setup(m => m.DragonRepository.GetByID(DRAGON_ID)).ReturnsAsync(dragon);
+        unitOfWorkMock.Setup(u => u.GetSkillTagsById(It.IsAny<IList<int>>())).Returns([]);
 
         //Act
         var response = await DragonEndpoints.UpdateDragonAsync(unitOfWorkMock.Object, DRAGON_ID, dragon);

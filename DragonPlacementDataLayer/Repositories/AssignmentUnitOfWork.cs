@@ -23,6 +23,7 @@ public interface IAssignmentUnitOfWork
     IEnumerable<Dragon> GetDragonsWithoutOverlappingAssignments(int jobId);
     IEnumerable<Dragon> GetAssignedDragons(int jobId);
     IEnumerable<JobWithCapacity> GetJobsWithCapacity();
+    IList<SkillTag> GetSkillTagsById(IList<int> skillTagIds);
     // 0, 1, or 2 results
     Task<IList<Dragon>> GetDragonWithJobAsync(int dragonId, JobInclusions jobInclusions);
     Task<IList<Job>> GetJobWithSkillsAsync(int jobId);
@@ -108,7 +109,12 @@ public class AssignmentUnitOfWork(DragonPlacementContext context, ILogger<Assign
                 StartDateUnix = j.StartDateUnix,
                 EndDateUnix = j.EndDateUnix                
             });
-    }    
+    }
+
+    public IList<SkillTag> GetSkillTagsById(IList<int> skillTagIds)
+    {
+        return _context.SkillTags.Where(st => skillTagIds.Contains(st.SkillTagId)).ToList();
+    }
 
     public async Task<IList<Dragon>> GetDragonWithJobAsync(int dragonId, JobInclusions jobInclusions)
     {

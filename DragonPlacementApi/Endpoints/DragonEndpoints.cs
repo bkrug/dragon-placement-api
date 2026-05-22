@@ -63,7 +63,6 @@ public class DragonEndpoints
         if (validationFailures != null)
             return TypedResults.BadRequest(validationFailures);
 
-        var selectedSkillTagIds = inputDragon.SkillTags.Select(st => st.SkillTagId).ToList();
         var newDragon = new Dragon
         {
             GivenName = inputDragon.GivenName,
@@ -73,9 +72,7 @@ public class DragonEndpoints
             WeightInKg = inputDragon.WeightInKg,
             LengthInMeters = inputDragon.LengthInMeters,
             FightingSkills = inputDragon.FightingSkills,
-            SkillTags = unitOfWork.SkillTagRespository
-                .Get(st => selectedSkillTagIds.Contains(st.SkillTagId))
-                .ToList()
+            SkillTags = unitOfWork.GetSkillTagsById(inputDragon.SkillTags.Select(st => st.SkillTagId).ToList())
         };
         unitOfWork.DragonRepository.Insert(newDragon);
 
