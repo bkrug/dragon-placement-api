@@ -25,7 +25,6 @@ public interface IAssignmentUnitOfWork
     IEnumerable<JobWithCapacity> GetJobsWithCapacity();
     // 0, 1, or 2 results
     Task<IList<Dragon>> GetDragonWithJobAsync(int dragonId, JobInclusions jobInclusions);
-    Task<IList<Dragon>> GetDragonWithSkillsAsync(int dragonId);
     Task<IList<Job>> GetJobWithSkillsAsync(int jobId);
     //
     Task<bool> DragonHasAnAssignment(int dragonId);
@@ -125,15 +124,6 @@ public class AssignmentUnitOfWork(DragonPlacementContext context, ILogger<Assign
             _ => _context.Dragons
         };
         return await dragonEnumerable
-            .Where(d => d.DragonId == dragonId)
-            .Take(2)
-            .ToListAsync()
-            .ConfigureAwait(false);
-    }
-
-    public async Task<IList<Dragon>> GetDragonWithSkillsAsync(int dragonId)
-    {
-        return await _context.Dragons
             .Include(d => d.SkillTags)
             .Where(d => d.DragonId == dragonId)
             .Take(2)

@@ -40,7 +40,6 @@ public class DragonEndpoints
 
     public static async Task<Results<Ok<ValidatedPayload<Dragon>>, NotFound<ValidatedResponse>, InternalServerError<ValidatedResponse>>>
         GetDragonAsync(
-            HttpContext context,
             IAssignmentUnitOfWork unitOfWork,
             [FromRoute(Name="dragonId")] int dragonId,
             [FromQuery(Name="jobInclusions")] JobInclusions jobInclusions = JobInclusions.None
