@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using DragonPlacementApi.Endpoints;
 using DragonPlacementApi.Poco;
+using DragonPlacementDataLayer.Enum;
 using DragonPlacementDataLayer.Models;
 using DragonPlacementDataLayer.Repositories;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -153,7 +154,7 @@ public class DragonTests
             SkillTags = newSkills
         };
         var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
-        unitOfWorkMock.Setup(u => u.DragonRepository.GetByID(dragonId)).ReturnsAsync(existingDragon);
+        unitOfWorkMock.Setup(u => u.GetDragonWithJobAsync(dragonId, JobInclusions.None)).ReturnsAsync([existingDragon]);
         unitOfWorkMock.Setup(u => u.GetSkillTagsById(skillIds)).Returns(newSkills.Clone());
 
         //Act
@@ -169,7 +170,7 @@ public class DragonTests
     public async Task UpdateDragon_DragonNotFound_ExpectNotFoundAndDoesNotSave()
     {
         var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
-        unitOfWorkMock.Setup(u => u.DragonRepository.GetByID(It.IsAny<object>())).ReturnsAsync((Dragon?)null);
+        unitOfWorkMock.Setup(u => u.GetDragonWithJobAsync(It.IsAny<int>(), JobInclusions.None)).ReturnsAsync([]);
         unitOfWorkMock.Setup(u => u.GetSkillTagsById(It.IsAny<IList<int>>())).Returns([]);
 
         //Act
@@ -202,7 +203,7 @@ public class DragonTests
         };
         typeof(Dragon).GetProperty(expectedFailureField)!.SetValue(dragon, invalidValue);
         var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
-        unitOfWorkMock.Setup(m => m.DragonRepository.GetByID(DRAGON_ID)).ReturnsAsync(dragon);
+        unitOfWorkMock.Setup(m => m.GetDragonWithJobAsync(DRAGON_ID, JobInclusions.None)).ReturnsAsync([dragon]);
         unitOfWorkMock.Setup(u => u.GetSkillTagsById(It.IsAny<IList<int>>())).Returns([]);
 
         //Act
@@ -232,7 +233,7 @@ public class DragonTests
             FightingSkills = "c"
         };
         var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
-        unitOfWorkMock.Setup(m => m.DragonRepository.GetByID(DRAGON_ID)).ReturnsAsync(dragon);
+        unitOfWorkMock.Setup(m => m.GetDragonWithJobAsync(DRAGON_ID, JobInclusions.None)).ReturnsAsync([dragon]);
         unitOfWorkMock.Setup(u => u.GetSkillTagsById(It.IsAny<IList<int>>())).Returns([]);
 
         //Act
