@@ -98,15 +98,24 @@ public class JobEndpoints
     public static async Task<Results<Ok<ValidatedPayload<Job>>, BadRequest<ValidatedForm<JobValidationFailures>>>>
         CreateJobAsync(
             IAssignmentUnitOfWork unitOfWork,
-            [FromBody] Job job)
+            [FromBody] Job inputJob)
     {
-        var validationFailures = ValidateJob(job);
+        var validationFailures = ValidateJob(inputJob);
         if (validationFailures != null)
             return TypedResults.BadRequest(validationFailures);
 
-        unitOfWork.JobRepository.Insert(job);
+        var job = new Job {
+            JobTitle = inputJob.JobTitle,
+            EmployerName = inputJob.EmployerName,
+            NumberOfPositions = inputJob.NumberOfPositions,
+            StartDateUnix = inputJob.StartDateUnix,
+            EndDateUnix = inputJob.EndDateUnix,
+            SkillTags = unitOfWork.GetSkillTagsById(inputJob.SkillTags.Select(st => st.SkillTagId).ToList())
+        };
+
+        unitOfWork.JobRepository.Insert(inputJob);
         await unitOfWork.SaveAsync().ConfigureAwait(false);
-        return TypedResults.Ok(ValidatedPayload<Job>.FromPayload(job));
+        return TypedResults.Ok(ValidatedPayload<Job>.FromPayload(inputJob));
     }
 
     //TODO: Create a poco that is only used for POST/PUT. It won't need a list of assignments, or the skill's name.
