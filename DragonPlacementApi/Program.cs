@@ -44,5 +44,6 @@ app.MapDelete("/job/{jobId}", JobEndpoints.DeleteJobAsync);
 app.MapGet("/job/{jobId}/assigned-dragon", JobEndpoints.GetAssignedDragons);
 app.MapPost("/job/{jobId}/assigned-dragon/{dragonId}", JobEndpoints.AssignDragonToJobAsync);
 app.MapDelete("/job/{jobId}/assigned-dragon/{dragonId}", JobEndpoints.UnassignDragonFromJobAsync);
+app.MapGet("/skill-tag", SkillEndpoints.GetSkillTagsAsync);
 
 app.Run();

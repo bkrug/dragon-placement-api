@@ -13,15 +13,21 @@ public interface IAssignmentUnitOfWork
     IGenericRepository<Dragon> DragonRepository { get; }
     IGenericRepository<Job> JobRepository { get; }
     IGenericRepository<Assignment> AssignmentRepository { get; }
+    IGenericRepository<SkillTag> SkillTagRespository { get; }
 
     void Dispose();
     Task SaveAsync();
 
-    Task<IList<Dragon>> GetDragonWithJobAsync(int dragonId, JobInclusions jobInclusions);
+    // Many results
     IEnumerable<Assignment> GetOverlappingAssignments(int dragonId, long periodStartUnix, long periodEndUnix);
     IEnumerable<Dragon> GetDragonsWithoutOverlappingAssignments(int jobId);
     IEnumerable<Dragon> GetAssignedDragons(int jobId);
     IEnumerable<JobWithCapacity> GetJobsWithCapacity();
+    // 0, 1, or 2 results
+    Task<IList<Dragon>> GetDragonWithJobAsync(int dragonId, JobInclusions jobInclusions);
+    Task<IList<Dragon>> GetDragonWithSkillsAsync(int dragonId);
+    Task<IList<Job>> GetJobWithSkillsAsync(int jobId);
+    //
     Task<bool> DragonHasAnAssignment(int dragonId);
     Task<bool> JobHasAnAssignment(int jobId);
 }
@@ -32,6 +38,7 @@ public class AssignmentUnitOfWork(DragonPlacementContext context, ILogger<Assign
     public IGenericRepository<Dragon> DragonRepository { get; } = new GenericRepository<Dragon>(context);
     public IGenericRepository<Job> JobRepository { get; } = new GenericRepository<Job>(context);
     public IGenericRepository<Assignment> AssignmentRepository { get; } = new GenericRepository<Assignment>(context);
+    public IGenericRepository<SkillTag> SkillTagRespository { get; } = new GenericRepository<SkillTag>(context);
     private readonly ILogger<AssignmentUnitOfWork> _logger = logger;
 
     public async Task SaveAsync()
@@ -123,6 +130,26 @@ public class AssignmentUnitOfWork(DragonPlacementContext context, ILogger<Assign
             .ToListAsync()
             .ConfigureAwait(false);
     }
+
+    public async Task<IList<Dragon>> GetDragonWithSkillsAsync(int dragonId)
+    {
+        return await _context.Dragons
+            .Include(d => d.SkillTags)
+            .Where(d => d.DragonId == dragonId)
+            .Take(2)
+            .ToListAsync()
+            .ConfigureAwait(false);
+    }
+
+    public async Task<IList<Job>> GetJobWithSkillsAsync(int jobId)
+    {
+        return await _context.Jobs
+            .Include(d => d.SkillTags)
+            .Where(d => d.JobId == jobId)
+            .Take(2)
+            .ToListAsync()
+            .ConfigureAwait(false);
+    }    
 
     public async Task<bool> DragonHasAnAssignment(int dragonId)
     {

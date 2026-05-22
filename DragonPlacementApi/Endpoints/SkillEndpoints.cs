@@ -1,0 +1,21 @@
+using DragonPlacementApi.Poco;
+using DragonPlacementDataLayer.Models;
+using DragonPlacementDataLayer.Repositories;
+using Microsoft.AspNetCore.Mvc;
+
+namespace DragonPlacementApi.Endpoints;
+
+public class SkillEndpoints
+{
+    public static PagedData<SkillTag> GetSkillTagsAsync(IAssignmentUnitOfWork unitOfWork, [FromQuery(Name="offset")] int offset = 0, [FromQuery(Name="limit")] int limit = 20)
+    {
+        var skillTags = unitOfWork.SkillTagRespository.Get(st => true);
+        return new PagedData<SkillTag>
+        {
+            Offset = offset,
+            Limit = limit,
+            TotalRecords = skillTags.Count(),
+            Data = skillTags.Skip(offset).Take(limit).ToList()
+        };
+    }
+}
