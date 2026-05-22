@@ -17,7 +17,7 @@ public partial class Job
 
     public long EndDateUnix { get; set; }
 
-    public virtual ICollection<Assignment> Assignments { get; set; } = new List<Assignment>();
+    public virtual ICollection<Assignment> Assignments { get; set; } = [];
 
-    public virtual ICollection<SkillTag> SkillTags { get; set; } = new List<SkillTag>();
+    public virtual ICollection<SkillTag> SkillTags { get; set; } = [];
 }

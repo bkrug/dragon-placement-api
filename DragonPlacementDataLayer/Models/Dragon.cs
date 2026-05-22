@@ -21,7 +21,7 @@ public partial class Dragon
 
     public string? FightingSkills { get; set; }
 
-    public virtual ICollection<Assignment> Assignments { get; set; } = new List<Assignment>();
+    public virtual ICollection<Assignment> Assignments { get; set; } = [];
 
-    public virtual ICollection<SkillTag> SkillTags { get; set; } = new List<SkillTag>();
+    public virtual ICollection<SkillTag> SkillTags { get; set; } = [];
 }

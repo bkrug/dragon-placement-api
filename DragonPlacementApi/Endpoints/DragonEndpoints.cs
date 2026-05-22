@@ -76,9 +76,7 @@ public class DragonEndpoints
     {
         var existing = await unitOfWork.DragonRepository.GetByID(dragonId).ConfigureAwait(false);
         if (existing == null)
-        {
             return TypedResults.NotFound(ValidatedResponse.NotFound);
-        }
 
         existing.GivenName = inputDragon.GivenName;
         existing.FamilyName = inputDragon.FamilyName;
