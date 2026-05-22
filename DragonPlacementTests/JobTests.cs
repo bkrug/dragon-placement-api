@@ -119,7 +119,7 @@ public class JobTests
             EndDateUnix = 4000000
         };
         var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
-        unitOfWorkMock.Setup(u => u.JobRepository.GetByID(JOB_ID)).ReturnsAsync(existingJob);
+        unitOfWorkMock.Setup(u => u.GetJobWithSkillsAsync(JOB_ID)).ReturnsAsync([existingJob]);
 
         //Act
         var response = await JobEndpoints.UpdateJobAsync(unitOfWorkMock.Object, JOB_ID, updatedJob);
@@ -134,7 +134,7 @@ public class JobTests
     public async Task UpdateJob_JobNotFound_ExpectNotFoundAndDoesNotSave()
     {
         var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
-        unitOfWorkMock.Setup(u => u.JobRepository.GetByID(It.IsAny<object>())).ReturnsAsync((Job?)null);
+        unitOfWorkMock.Setup(u => u.GetJobWithSkillsAsync(It.IsAny<int>())).ReturnsAsync([]);
 
         //Act
         var response = await JobEndpoints.UpdateJobAsync(unitOfWorkMock.Object, 999, new Job());
@@ -163,7 +163,7 @@ public class JobTests
         };
         typeof(Job).GetProperty(expectedFailureField)!.SetValue(job, invalidValue);
         var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
-        unitOfWorkMock.Setup(m => m.JobRepository.GetByID(JOB_ID)).ReturnsAsync(job);
+        unitOfWorkMock.Setup(u => u.GetJobWithSkillsAsync(JOB_ID)).ReturnsAsync([job]);
 
         //Act
         var response = await JobEndpoints.UpdateJobAsync(unitOfWorkMock.Object, JOB_ID, job);
@@ -190,7 +190,7 @@ public class JobTests
             EndDateUnix = 2000000
         };
         var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
-        unitOfWorkMock.Setup(m => m.JobRepository.GetByID(JOB_ID)).ReturnsAsync(job);
+        unitOfWorkMock.Setup(u => u.GetJobWithSkillsAsync(JOB_ID)).ReturnsAsync([job]);
 
         //Act
         var response = await JobEndpoints.UpdateJobAsync(unitOfWorkMock.Object, JOB_ID, job);

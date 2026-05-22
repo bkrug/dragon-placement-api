@@ -94,6 +94,7 @@ public class JobEndpoints
         }
     }    
 
+    //TODO: Create a poco that is only used for POST/PUT. It won't need a list of assignments, or the skill's name.
     public static async Task<Results<Ok<ValidatedPayload<Job>>, BadRequest<ValidatedForm<JobValidationFailures>>>>
         CreateJobAsync(
             IAssignmentUnitOfWork unitOfWork,
@@ -108,16 +109,20 @@ public class JobEndpoints
         return TypedResults.Ok(ValidatedPayload<Job>.FromPayload(job));
     }
 
-    public static async Task<Results<Ok<ValidatedPayload<Job>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<JobValidationFailures>>>>
+    //TODO: Create a poco that is only used for POST/PUT. It won't need a list of assignments, or the skill's name.
+    public static async Task<Results<Ok<ValidatedPayload<Job>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<JobValidationFailures>>, InternalServerError<ValidatedResponse>>>
         UpdateJobAsync(
             IAssignmentUnitOfWork unitOfWork,
             [FromRoute(Name="jobId")] int jobId,
             [FromBody] Job inputJob)
     {
-        var existing = await unitOfWork.JobRepository.GetByID(jobId).ConfigureAwait(false);
-        if (existing == null)
+        var loadedJobs = await unitOfWork.GetJobWithSkillsAsync(jobId).ConfigureAwait(false);
+        if (loadedJobs.Count == 0)
             return TypedResults.NotFound(ValidatedResponse.NotFound);
+        else if (loadedJobs.Count > 1)
+            return TypedResults.InternalServerError(ValidatedResponse.ExpectedOneFoundMultiple);
 
+        var existing = loadedJobs.Single();
         existing.JobTitle = inputJob.JobTitle;
         existing.EmployerName = inputJob.EmployerName;
         existing.NumberOfPositions = inputJob.NumberOfPositions;
