@@ -113,9 +113,9 @@ public class JobEndpoints
             SkillTags = unitOfWork.GetSkillTagsById(inputJob.SkillTags.Select(st => st.SkillTagId).ToList())
         };
 
-        unitOfWork.JobRepository.Insert(inputJob);
+        unitOfWork.JobRepository.Insert(job);
         await unitOfWork.SaveAsync().ConfigureAwait(false);
-        return TypedResults.Ok(ValidatedPayload<Job>.FromPayload(inputJob));
+        return TypedResults.Ok(ValidatedPayload<Job>.FromPayload(job));
     }
 
     //TODO: Create a poco that is only used for POST/PUT. It won't need a list of assignments, or the skill's name.
@@ -137,6 +137,7 @@ public class JobEndpoints
         existing.NumberOfPositions = inputJob.NumberOfPositions;
         existing.StartDateUnix = inputJob.StartDateUnix;
         existing.EndDateUnix = inputJob.EndDateUnix;
+        existing.SkillTags = unitOfWork.GetSkillTagsById(inputJob.SkillTags.Select(st => st.SkillTagId).ToList());
         var validationFailures = ValidateJob(existing);
         if (validationFailures != null)
             return TypedResults.BadRequest(validationFailures);
