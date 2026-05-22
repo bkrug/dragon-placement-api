@@ -94,36 +94,34 @@ public class JobEndpoints
         }
     }    
 
-    //TODO: Create a poco that is only used for POST/PUT. It won't need a list of assignments, or the skill's name.
     public static async Task<Results<Ok<ValidatedPayload<Job>>, BadRequest<ValidatedForm<JobValidationFailures>>>>
         CreateJobAsync(
             IAssignmentUnitOfWork unitOfWork,
-            [FromBody] Job inputJob)
+            [FromBody] JobCreateEdit inputJob)
     {
         var validationFailures = ValidateJob(inputJob);
         if (validationFailures != null)
             return TypedResults.BadRequest(validationFailures);
 
-        var job = new Job {
+        var job = new Job
+        {
             JobTitle = inputJob.JobTitle,
             EmployerName = inputJob.EmployerName,
             NumberOfPositions = inputJob.NumberOfPositions,
             StartDateUnix = inputJob.StartDateUnix,
             EndDateUnix = inputJob.EndDateUnix,
-            SkillTags = unitOfWork.GetSkillTagsById(inputJob.SkillTags.Select(st => st.SkillTagId).ToList())
+            SkillTags = unitOfWork.GetSkillTagsById(inputJob.SkillTagIds)
         };
-
         unitOfWork.JobRepository.Insert(job);
         await unitOfWork.SaveAsync().ConfigureAwait(false);
         return TypedResults.Ok(ValidatedPayload<Job>.FromPayload(job));
     }
 
-    //TODO: Create a poco that is only used for POST/PUT. It won't need a list of assignments, or the skill's name.
     public static async Task<Results<Ok<ValidatedPayload<Job>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<JobValidationFailures>>, InternalServerError<ValidatedResponse>>>
         UpdateJobAsync(
             IAssignmentUnitOfWork unitOfWork,
             [FromRoute(Name="jobId")] int jobId,
-            [FromBody] Job inputJob)
+            [FromBody] JobCreateEdit inputJob)
     {
         var loadedJobs = await unitOfWork.GetJobWithSkillsAsync(jobId).ConfigureAwait(false);
         if (loadedJobs.Count == 0)
@@ -131,16 +129,17 @@ public class JobEndpoints
         else if (loadedJobs.Count > 1)
             return TypedResults.InternalServerError(ValidatedResponse.ExpectedOneFoundMultiple);
 
+        var validationFailures = ValidateJob(inputJob);
+        if (validationFailures != null)
+            return TypedResults.BadRequest(validationFailures);
+
         var existing = loadedJobs.Single();
         existing.JobTitle = inputJob.JobTitle;
         existing.EmployerName = inputJob.EmployerName;
         existing.NumberOfPositions = inputJob.NumberOfPositions;
         existing.StartDateUnix = inputJob.StartDateUnix;
         existing.EndDateUnix = inputJob.EndDateUnix;
-        existing.SkillTags = unitOfWork.GetSkillTagsById(inputJob.SkillTags.Select(st => st.SkillTagId).ToList());
-        var validationFailures = ValidateJob(existing);
-        if (validationFailures != null)
-            return TypedResults.BadRequest(validationFailures);
+        existing.SkillTags = unitOfWork.GetSkillTagsById(inputJob.SkillTagIds);
 
         await unitOfWork.SaveAsync().ConfigureAwait(false);
         return TypedResults.Ok(ValidatedPayload<Job>.FromPayload(existing));
@@ -162,7 +161,7 @@ public class JobEndpoints
         return TypedResults.Ok(ValidatedResponse.Success);
     }
 
-    private static ValidatedForm<JobValidationFailures>? ValidateJob(Job job)
+    private static ValidatedForm<JobValidationFailures>? ValidateJob(JobCreateEdit job)
     {
         var failures = new JobValidationFailures();
 

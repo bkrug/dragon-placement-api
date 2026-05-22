@@ -18,7 +18,16 @@ public class JobTests
             new SkillTag { SkillTagId = 2012, SkillName = "Crowd Control" },
         ];
         var skillIds = skills.Select(s => s.SkillTagId).ToList();
-        var job = new Job
+        var inputJob = new JobCreateEdit
+        {
+            JobTitle = "Dragon Wrangler",
+            EmployerName = "Dragonscale Inc.",
+            NumberOfPositions = 3,
+            StartDateUnix = 1000000,
+            EndDateUnix = 2000000,
+            SkillTagIds = skillIds
+        };
+        var expectedJob = new Job
         {
             JobTitle = "Dragon Wrangler",
             EmployerName = "Dragonscale Inc.",
@@ -34,11 +43,11 @@ public class JobTests
         unitOfWorkMock.Setup(u => u.GetSkillTagsById(skillIds)).Returns(skills.Clone());
 
         //Act
-        var response = await JobEndpoints.CreateJobAsync(unitOfWorkMock.Object, job.Clone());
+        var response = await JobEndpoints.CreateJobAsync(unitOfWorkMock.Object, inputJob);
 
         //Assert
         response.Result.ShouldBeOfType<Ok<ValidatedPayload<Job>>>();
-        insertedJob.Get().ShouldBeEquivalentTo(job);
+        insertedJob.Get().ShouldBeEquivalentTo(expectedJob);
         unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Once);
     }
 
@@ -51,7 +60,7 @@ public class JobTests
         string expectedFailureField,
         string expectedFailureMessage)
     {
-        var job = new Job
+        var inputJob = new JobCreateEdit
         {
             JobTitle = "Dragon Wrangler",
             EmployerName = "Dragonscale Inc.",
@@ -59,12 +68,12 @@ public class JobTests
             StartDateUnix = 1000000,
             EndDateUnix = 2000000
         };
-        typeof(Job).GetProperty(expectedFailureField)!.SetValue(job, invalidValue);
+        typeof(JobCreateEdit).GetProperty(expectedFailureField)!.SetValue(inputJob, invalidValue);
         var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
         unitOfWorkMock.Setup(m => m.JobRepository).Returns(new Mock<IGenericRepository<Job>>().Object);
 
         //Act
-        var response = await JobEndpoints.CreateJobAsync(unitOfWorkMock.Object, job);
+        var response = await JobEndpoints.CreateJobAsync(unitOfWorkMock.Object, inputJob);
 
         //Assert
         response.Result.ShouldBeOfType<BadRequest<ValidatedForm<JobValidationFailures>>>();
@@ -79,7 +88,7 @@ public class JobTests
     [Fact]
     public async Task CreateJob_AllFieldsInvalid_ExpectBadRequestWithAllValidationFailures()
     {
-        var job = new Job
+        var inputJob = new JobCreateEdit
         {
             JobTitle = null!,
             NumberOfPositions = -1,
@@ -90,7 +99,7 @@ public class JobTests
         unitOfWorkMock.Setup(m => m.JobRepository).Returns(new Mock<IGenericRepository<Job>>().Object);
 
         //Act
-        var response = await JobEndpoints.CreateJobAsync(unitOfWorkMock.Object, job);
+        var response = await JobEndpoints.CreateJobAsync(unitOfWorkMock.Object, inputJob);
 
         //Assert
         response.Result.ShouldBeOfType<BadRequest<ValidatedForm<JobValidationFailures>>>();
@@ -127,7 +136,16 @@ public class JobTests
             EndDateUnix = 2000000,
             SkillTags = oldSkills
         };
-        var updatedJob = new Job
+        var inputJob = new JobCreateEdit
+        {
+            JobTitle = "New Title",
+            EmployerName = "New Employer",
+            NumberOfPositions = 5,
+            StartDateUnix = 3000000,
+            EndDateUnix = 4000000,
+            SkillTagIds = skillIds
+        };
+        var expectedJob = new Job
         {
             JobId = JOB_ID,
             JobTitle = "New Title",
@@ -142,11 +160,11 @@ public class JobTests
         unitOfWorkMock.Setup(u => u.GetSkillTagsById(skillIds)).Returns(newSkills.Clone());
 
         //Act
-        var response = await JobEndpoints.UpdateJobAsync(unitOfWorkMock.Object, JOB_ID, updatedJob);
+        var response = await JobEndpoints.UpdateJobAsync(unitOfWorkMock.Object, JOB_ID, inputJob);
 
         //Assert
         response.Result.ShouldBeOfType<Ok<ValidatedPayload<Job>>>();
-        existingJob.ShouldBeEquivalentTo(updatedJob);
+        existingJob.ShouldBeEquivalentTo(expectedJob);
         unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Once);
     }
 
@@ -157,7 +175,7 @@ public class JobTests
         unitOfWorkMock.Setup(u => u.GetJobWithSkillsAsync(It.IsAny<int>())).ReturnsAsync([]);
 
         //Act
-        var response = await JobEndpoints.UpdateJobAsync(unitOfWorkMock.Object, 999, new Job());
+        var response = await JobEndpoints.UpdateJobAsync(unitOfWorkMock.Object, 999, new JobCreateEdit());
 
         //Assert
         response.Result.ShouldBeOfType<NotFound<ValidatedResponse>>();
@@ -173,7 +191,7 @@ public class JobTests
         string expectedFailureMessage)
     {
         const int JOB_ID = 3792;
-        var job = new Job
+        var existingJob = new Job
         {
             JobTitle = "Dragon Wrangler",
             EmployerName = "Dragonscale Inc.",
@@ -181,12 +199,20 @@ public class JobTests
             StartDateUnix = 1000000,
             EndDateUnix = 2000000
         };
-        typeof(Job).GetProperty(expectedFailureField)!.SetValue(job, invalidValue);
+        var inputJob = new JobCreateEdit
+        {
+            JobTitle = "Dragon Wrangler",
+            EmployerName = "Dragonscale Inc.",
+            NumberOfPositions = 3,
+            StartDateUnix = 1000000,
+            EndDateUnix = 2000000
+        };
+        typeof(JobCreateEdit).GetProperty(expectedFailureField)!.SetValue(inputJob, invalidValue);
         var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
-        unitOfWorkMock.Setup(u => u.GetJobWithSkillsAsync(JOB_ID)).ReturnsAsync([job]);
+        unitOfWorkMock.Setup(u => u.GetJobWithSkillsAsync(JOB_ID)).ReturnsAsync([existingJob]);
 
         //Act
-        var response = await JobEndpoints.UpdateJobAsync(unitOfWorkMock.Object, JOB_ID, job);
+        var response = await JobEndpoints.UpdateJobAsync(unitOfWorkMock.Object, JOB_ID, inputJob);
 
         //Assert
         response.Result.ShouldBeOfType<BadRequest<ValidatedForm<JobValidationFailures>>>();
@@ -202,7 +228,15 @@ public class JobTests
     public async Task UpdateJob_AllFieldsInvalid_ExpectBadRequestWithAllValidationFailures()
     {
         const int JOB_ID = 278;
-        var job = new Job
+        var existingJob = new Job
+        {
+            JobTitle = "Dragon Wrangler",
+            EmployerName = "Dragonscale Inc.",
+            NumberOfPositions = 3,
+            StartDateUnix = 1000000,
+            EndDateUnix = 2000000
+        };
+        var inputJob = new JobCreateEdit
         {
             JobTitle = " ",
             NumberOfPositions = -5,
@@ -210,10 +244,10 @@ public class JobTests
             EndDateUnix = 2000000
         };
         var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
-        unitOfWorkMock.Setup(u => u.GetJobWithSkillsAsync(JOB_ID)).ReturnsAsync([job]);
+        unitOfWorkMock.Setup(u => u.GetJobWithSkillsAsync(JOB_ID)).ReturnsAsync([existingJob]);
 
         //Act
-        var response = await JobEndpoints.UpdateJobAsync(unitOfWorkMock.Object, JOB_ID, job);
+        var response = await JobEndpoints.UpdateJobAsync(unitOfWorkMock.Object, JOB_ID, inputJob);
 
         //Assert
         response.Result.ShouldBeOfType<BadRequest<ValidatedForm<JobValidationFailures>>>();

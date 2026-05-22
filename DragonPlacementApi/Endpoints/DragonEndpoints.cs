@@ -54,11 +54,10 @@ public class DragonEndpoints
         };
     }
 
-    //TODO: Create a Poco that is just for the PUT/POST Dragon endpoints. It doesn't need the "Assignments" property or the SkillTag's name.
     public static async Task<Results<Ok<ValidatedPayload<Dragon>>, BadRequest<ValidatedForm<DragonValidationFailures>>>>
         CreateDragonAsync(
             IAssignmentUnitOfWork unitOfWork,
-            [FromBody] Dragon inputDragon)
+            [FromBody] DragonCreateEdit inputDragon)
     {
         var validationFailures = ValidateDragon(inputDragon);
         if (validationFailures != null)
@@ -73,7 +72,7 @@ public class DragonEndpoints
             WeightInKg = inputDragon.WeightInKg,
             LengthInMeters = inputDragon.LengthInMeters,
             FightingSkills = inputDragon.FightingSkills,
-            SkillTags = unitOfWork.GetSkillTagsById(inputDragon.SkillTags.Select(st => st.SkillTagId).ToList())
+            SkillTags = unitOfWork.GetSkillTagsById(inputDragon.SkillTagIds)
         };
         unitOfWork.DragonRepository.Insert(newDragon);
 
@@ -81,18 +80,21 @@ public class DragonEndpoints
         return TypedResults.Ok(ValidatedPayload<Dragon>.FromPayload(newDragon));
     }
 
-    //TODO: Create a Poco that is just for the PUT/POST Dragon endpoints. It doesn't need the "Assignments" property or the SkillTag's name.
     public static async Task<Results<Ok<ValidatedPayload<Dragon>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<DragonValidationFailures>>, InternalServerError<ValidatedResponse>>>
         UpdateDragonAsync(
             IAssignmentUnitOfWork unitOfWork,
             [FromRoute(Name="dragonId")] int dragonId,
-            [FromBody] Dragon inputDragon)
+            [FromBody] DragonCreateEdit inputDragon)
     {
         var loadedDragons = await unitOfWork.GetDragonWithJobAsync(dragonId, JobInclusions.None).ConfigureAwait(false);
         if (loadedDragons.Count == 0)
             return TypedResults.NotFound(ValidatedResponse.NotFound);
         else if (loadedDragons.Count > 1)
             return TypedResults.InternalServerError(ValidatedResponse.ExpectedOneFoundMultiple);
+
+        var validationFailures = ValidateDragon(inputDragon);
+        if (validationFailures != null)
+            return TypedResults.BadRequest(validationFailures);
 
         var existing = loadedDragons.Single();
         existing.GivenName = inputDragon.GivenName;
@@ -102,17 +104,13 @@ public class DragonEndpoints
         existing.WeightInKg = inputDragon.WeightInKg;
         existing.LengthInMeters = inputDragon.LengthInMeters;
         existing.FightingSkills = inputDragon.FightingSkills;
-        existing.SkillTags = unitOfWork.GetSkillTagsById(inputDragon.SkillTags.Select(st => st.SkillTagId).ToList());
-
-        var validationFailures = ValidateDragon(existing);
-        if (validationFailures != null)
-            return TypedResults.BadRequest(validationFailures);
+        existing.SkillTags = unitOfWork.GetSkillTagsById(inputDragon.SkillTagIds);
 
         await unitOfWork.SaveAsync().ConfigureAwait(false);
         return TypedResults.Ok(ValidatedPayload<Dragon>.FromPayload(existing));
     }
 
-    private static ValidatedForm<DragonValidationFailures>? ValidateDragon(Dragon dragon)
+    private static ValidatedForm<DragonValidationFailures>? ValidateDragon(DragonCreateEdit dragon)
     {
         var failures = new DragonValidationFailures();
 
