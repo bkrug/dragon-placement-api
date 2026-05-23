@@ -91,9 +91,11 @@ public class AssignmentUnitOfWork(DragonPlacementContext context, ILogger<Assign
 
     public IEnumerable<Dragon> GetAssignedDragons(int jobId)
     {
-        return _context.Assignments
-            .Where(a => a.JobId == jobId)
-            .Select(a => a.Dragon);
+        return _context.Dragons
+            .Include(d => d.SkillTags)
+            .Where(d => d.Assignments.Any(a => a.JobId == jobId));
+            //.Where(a => a.JobId == jobId)
+            //.Select(a => a.Dragon);
     }
 
     public IEnumerable<JobWithCapacity> GetJobsWithCapacity()
