@@ -20,14 +20,23 @@ public class DragonEndpoints
     public static Results<Ok<PagedData<Dragon>>, BadRequest<ValidatedResponse>> 
         GetDragons(
             IAssignmentUnitOfWork unitOfWork,
+            [FromQuery(Name="skillTagId")] int[] skillTagIds,
             [FromQuery(Name="offset")] int offset = 0,
             [FromQuery(Name="limit")] int limit = 20,
             [FromQuery(Name="jobId")] int? jobId = null
         )
     {
+        if (skillTagIds.Length > 0 && jobId == null)
+            return TypedResults.BadRequest(new ValidatedResponse
+            {
+                IsSuccess = false,
+                IsInternalError = false,
+                ValidationFailures = ["Filtering by skills is only allowed when a jobId is specified"]
+            });
+
         var dataAsEnumerable = jobId == null
             ? unitOfWork.DragonRepository.Get()
-            : unitOfWork.GetDragonsWithoutOverlappingAssignments(jobId.Value);
+            : unitOfWork.GetDragonsWithoutOverlappingAssignments(jobId.Value, skillTagIds);
         var pagedData = new PagedData<Dragon>
         {
             Offset = offset,

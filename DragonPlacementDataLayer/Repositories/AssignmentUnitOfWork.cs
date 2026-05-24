@@ -20,7 +20,7 @@ public interface IAssignmentUnitOfWork
 
     // Many results
     IEnumerable<Assignment> GetOverlappingAssignments(int dragonId, long periodStartUnix, long periodEndUnix);
-    IEnumerable<Dragon> GetDragonsWithoutOverlappingAssignments(int jobId);
+    IEnumerable<Dragon> GetDragonsWithoutOverlappingAssignments(int jobId, int[] skillTagIds);
     IEnumerable<Dragon> GetAssignedDragons(int jobId);
     IEnumerable<JobWithCapacity> GetJobsWithCapacity();
     IList<SkillTag> GetSkillTagsById(IList<int> skillTagIds);
@@ -73,7 +73,7 @@ public class AssignmentUnitOfWork(DragonPlacementContext context, ILogger<Assign
             .Where(a => periodStartUnix <= a.EndDateUnix && periodEndUnix >= a.StartDateUnix);
     }
 
-    public IEnumerable<Dragon> GetDragonsWithoutOverlappingAssignments(int jobId)
+    public IEnumerable<Dragon> GetDragonsWithoutOverlappingAssignments(int jobId, int[] skillTagIds)
     {
         var job = _context.Jobs.Find(jobId);
         if (job == null)
@@ -81,12 +81,8 @@ public class AssignmentUnitOfWork(DragonPlacementContext context, ILogger<Assign
         var periodStart = job.StartDateUnix;
         var periodEnd = job.EndDateUnix;
         return _context.Dragons
-            .Where(d => d.Assignments
-                .Count(a =>
-                    periodStart <= a.EndDateUnix
-                    && periodEnd >= a.StartDateUnix
-                ) == 0
-            );
+            .Where(d => d.Assignments.Count(a => periodStart <= a.EndDateUnix && periodEnd >= a.StartDateUnix) == 0)
+            .Where(d => skillTagIds.All(stid => d.SkillTags.Any(st => st.SkillTagId == stid)));
     }
 
     public IEnumerable<Dragon> GetAssignedDragons(int jobId)
@@ -94,8 +90,6 @@ public class AssignmentUnitOfWork(DragonPlacementContext context, ILogger<Assign
         return _context.Dragons
             .Include(d => d.SkillTags)
             .Where(d => d.Assignments.Any(a => a.JobId == jobId));
-            //.Where(a => a.JobId == jobId)
-            //.Select(a => a.Dragon);
     }
 
     public IEnumerable<JobWithCapacity> GetJobsWithCapacity()

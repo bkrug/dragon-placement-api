@@ -31,11 +31,13 @@ app.UseCors(allowedOriginsPolicy);
 app.UseExceptionHandler(appBuilder => appBuilder.Run(async context => await Results.Problem().ExecuteAsync(context)));
 
 app.MapGet("/", () => "Dragon Placement API!");
+
 app.MapGet("/dragon", DragonEndpoints.GetDragons);
 app.MapGet("/dragon/{dragonId}", DragonEndpoints.GetDragonAsync);
 app.MapPost("/dragon", DragonEndpoints.CreateDragonAsync);
 app.MapPut("/dragon/{dragonId}", DragonEndpoints.UpdateDragonAsync);
 app.MapDelete("/dragon/{dragonId}", DragonEndpoints.DeleteDragonAsync);
+
 app.MapGet("/job", JobEndpoints.GetJobs);
 app.MapGet("/job/{jobId}", JobEndpoints.GetJob);
 app.MapPost("/job", JobEndpoints.CreateJobAsync);
@@ -44,6 +46,7 @@ app.MapDelete("/job/{jobId}", JobEndpoints.DeleteJobAsync);
 app.MapGet("/job/{jobId}/assigned-dragon", JobEndpoints.GetAssignedDragons);
 app.MapPost("/job/{jobId}/assigned-dragon/{dragonId}", JobEndpoints.AssignDragonToJobAsync);
 app.MapDelete("/job/{jobId}/assigned-dragon/{dragonId}", JobEndpoints.UnassignDragonFromJobAsync);
+
 app.MapGet("/skill-tag", SkillEndpoints.GetSkillTagsAsync);
 
 app.Run();
