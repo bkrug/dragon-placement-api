@@ -23,6 +23,7 @@ public class DragonEndpoints
             [FromQuery(Name="skillTagId")] int[] skillTagIds,
             [FromQuery(Name="offset")] int offset = 0,
             [FromQuery(Name="limit")] int limit = 20,
+            [FromQuery(Name="fightingSkill")] string? fightingSkill = null,
             [FromQuery(Name="jobId")] int? jobId = null
         )
     {
@@ -36,7 +37,7 @@ public class DragonEndpoints
 
         var dataAsEnumerable = jobId == null
             ? unitOfWork.DragonRepository.Get()
-            : unitOfWork.GetDragonsWithoutOverlappingAssignments(jobId.Value, skillTagIds);
+            : unitOfWork.GetDragonsWithoutOverlappingAssignments(jobId.Value, skillTagIds, fightingSkill);
         var pagedData = new PagedData<Dragon>
         {
             Offset = offset,

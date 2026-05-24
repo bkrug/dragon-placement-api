@@ -20,7 +20,7 @@ public interface IAssignmentUnitOfWork
 
     // Many results
     IEnumerable<Assignment> GetOverlappingAssignments(int dragonId, long periodStartUnix, long periodEndUnix);
-    IEnumerable<Dragon> GetDragonsWithoutOverlappingAssignments(int jobId, int[] skillTagIds);
+    IEnumerable<Dragon> GetDragonsWithoutOverlappingAssignments(int jobId, int[] skillTagIds, string? fightingSkill);
     IEnumerable<Dragon> GetAssignedDragons(int jobId);
     IEnumerable<JobWithCapacity> GetJobsWithCapacity();
     IList<SkillTag> GetSkillTagsById(IList<int> skillTagIds);
@@ -73,16 +73,19 @@ public class AssignmentUnitOfWork(DragonPlacementContext context, ILogger<Assign
             .Where(a => periodStartUnix <= a.EndDateUnix && periodEndUnix >= a.StartDateUnix);
     }
 
-    public IEnumerable<Dragon> GetDragonsWithoutOverlappingAssignments(int jobId, int[] skillTagIds)
+    public IEnumerable<Dragon> GetDragonsWithoutOverlappingAssignments(int jobId, int[] skillTagIds, string? fightingSkill)
     {
         var job = _context.Jobs.Find(jobId);
         if (job == null)
             return [];
         var periodStart = job.StartDateUnix;
         var periodEnd = job.EndDateUnix;
-        return _context.Dragons
+        var queryable = _context.Dragons
             .Where(d => d.Assignments.Count(a => periodStart <= a.EndDateUnix && periodEnd >= a.StartDateUnix) == 0)
             .Where(d => skillTagIds.All(stid => d.SkillTags.Any(st => st.SkillTagId == stid)));
+        if (!string.IsNullOrWhiteSpace(fightingSkill))
+            queryable = queryable.Where(d => d.FightingSkills == fightingSkill);
+        return queryable;
     }
 
     public IEnumerable<Dragon> GetAssignedDragons(int jobId)
