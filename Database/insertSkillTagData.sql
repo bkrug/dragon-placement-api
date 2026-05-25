@@ -8,4 +8,6 @@ INSERT INTO SkillTag (SkillName) VALUES
     ('Intimidation'),
     ('Healing Breath'),
     ('Weather Sensing'),
-    ('Ancient Languages');
+    ('Ancient Languages'),
+    ('Breathes Fire'),
+    ('Takes Passengers');
