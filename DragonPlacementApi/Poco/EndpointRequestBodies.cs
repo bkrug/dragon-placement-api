@@ -4,8 +4,6 @@ public class DragonCreateEdit
 {
     public string GivenName { get; set; } = null!;
     public string? FamilyName { get; set; }
-    public bool CanBreathFire { get; set; }
-    public bool CanTakePassengers { get; set; }
     public int? WeightInKg { get; set; }
     public int? LengthInMeters { get; set; }
     public string? FightingSkills { get; set; }

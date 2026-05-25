@@ -11,10 +11,6 @@ public partial class Dragon
 
     public string? FamilyName { get; set; }
 
-    public bool CanBreathFire { get; set; }
-
-    public bool CanTakePassengers { get; set; }
-
     public int? WeightInKg { get; set; }
 
     public int? LengthInMeters { get; set; }

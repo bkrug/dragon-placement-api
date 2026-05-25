@@ -23,8 +23,6 @@ public class DragonTests
         var inputDragon = new DragonCreateEdit
         {
             GivenName = "Fluffy",
-            CanBreathFire = true,
-            CanTakePassengers = false,
             WeightInKg = 10,
             LengthInMeters = 5,
             FightingSkills = "b",
@@ -33,8 +31,6 @@ public class DragonTests
         var expectedDragon = new Dragon
         {
             GivenName = "Fluffy",
-            CanBreathFire = true,
-            CanTakePassengers = false,
             WeightInKg = 10,
             LengthInMeters = 5,
             FightingSkills = "b",
@@ -69,8 +65,6 @@ public class DragonTests
         var inputDragon = new DragonCreateEdit
         {
             GivenName = "Fluffy",
-            CanBreathFire = true,
-            CanTakePassengers = false,
             WeightInKg = 10,
             LengthInMeters = 5,
             FightingSkills = "b"
@@ -98,8 +92,6 @@ public class DragonTests
         var inputDragon = new DragonCreateEdit
         {
             GivenName = null!,
-            CanBreathFire = false,
-            CanTakePassengers = false,
             WeightInKg = -1,
             LengthInMeters = -1,
             FightingSkills = "x"
@@ -142,8 +134,6 @@ public class DragonTests
             DragonId = dragonId,
             GivenName = "Old Name",
             FamilyName = "Old Family",
-            CanBreathFire = false,
-            CanTakePassengers = false,
             WeightInKg = 5,
             LengthInMeters = 3,
             FightingSkills = "b",
@@ -153,8 +143,6 @@ public class DragonTests
         {
             GivenName = "New Name",
             FamilyName = "New Family",
-            CanBreathFire = true,
-            CanTakePassengers = true,
             WeightInKg = 20,
             LengthInMeters = 10,
             FightingSkills = "a",
@@ -165,8 +153,6 @@ public class DragonTests
             DragonId = dragonId,
             GivenName = "New Name",
             FamilyName = "New Family",
-            CanBreathFire = true,
-            CanTakePassengers = true,
             WeightInKg = 20,
             LengthInMeters = 10,
             FightingSkills = "a",
@@ -213,8 +199,6 @@ public class DragonTests
         var existingDragon = new Dragon
         {
             GivenName = "Thunderclaw",
-            CanBreathFire = true,
-            CanTakePassengers = false,
             WeightInKg = 50,
             LengthInMeters = 8,
             FightingSkills = "m"
@@ -222,8 +206,6 @@ public class DragonTests
         var inputDragon = new DragonCreateEdit
         {
             GivenName = "Thunderclaw",
-            CanBreathFire = true,
-            CanTakePassengers = false,
             WeightInKg = 50,
             LengthInMeters = 8,
             FightingSkills = "m"
@@ -252,8 +234,6 @@ public class DragonTests
         var existingDragon = new Dragon
         {
             GivenName = "Thunderclaw",
-            CanBreathFire = true,
-            CanTakePassengers = false,
             WeightInKg = 50,
             LengthInMeters = 8,
             FightingSkills = "m"
@@ -261,8 +241,6 @@ public class DragonTests
         var inputDragon = new DragonCreateEdit
         {
             GivenName = " ",
-            CanBreathFire = false,
-            CanTakePassengers = false,
             WeightInKg = -5,
             LengthInMeters = -10,
             FightingSkills = "c"

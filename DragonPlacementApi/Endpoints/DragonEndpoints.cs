@@ -77,8 +77,6 @@ public class DragonEndpoints
         {
             GivenName = inputDragon.GivenName,
             FamilyName = inputDragon.FamilyName,
-            CanBreathFire = inputDragon.CanBreathFire,
-            CanTakePassengers = inputDragon.CanTakePassengers,
             WeightInKg = inputDragon.WeightInKg,
             LengthInMeters = inputDragon.LengthInMeters,
             FightingSkills = inputDragon.FightingSkills,
@@ -109,8 +107,6 @@ public class DragonEndpoints
         var existing = loadedDragons.Single();
         existing.GivenName = inputDragon.GivenName;
         existing.FamilyName = inputDragon.FamilyName;
-        existing.CanBreathFire = inputDragon.CanBreathFire;
-        existing.CanTakePassengers = inputDragon.CanTakePassengers;
         existing.WeightInKg = inputDragon.WeightInKg;
         existing.LengthInMeters = inputDragon.LengthInMeters;
         existing.FightingSkills = inputDragon.FightingSkills;

@@ -1,11 +1,11 @@
 insert into Dragon
-(GivenName, FamilyName, CanBreathFire, CanTakePassengers, FightingSkills, WeightInKg, LengthInMeters)
+(GivenName, FamilyName, FightingSkills, WeightInKg, LengthInMeters)
 values
-('Scorch', null, 1, 1, '', 7525, 30 ),
-('Tumble', 'of Grennwich', 0, 1, '', 4000, 15 ),
-('Grunal', 'Stoneson', 0, 0, 'm', 6892, 23 ),
-('Magno', 'Sharp', 0, 1, 'b', 5190, 21 ),
-('Rose', null, 0, 0, '', 4090, 17 );
+('Scorch', null, '', 7525, 30 ),
+('Tumble', 'of Grennwich', '', 4000, 15 ),
+('Grunal', 'Stoneson', 'm', 6892, 23 ),
+('Magno', 'Sharp', 'b', 5190, 21 ),
+('Rose', null, '', 4090, 17 );
 
 insert into Job
 (JobTitle, EmployerName, NumberOfPositions, StartDateUnix, EndDateUnix)
