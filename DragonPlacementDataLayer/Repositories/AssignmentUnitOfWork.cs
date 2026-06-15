@@ -14,6 +14,7 @@ public interface IAssignmentUnitOfWork
     IGenericRepository<Job> JobRepository { get; }
     IGenericRepository<Assignment> AssignmentRepository { get; }
     IGenericRepository<SkillTag> SkillTagRespository { get; }
+    IGenericRepository<HoursWorked> HoursWorkedRepository { get; }
 
     void Dispose();
     Task SaveAsync();
@@ -39,6 +40,7 @@ public class AssignmentUnitOfWork(DragonPlacementContext context, ILogger<Assign
     public IGenericRepository<Job> JobRepository { get; } = new GenericRepository<Job>(context);
     public IGenericRepository<Assignment> AssignmentRepository { get; } = new GenericRepository<Assignment>(context);
     public IGenericRepository<SkillTag> SkillTagRespository { get; } = new GenericRepository<SkillTag>(context);
+    public IGenericRepository<HoursWorked> HoursWorkedRepository { get; } = new GenericRepository<HoursWorked>(context);
     private readonly ILogger<AssignmentUnitOfWork> _logger = logger;
 
     public async Task SaveAsync()

@@ -13,3 +13,9 @@ public class DragonValidationFailures
     public string LengthInMeters { get; set; } = null!;
     public string FightingSkills { get; set; } = null!;
 }
+
+public class HoursWorkedValidationFailures
+{
+    public string? StartDateTimeUnix { get; set; }
+    public string? EndDateTimeUnix { get; set; }
+}

@@ -19,3 +19,11 @@ public class JobCreateEdit
     public long EndDateUnix { get; set; }
     public IList<int> SkillTagIds { get; set; } = [];
 }
+
+public class HoursWorkedCreateEdit
+{
+    public int AssignmentId { get; set; }
+    public int DragonId { get; set; }
+    public long StartDateTimeUnix { get; set; }
+    public long EndDateTimeUnix { get; set; }
+}
