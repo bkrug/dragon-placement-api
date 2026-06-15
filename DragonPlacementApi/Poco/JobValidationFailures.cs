@@ -16,6 +16,6 @@ public class DragonValidationFailures
 
 public class HoursWorkedValidationFailures
 {
-    public string? StartDateTimeUnix { get; set; }
-    public string? EndDateTimeUnix { get; set; }
+    public string StartDateTimeUnix { get; set; } = string.Empty;
+    public string EndDateTimeUnix { get; set; } = string.Empty;
 }

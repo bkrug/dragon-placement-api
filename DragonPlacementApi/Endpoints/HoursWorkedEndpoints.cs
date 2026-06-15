@@ -97,11 +97,14 @@ public class HoursWorkedEndpoints
     private static ValidatedForm<HoursWorkedValidationFailures>? ValidateHoursWorked(HoursWorkedCreateEdit input)
     {
         var failures = new HoursWorkedValidationFailures();
+        var duration = input.EndDateTimeUnix - input.StartDateTimeUnix;
 
-        if (input.StartDateTimeUnix >= input.EndDateTimeUnix)
-            failures.StartDateTimeUnix = "must be before EndDateTimeUnix";
+        if (duration < 0)
+            failures.EndDateTimeUnix = "Cannot clock out before clocking in";
+        else if (duration < 60 || duration > 86_400)
+            failures.EndDateTimeUnix = "Cannot log less than 1 minute or more than 24 hours as a single log entry";
 
-        if (failures.StartDateTimeUnix != null)
+        if (!string.IsNullOrEmpty(failures.EndDateTimeUnix))
             return new ValidatedForm<HoursWorkedValidationFailures>
             {
                 IsSuccess = false,
