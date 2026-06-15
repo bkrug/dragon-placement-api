@@ -6,9 +6,15 @@ The companion Angular code can be found at: https://github.com/bkrug/dragon-plac
 
 ## Running this application for the first time
 
-1. Create an empty SQLite database in the "Database" folder.
-1. Run the SQL in `./Database/schemaDragonPlacement.sql` in the new database, creating the schema.
-1. Run the SQL in `./Database/insertTestData.sql` to populate the 'Job' and 'Dragon' tables. The application currently only edits records in the 'Assignments' table.
+You will need to create the databse.
+Run these commands from the root of the repo.
+
+```
+sqlite3 ./Database/DragonPlacement.db < ./Database/schemaDragonPlacement.sql
+sqlite3 ./Database/DragonPlacement.db < ./Database/insertTestData.sql
+
+dotnet run --project=DragonPlacementApi
+```
 
 ## Helpful Commands
 

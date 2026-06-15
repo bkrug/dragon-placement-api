@@ -45,7 +45,6 @@ CREATE TABLE JobSkillTag (
     CONSTRAINT FK_JobSkillTag_Job      FOREIGN KEY (JobId)      REFERENCES Job(JobId),
     CONSTRAINT FK_JobSkillTag_SkillTag FOREIGN KEY (SkillTagId) REFERENCES SkillTag(SkillTagId)
 );
-CREATE TABLE sqlite_sequence(name,seq);
 CREATE TABLE HoursWorked (
     HoursWorkedId     INTEGER NOT NULL,
     AssignmentId      INTEGER NOT NULL,
