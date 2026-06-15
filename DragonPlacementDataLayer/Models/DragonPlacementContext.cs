@@ -21,6 +21,8 @@ public partial class DragonPlacementContext : DbContext
 
     public virtual DbSet<Job> Jobs { get; set; }
 
+    public virtual DbSet<HoursWorked> HoursWorked { get; set; }
+
     public virtual DbSet<SkillTag> SkillTags { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -90,6 +92,23 @@ public partial class DragonPlacementContext : DbContext
                         j.HasKey("JobId", "SkillTagId");
                         j.ToTable("JobSkillTag");
                     });
+        });
+
+        modelBuilder.Entity<HoursWorked>(entity =>
+        {
+            entity.ToTable("HoursWorked");
+
+            entity.HasKey(e => e.HoursWorkedId);
+
+            entity.HasOne<Assignment>()
+                .WithMany()
+                .HasForeignKey(e => e.AssignmentId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
+            entity.HasOne<Dragon>()
+                .WithMany()
+                .HasForeignKey(e => e.DragonId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
         });
 
         modelBuilder.Entity<SkillTag>(entity =>
