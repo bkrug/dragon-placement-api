@@ -121,6 +121,9 @@ public class AssignmentUnitOfWork(DragonPlacementContext context, ILogger<Assign
         var todayUnix = new DateTimeOffset(DateTime.UtcNow.Date).ToUnixTimeSeconds();
         IQueryable<Dragon> dragonEnumerable = jobInclusions switch
         {
+            JobInclusions.All => _context.Dragons
+                .Include(d => d.Assignments)
+                    .ThenInclude(a => a.Job),
             JobInclusions.Past => _context.Dragons
                 .Include(d => d.Assignments.Where(a => a.EndDateUnix < todayUnix))
                     .ThenInclude(a => a.Job),
