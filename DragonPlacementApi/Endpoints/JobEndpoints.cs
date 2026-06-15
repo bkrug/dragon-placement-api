@@ -25,7 +25,14 @@ public class JobEndpoints
         };
     }
 
-    public static PagedData<JobWithCapacity> GetJobs(IAssignmentUnitOfWork unitOfWork, [FromQuery(Name="offset")] int offset = 0, [FromQuery(Name="limit")] int limit = 20, [FromQuery(Name="jobInclusions")] JobInclusions jobInclusions = JobInclusions.All) {
+    public static PagedData<JobWithCapacity>
+        GetJobs(
+            IAssignmentUnitOfWork unitOfWork,
+            [FromQuery(Name="offset")] int offset = 0,
+            [FromQuery(Name="limit")] int limit = 20,
+            [FromQuery(Name="jobInclusions")] JobInclusions jobInclusions = JobInclusions.All
+        )
+    {
         var jobEnumerable = unitOfWork.GetJobsWithCapacity(jobInclusions);
         return new()
         {
