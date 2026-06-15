@@ -22,7 +22,7 @@ public interface IAssignmentUnitOfWork
     IEnumerable<Assignment> GetOverlappingAssignments(int dragonId, long periodStartUnix, long periodEndUnix);
     IEnumerable<Dragon> GetDragonsWithoutOverlappingAssignments(int jobId, int[] skillTagIds, string? fightingSkill);
     IEnumerable<Dragon> GetAssignedDragons(int jobId);
-    IEnumerable<JobWithCapacity> GetJobsWithCapacity();
+    IEnumerable<JobWithCapacity> GetJobsWithCapacity(JobInclusions jobInclusions);
     IList<SkillTag> GetSkillTagsById(IList<int> skillTagIds);
     // 0, 1, or 2 results
     Task<IList<Dragon>> GetDragonWithJobAsync(int dragonId, JobInclusions jobInclusions);
@@ -96,9 +96,17 @@ public class AssignmentUnitOfWork(DragonPlacementContext context, ILogger<Assign
             .Where(d => d.Assignments.Any(a => a.JobId == jobId));
     }
 
-    public IEnumerable<JobWithCapacity> GetJobsWithCapacity()
+    public IEnumerable<JobWithCapacity> GetJobsWithCapacity(JobInclusions jobInclusions)
     {
-        return _context.Jobs
+        var todayUnix = new DateTimeOffset(DateTime.UtcNow.Date).ToUnixTimeSeconds();
+        var queryable = jobInclusions switch
+        {
+            JobInclusions.Past => _context.Jobs.Where(j => j.EndDateUnix < todayUnix),
+            JobInclusions.CurrentAndFuture => _context.Jobs.Where(j => j.StartDateUnix >= todayUnix),
+            JobInclusions.All => _context.Jobs.AsQueryable(),
+            _ => _context.Jobs.Where(j => false)
+        };
+        return queryable
             .Select(j => new JobWithCapacity
             {
                 JobId = j.JobId,
@@ -107,7 +115,7 @@ public class AssignmentUnitOfWork(DragonPlacementContext context, ILogger<Assign
                 NumberOfPositions = j.NumberOfPositions,
                 FilledPositions = j.Assignments.Count(),
                 StartDateUnix = j.StartDateUnix,
-                EndDateUnix = j.EndDateUnix                
+                EndDateUnix = j.EndDateUnix
             });
     }
 

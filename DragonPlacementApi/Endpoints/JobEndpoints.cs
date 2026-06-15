@@ -1,4 +1,5 @@
 using DragonPlacementApi.Poco;
+using DragonPlacementDataLayer.Enum;
 using DragonPlacementDataLayer.Models;
 using DragonPlacementDataLayer.Poco;
 using DragonPlacementDataLayer.Repositories;
@@ -24,8 +25,8 @@ public class JobEndpoints
         };
     }
 
-    public static PagedData<JobWithCapacity> GetJobs(IAssignmentUnitOfWork unitOfWork, [FromQuery(Name="offset")] int offset = 0, [FromQuery(Name="limit")] int limit = 20) {
-        var jobEnumerable = unitOfWork.GetJobsWithCapacity();
+    public static PagedData<JobWithCapacity> GetJobs(IAssignmentUnitOfWork unitOfWork, [FromQuery(Name="offset")] int offset = 0, [FromQuery(Name="limit")] int limit = 20, [FromQuery(Name="jobInclusions")] JobInclusions jobInclusions = JobInclusions.All) {
+        var jobEnumerable = unitOfWork.GetJobsWithCapacity(jobInclusions);
         return new()
         {
             Offset = offset,
