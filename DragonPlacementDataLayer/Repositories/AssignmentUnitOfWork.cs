@@ -102,7 +102,7 @@ public class AssignmentUnitOfWork(DragonPlacementContext context, ILogger<Assign
         var queryable = jobInclusions switch
         {
             JobInclusions.Past => _context.Jobs.Where(j => j.EndDateUnix < todayUnix),
-            JobInclusions.CurrentAndFuture => _context.Jobs.Where(j => j.StartDateUnix >= todayUnix),
+            JobInclusions.CurrentAndFuture => _context.Jobs.Where(j => j.EndDateUnix >= todayUnix),
             JobInclusions.All => _context.Jobs.AsQueryable(),
             _ => _context.Jobs.Where(j => false)
         };
@@ -136,7 +136,7 @@ public class AssignmentUnitOfWork(DragonPlacementContext context, ILogger<Assign
                 .Include(d => d.Assignments.Where(a => a.EndDateUnix < todayUnix))
                     .ThenInclude(a => a.Job),
             JobInclusions.CurrentAndFuture => _context.Dragons
-                .Include(d => d.Assignments.Where(a => a.StartDateUnix >= todayUnix))
+                .Include(d => d.Assignments.Where(a => a.EndDateUnix >= todayUnix))
                     .ThenInclude(a => a.Job),
             _ => _context.Dragons
         };
