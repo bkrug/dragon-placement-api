@@ -1,3 +1,4 @@
+using System.Net;
 using DragonPlacementApi.Poco;
 using DragonPlacementDataLayer.Models;
 using DragonPlacementDataLayer.Repositories;
@@ -10,14 +11,14 @@ public class HoursWorkedEndpoints
 {
     public static PagedData<HoursWorked> GetHoursWorked(
         IAssignmentUnitOfWork unitOfWork,
-        [FromRoute(Name = "dragonId")] int? dragonId = null,
+        [FromRoute(Name = "dragonId")] int dragonId,
         [FromQuery(Name = "assignmentId")] int? assignmentId = null,
         [FromQuery(Name = "offset")] int offset = 0,
         [FromQuery(Name = "limit")] int limit = 20)
     {
         var results = unitOfWork.HoursWorkedRepository.Get(
             hw => (assignmentId == null || hw.AssignmentId == assignmentId)
-               && (dragonId == null || hw.DragonId == dragonId));
+               && (hw.DragonId == dragonId));
         return new()
         {
             Offset = offset,
@@ -26,6 +27,39 @@ public class HoursWorkedEndpoints
             Data = results.Skip(offset).Take(limit).ToList()
         };
     }
+
+    public static PagedData<HoursWorked> GetHoursFromWeek(
+        IAssignmentUnitOfWork unitOfWork,
+        ILogger<AssignmentUnitOfWork> logger,
+        [FromRoute(Name = "dragonId")] int dragonId,
+        [FromRoute(Name = "assignmentId")] int assignmentId,
+        [FromRoute(Name = "startOfWeekUnix")] int startOfWeekUnix)
+    {
+        const int LENGTH_OF_WEEK = 7 * 24 * 3600;
+        var results = unitOfWork.HoursWorkedRepository
+            .Get(hw => hw.AssignmentId == assignmentId
+                    && hw.DragonId == dragonId
+                    && hw.StartDateTimeUnix >= startOfWeekUnix
+                    && hw.StartDateTimeUnix < startOfWeekUnix + LENGTH_OF_WEEK)
+            .OrderBy(hw => hw.StartDateTimeUnix)
+            .Take(100)
+            .ToList();
+        if (results.Count > 14)
+        {
+            logger.LogWarning("Dragon {DragonId} had {totalRecords} records of work time in the week of {Week}, no more than 14 are expected.",
+                dragonId,
+                results.Count,
+                DateTimeOffset.FromUnixTimeSeconds(startOfWeekUnix).ToString()
+            );
+        }
+        return new()
+        {
+            Offset = 0,
+            Limit = int.MaxValue,
+            TotalRecords = results.Count,
+            Data = results
+        };
+    }    
 
     public static async Task<Results<Ok<ValidatedPayload<HoursWorked>>, NotFound<ValidatedResponse>>>
         GetHoursWorkedEntryAsync(
