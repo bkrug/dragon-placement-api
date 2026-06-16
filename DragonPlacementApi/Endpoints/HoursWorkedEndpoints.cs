@@ -1,6 +1,7 @@
 using System.Net;
 using DragonPlacementApi.Poco;
 using DragonPlacementDataLayer.Models;
+using DragonPlacementDataLayer.Poco;
 using DragonPlacementDataLayer.Repositories;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -9,16 +10,14 @@ namespace DragonPlacementApi.Endpoints;
 
 public class HoursWorkedEndpoints
 {
-    public static PagedData<HoursWorked> GetHoursWorked(
+    public static PagedData<HoursWorkedWithJob> GetHoursWorked(
         IAssignmentUnitOfWork unitOfWork,
         [FromRoute(Name = "dragonId")] int dragonId,
         [FromQuery(Name = "assignmentId")] int? assignmentId = null,
         [FromQuery(Name = "offset")] int offset = 0,
         [FromQuery(Name = "limit")] int limit = 20)
     {
-        var results = unitOfWork.HoursWorkedRepository.Get(
-            hw => (assignmentId == null || hw.AssignmentId == assignmentId)
-               && (hw.DragonId == dragonId));
+        var results = unitOfWork.GetHoursWorkedWithJob(dragonId, assignmentId);
         return new()
         {
             Offset = offset,

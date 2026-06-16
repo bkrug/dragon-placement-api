@@ -100,7 +100,7 @@ public partial class DragonPlacementContext : DbContext
 
             entity.HasKey(e => e.HoursWorkedId);
 
-            entity.HasOne<Assignment>()
+            entity.HasOne(e => e.Assignment)
                 .WithMany()
                 .HasForeignKey(e => e.AssignmentId)
                 .OnDelete(DeleteBehavior.ClientSetNull);

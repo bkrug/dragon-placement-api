@@ -25,6 +25,7 @@ public interface IAssignmentUnitOfWork
     IEnumerable<Dragon> GetAssignedDragons(int jobId);
     IEnumerable<JobWithCapacity> GetJobsWithCapacity(JobInclusions jobInclusions);
     IList<SkillTag> GetSkillTagsById(IList<int> skillTagIds);
+    IEnumerable<HoursWorkedWithJob> GetHoursWorkedWithJob(int dragonId, int? assignmentId);
     // 0, 1, or 2 results
     Task<IList<Dragon>> GetDragonWithJobAsync(int dragonId, JobInclusions jobInclusions);
     Task<IList<Job>> GetJobWithSkillsAsync(int jobId);
@@ -125,6 +126,22 @@ public class AssignmentUnitOfWork(DragonPlacementContext context, ILogger<Assign
     {
         return _context.SkillTags.Where(st => skillTagIds.Contains(st.SkillTagId)).ToList();
     }
+
+    public IEnumerable<HoursWorkedWithJob> GetHoursWorkedWithJob(int dragonId, int? assignmentId)
+    {
+        return _context.HoursWorked
+            .Where(hw => hw.DragonId == dragonId && (assignmentId == null || hw.AssignmentId == assignmentId))
+            .Select(hw => new HoursWorkedWithJob
+            {
+                HoursWorkedId = hw.HoursWorkedId,
+                AssignmentId = hw.AssignmentId,
+                DragonId = hw.DragonId,
+                StartDateTimeUnix = hw.StartDateTimeUnix,
+                EndDateTimeUnix = hw.EndDateTimeUnix,
+                JobTitle = hw.Assignment.Job.JobTitle,
+                EmployerName = hw.Assignment.Job.EmployerName
+            });
+    } 
 
     public async Task<IList<Dragon>> GetDragonWithJobAsync(int dragonId, JobInclusions jobInclusions)
     {
