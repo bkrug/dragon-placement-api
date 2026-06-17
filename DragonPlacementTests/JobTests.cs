@@ -23,8 +23,8 @@ public class JobTests
             JobTitle = "Dragon Wrangler",
             EmployerName = "Dragonscale Inc.",
             NumberOfPositions = 3,
-            StartDateUnix = 1000000,
-            EndDateUnix = 2000000,
+            StartDateUnix = 1 * JobEndpoints.SECONDS_IN_A_DAY,
+            EndDateUnix = 2 * JobEndpoints.SECONDS_IN_A_DAY,
             SkillTagIds = skillIds
         };
         var expectedJob = new Job
@@ -32,8 +32,8 @@ public class JobTests
             JobTitle = "Dragon Wrangler",
             EmployerName = "Dragonscale Inc.",
             NumberOfPositions = 3,
-            StartDateUnix = 1000000,
-            EndDateUnix = 2000000,
+            StartDateUnix = 1 * JobEndpoints.SECONDS_IN_A_DAY,
+            EndDateUnix = 2 * JobEndpoints.SECONDS_IN_A_DAY,
             SkillTags = skills
         };
         var insertedJob = new Immutable<Job>();
@@ -52,9 +52,11 @@ public class JobTests
     }
 
     [Theory]
-    [InlineData(null, "JobTitle",           "is required")]
-    [InlineData("",   "JobTitle",           "is required")]
-    [InlineData(-1,   "NumberOfPositions",  "must be a positive number")]
+    [InlineData(null,     "JobTitle",           "is required")]
+    [InlineData("",       "JobTitle",           "is required")]
+    [InlineData(-1,       "NumberOfPositions",  "must be a positive number")]
+    [InlineData(1000001L, "StartDateUnix",      "must be midnight UTC")]
+    [InlineData(1000001L, "EndDateUnix",        "must be midnight UTC")]
     public async Task CreateJob_InvalidInput_ExpectBadRequestWithValidationFailure(
         object? invalidValue,
         string expectedFailureField,
@@ -65,8 +67,8 @@ public class JobTests
             JobTitle = "Dragon Wrangler",
             EmployerName = "Dragonscale Inc.",
             NumberOfPositions = 3,
-            StartDateUnix = 1000000,
-            EndDateUnix = 2000000
+            StartDateUnix = 1 * JobEndpoints.SECONDS_IN_A_DAY,
+            EndDateUnix = 2 * JobEndpoints.SECONDS_IN_A_DAY
         };
         typeof(JobCreateEdit).GetProperty(expectedFailureField)!.SetValue(inputJob, invalidValue);
         var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
@@ -108,7 +110,9 @@ public class JobTests
         failures.ShouldBeEquivalentTo(new JobValidationFailures
         {
             JobTitle = "is required",
-            NumberOfPositions = "must be a positive number"
+            NumberOfPositions = "must be a positive number",
+            StartDateUnix = "must be midnight UTC",
+            EndDateUnix = "must be midnight UTC"
         });
     }
 
@@ -132,8 +136,8 @@ public class JobTests
             JobTitle = "Old Title",
             EmployerName = "Old Employer",
             NumberOfPositions = 1,
-            StartDateUnix = 1000000,
-            EndDateUnix = 2000000,
+            StartDateUnix = 1 * JobEndpoints.SECONDS_IN_A_DAY,
+            EndDateUnix = 2 * JobEndpoints.SECONDS_IN_A_DAY,
             SkillTags = oldSkills
         };
         var inputJob = new JobCreateEdit
@@ -141,8 +145,8 @@ public class JobTests
             JobTitle = "New Title",
             EmployerName = "New Employer",
             NumberOfPositions = 5,
-            StartDateUnix = 3000000,
-            EndDateUnix = 4000000,
+            StartDateUnix = 2592000,
+            EndDateUnix = 3456000,
             SkillTagIds = skillIds
         };
         var expectedJob = new Job
@@ -151,8 +155,8 @@ public class JobTests
             JobTitle = "New Title",
             EmployerName = "New Employer",
             NumberOfPositions = 5,
-            StartDateUnix = 3000000,
-            EndDateUnix = 4000000,
+            StartDateUnix = 2592000,
+            EndDateUnix = 3456000,
             SkillTags = newSkills
         };
         var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
@@ -183,8 +187,10 @@ public class JobTests
     }
 
     [Theory]
-    [InlineData(" ",  "JobTitle",           "is required")]
-    [InlineData(-5,   "NumberOfPositions",  "must be a positive number")]
+    [InlineData(" ",      "JobTitle",           "is required")]
+    [InlineData(-5,       "NumberOfPositions",  "must be a positive number")]
+    [InlineData(1000001L, "StartDateUnix",      "must be midnight UTC")]
+    [InlineData(1000001L, "EndDateUnix",        "must be midnight UTC")]
     public async Task UpdateJob_InvalidInput_ExpectBadRequestWithValidationFailure(
         object? invalidValue,
         string expectedFailureField,
@@ -196,16 +202,16 @@ public class JobTests
             JobTitle = "Dragon Wrangler",
             EmployerName = "Dragonscale Inc.",
             NumberOfPositions = 3,
-            StartDateUnix = 1000000,
-            EndDateUnix = 2000000
+            StartDateUnix = 1 * JobEndpoints.SECONDS_IN_A_DAY,
+            EndDateUnix = 2 * JobEndpoints.SECONDS_IN_A_DAY
         };
         var inputJob = new JobCreateEdit
         {
             JobTitle = "Dragon Wrangler",
             EmployerName = "Dragonscale Inc.",
             NumberOfPositions = 3,
-            StartDateUnix = 1000000,
-            EndDateUnix = 2000000
+            StartDateUnix = 1 * JobEndpoints.SECONDS_IN_A_DAY,
+            EndDateUnix = 2 * JobEndpoints.SECONDS_IN_A_DAY
         };
         typeof(JobCreateEdit).GetProperty(expectedFailureField)!.SetValue(inputJob, invalidValue);
         var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
@@ -233,8 +239,8 @@ public class JobTests
             JobTitle = "Dragon Wrangler",
             EmployerName = "Dragonscale Inc.",
             NumberOfPositions = 3,
-            StartDateUnix = 1000000,
-            EndDateUnix = 2000000
+            StartDateUnix = 1 * JobEndpoints.SECONDS_IN_A_DAY,
+            EndDateUnix = 2 * JobEndpoints.SECONDS_IN_A_DAY
         };
         var inputJob = new JobCreateEdit
         {
@@ -256,7 +262,9 @@ public class JobTests
         failures.ShouldBeEquivalentTo(new JobValidationFailures
         {
             JobTitle = "is required",
-            NumberOfPositions = "must be a positive number"
+            NumberOfPositions = "must be a positive number",
+            StartDateUnix = "must be midnight UTC",
+            EndDateUnix = "must be midnight UTC"
         });
     }
 

@@ -169,6 +169,8 @@ public class JobEndpoints
         return TypedResults.Ok(ValidatedResponse.Success);
     }
 
+    public const long SECONDS_IN_A_DAY = 86400;
+
     private static ValidatedForm<JobValidationFailures>? ValidateJob(JobCreateEdit job)
     {
         var failures = new JobValidationFailures();
@@ -177,8 +179,13 @@ public class JobEndpoints
             failures.JobTitle = "is required";
         if (job.NumberOfPositions <= 0)
             failures.NumberOfPositions = "must be a positive number";
+        if (job.StartDateUnix % SECONDS_IN_A_DAY != 0)
+            failures.StartDateUnix = "must be midnight UTC";
+        if (job.EndDateUnix % SECONDS_IN_A_DAY != 0)
+            failures.EndDateUnix = "must be midnight UTC";
 
-        if (failures.JobTitle != null || failures.NumberOfPositions != null)
+        if (failures.JobTitle != null || failures.NumberOfPositions != null
+            || failures.StartDateUnix != null || failures.EndDateUnix != null)
             return new ValidatedForm<JobValidationFailures>
             {
                 IsSuccess = false,

@@ -12,6 +12,7 @@ Run these commands from the root of the repo.
 ```
 sqlite3 ./Database/DragonPlacement.db < ./Database/schemaDragonPlacement.sql
 sqlite3 ./Database/DragonPlacement.db < ./Database/insertTestData.sql
+sqlite3 ./Database/DragonPlacement.db < ./Database/insertSkillTagData.sql
 
 dotnet run --project=DragonPlacementApi
 ```
