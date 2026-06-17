@@ -13,7 +13,7 @@ public class HoursWorkedEndpoints
     public static PagedData<HoursWorkedWithJob> GetHoursWorked(
         IAssignmentUnitOfWork unitOfWork,
         [FromRoute(Name = "dragonId")] int dragonId,
-        [FromQuery(Name = "assignmentId")] int? assignmentId = null,
+        [FromRoute(Name = "assignmentId")] int assignmentId,
         [FromQuery(Name = "offset")] int offset = 0,
         [FromQuery(Name = "limit")] int limit = 20)
     {

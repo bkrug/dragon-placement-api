@@ -49,7 +49,7 @@ app.MapDelete("/job/{jobId}/assigned-dragon/{dragonId}", JobEndpoints.UnassignDr
 
 app.MapGet("/skill-tag", SkillEndpoints.GetSkillTagsAsync);
 
-app.MapGet("/dragon/{dragonId}/hoursworked", HoursWorkedEndpoints.GetHoursWorked);
+app.MapGet("/dragon/{dragonId}/assignment/{assignmentId}/hoursworked", HoursWorkedEndpoints.GetHoursWorked);
 app.MapGet("/dragon/{dragonId}/assignment/{assignmentId}/week/{startOfWeekUnix}", HoursWorkedEndpoints.GetHoursFromWeek);
 app.MapGet("/hoursworked/{hoursWorkedId}", HoursWorkedEndpoints.GetHoursWorkedEntryAsync);
 app.MapPost("/hoursworked", HoursWorkedEndpoints.CreateHoursWorkedAsync);
