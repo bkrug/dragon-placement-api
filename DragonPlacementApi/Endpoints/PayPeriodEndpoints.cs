@@ -26,6 +26,14 @@ public class PayPeriodEndpoints
         };
     }
 
+    public static Ok<ValidatedPayload<List<PayPeriod>>> GetValidPayPeriods(
+            ITimekeepingUnitOfWork unitOfWork,
+            [FromRoute(Name = "dragonId")] int dragonId,
+            [FromRoute(Name = "assignmentId")] int assignmentId)
+    {
+        return TypedResults.Ok(ValidatedPayload<List<PayPeriod>>.FromPayload([]));
+    }
+
     public static async Task<Results<Ok<ValidatedPayload<PayPeriod>>, NotFound<ValidatedResponse>>>
         GetPayPeriodAsync(
             ITimekeepingUnitOfWork unitOfWork,
