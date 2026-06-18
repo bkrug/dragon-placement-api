@@ -84,6 +84,7 @@ public class PayPeriodEndpoints
             }
             else
             {
+                //TODO: Search for this record from entry.HoursWorked, not a new query
                 var existing = await unitOfWork.HoursWorkedRepository.GetByID(hw.HoursWorkedId).ConfigureAwait(false);
                 if (existing != null)
                 {
