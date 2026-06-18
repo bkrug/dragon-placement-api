@@ -8,6 +8,24 @@ namespace DragonPlacementApi.Endpoints;
 
 public class PayPeriodEndpoints
 {
+    public static PagedData<PayPeriod> GetPayPeriods(
+            ITimekeepingUnitOfWork unitOfWork,
+            [FromRoute(Name = "dragonId")] int dragonId,
+            [FromRoute(Name = "assignmentId")] int assignmentId,
+            [FromQuery(Name = "offset")] int offset = 0,
+            [FromQuery(Name = "limit")] int limit = 20)
+    {
+        var results = unitOfWork.PayPeriodRepository
+            .Get(pp => pp.DragonId == dragonId && pp.AssignmentId == assignmentId);
+        return new()
+        {
+            Offset = offset,
+            Limit = limit,
+            TotalRecords = results.Count(),
+            Data = results.Skip(offset).Take(limit).ToList()
+        };
+    }
+
     public static async Task<Results<Ok<ValidatedPayload<PayPeriod>>, NotFound<ValidatedResponse>>>
         GetPayPeriodAsync(
             ITimekeepingUnitOfWork unitOfWork,
