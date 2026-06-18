@@ -14,9 +14,6 @@ public interface IAssignmentUnitOfWork
     IGenericRepository<Job> JobRepository { get; }
     IGenericRepository<Assignment> AssignmentRepository { get; }
     IGenericRepository<SkillTag> SkillTagRespository { get; }
-    IGenericRepository<HoursWorked> HoursWorkedRepository { get; }
-    IGenericRepository<PayPeriod> PayPeriodRepository { get; }
-
     void Dispose();
     Task SaveAsync();
 
@@ -26,14 +23,12 @@ public interface IAssignmentUnitOfWork
     IEnumerable<Dragon> GetAssignedDragons(int jobId);
     IEnumerable<JobWithCapacity> GetJobsWithCapacity(JobInclusions jobInclusions);
     IList<SkillTag> GetSkillTagsById(IList<int> skillTagIds);
-    IEnumerable<HoursWorkedWithJob> GetHoursWorkedWithJob(int dragonId, int? assignmentId);
     // 0, 1, or 2 results
     Task<IList<Dragon>> GetDragonWithJobAsync(int dragonId, JobInclusions jobInclusions);
     Task<IList<Job>> GetJobWithSkillsAsync(int jobId);
     //
     Task<bool> DragonHasAnAssignment(int dragonId);
     Task<bool> JobHasAnAssignment(int jobId);
-    Task<bool> PayPeriodHasHoursWorked(int payPeriodId);
 }
 
 public class AssignmentUnitOfWork(DragonPlacementContext context, ILogger<AssignmentUnitOfWork> logger) : IDisposable, IAssignmentUnitOfWork
@@ -43,8 +38,6 @@ public class AssignmentUnitOfWork(DragonPlacementContext context, ILogger<Assign
     public IGenericRepository<Job> JobRepository { get; } = new GenericRepository<Job>(context);
     public IGenericRepository<Assignment> AssignmentRepository { get; } = new GenericRepository<Assignment>(context);
     public IGenericRepository<SkillTag> SkillTagRespository { get; } = new GenericRepository<SkillTag>(context);
-    public IGenericRepository<HoursWorked> HoursWorkedRepository { get; } = new GenericRepository<HoursWorked>(context);
-    public IGenericRepository<PayPeriod> PayPeriodRepository { get; } = new GenericRepository<PayPeriod>(context);
     private readonly ILogger<AssignmentUnitOfWork> _logger = logger;
 
     public async Task SaveAsync()
@@ -130,22 +123,6 @@ public class AssignmentUnitOfWork(DragonPlacementContext context, ILogger<Assign
         return _context.SkillTags.Where(st => skillTagIds.Contains(st.SkillTagId)).ToList();
     }
 
-    public IEnumerable<HoursWorkedWithJob> GetHoursWorkedWithJob(int dragonId, int? assignmentId)
-    {
-        return _context.HoursWorked
-            .Where(hw => hw.DragonId == dragonId && (assignmentId == null || hw.AssignmentId == assignmentId))
-            .Select(hw => new HoursWorkedWithJob
-            {
-                HoursWorkedId = hw.HoursWorkedId,
-                AssignmentId = hw.AssignmentId,
-                DragonId = hw.DragonId,
-                StartDateTimeUnix = hw.StartDateTimeUnix,
-                EndDateTimeUnix = hw.EndDateTimeUnix,
-                JobTitle = "Placeholder",
-                EmployerName = "Placeholder"
-            });
-    } 
-
     public async Task<IList<Dragon>> GetDragonWithJobAsync(int dragonId, JobInclusions jobInclusions)
     {
         var todayUnix = new DateTimeOffset(DateTime.UtcNow.Date).ToUnixTimeSeconds();
@@ -188,10 +165,5 @@ public class AssignmentUnitOfWork(DragonPlacementContext context, ILogger<Assign
     public async Task<bool> JobHasAnAssignment(int jobId)
     {
         return await _context.Assignments.AnyAsync(a => a.JobId == jobId);
-    }
-
-    public async Task<bool> PayPeriodHasHoursWorked(int payPeriodId)
-    {
-        return await _context.HoursWorked.AnyAsync(hw => hw.PayPeriodId == payPeriodId);
     }
 }

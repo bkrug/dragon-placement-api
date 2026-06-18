@@ -16,15 +16,16 @@ builder.Services.AddCors(options =>
     )
 );
 
+var connectionString = builder.Configuration.GetConnectionString("DragonPlacementDb");
 builder.Services
     .AddEntityFrameworkSqlite()
-    .AddDbContext<DragonPlacementContext>(options =>
-        options.UseSqlite(builder.Configuration.GetConnectionString("DragonPlacementDb")));
+    .AddDbContext<DragonPlacementContext>(options => options.UseSqlite(connectionString))
+    .AddDbContext<TimekeepingContext>(options => options.UseSqlite(connectionString));
 builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(o => o.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 builder.Services.AddLogging();
-builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IAssignmentUnitOfWork, AssignmentUnitOfWork>();
+builder.Services.AddScoped<ITimekeepingUnitOfWork, TimekeepingUnitOfWork>();
 
 var app = builder.Build();
 app.UseCors(allowedOriginsPolicy);

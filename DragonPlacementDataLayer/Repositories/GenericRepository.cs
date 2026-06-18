@@ -26,9 +26,9 @@ public interface IGenericRepository<TEntity> where TEntity : class
     void Update(TEntity entityToUpdate);
 }
 
-public class GenericRepository<TEntity>(DragonPlacementContext context) : IGenericRepository<TEntity> where TEntity : class
+public class GenericRepository<TEntity>(DbContext context) : IGenericRepository<TEntity> where TEntity : class
 {
-    internal readonly DragonPlacementContext _context = context;
+    internal readonly DbContext _context = context;
     internal readonly DbSet<TEntity> _dbSet = context.Set<TEntity>();
 
     public virtual IEnumerable<TEntity> Get(

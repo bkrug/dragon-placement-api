@@ -21,10 +21,6 @@ public partial class DragonPlacementContext : DbContext
 
     public virtual DbSet<Job> Jobs { get; set; }
 
-    public virtual DbSet<HoursWorked> HoursWorked { get; set; }
-
-    public virtual DbSet<PayPeriod> PayPeriods { get; set; }
-
     public virtual DbSet<SkillTag> SkillTags { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -94,45 +90,6 @@ public partial class DragonPlacementContext : DbContext
                         j.HasKey("JobId", "SkillTagId");
                         j.ToTable("JobSkillTag");
                     });
-        });
-
-        modelBuilder.Entity<HoursWorked>(entity =>
-        {
-            entity.ToTable("HoursWorked");
-
-            entity.HasKey(e => e.HoursWorkedId);
-
-            entity.HasOne(e => e.Assignment)
-                .WithMany()
-                .HasForeignKey(e => e.AssignmentId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            entity.HasOne<Dragon>()
-                .WithMany()
-                .HasForeignKey(e => e.DragonId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            entity.HasOne(e => e.PayPeriod)
-                .WithMany(p => p.HoursWorked)
-                .HasForeignKey(e => e.PayPeriodId)
-                .OnDelete(DeleteBehavior.Cascade);
-        });
-
-        modelBuilder.Entity<PayPeriod>(entity =>
-        {
-            entity.ToTable("PayPeriod");
-
-            entity.HasKey(e => e.PayPeriodId);
-
-            entity.HasOne(e => e.Assignment)
-                .WithMany()
-                .HasForeignKey(e => e.AssignmentId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            entity.HasOne<Dragon>()
-                .WithMany()
-                .HasForeignKey(e => e.DragonId)
-                .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<SkillTag>(entity =>

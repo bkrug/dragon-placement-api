@@ -11,7 +11,7 @@ namespace DragonPlacementApi.Endpoints;
 public class HoursWorkedEndpoints
 {
     public static PagedData<HoursWorkedWithJob> GetHoursWorked(
-        IAssignmentUnitOfWork unitOfWork,
+        ITimekeepingUnitOfWork unitOfWork,
         [FromRoute(Name = "dragonId")] int dragonId,
         [FromRoute(Name = "assignmentId")] int assignmentId,
         [FromQuery(Name = "offset")] int offset = 0,
@@ -28,8 +28,8 @@ public class HoursWorkedEndpoints
     }
 
     public static PagedData<HoursWorked> GetHoursFromWeek(
-        IAssignmentUnitOfWork unitOfWork,
-        ILogger<AssignmentUnitOfWork> logger,
+        ITimekeepingUnitOfWork unitOfWork,
+        ILogger<TimekeepingUnitOfWork> logger,
         [FromRoute(Name = "dragonId")] int dragonId,
         [FromRoute(Name = "assignmentId")] int assignmentId,
         [FromRoute(Name = "startOfWeekUnix")] int startOfWeekUnix)
@@ -62,7 +62,7 @@ public class HoursWorkedEndpoints
 
     public static async Task<Results<Ok<ValidatedPayload<HoursWorked>>, NotFound<ValidatedResponse>>>
         GetHoursWorkedEntryAsync(
-            IAssignmentUnitOfWork unitOfWork,
+            ITimekeepingUnitOfWork unitOfWork,
             [FromRoute(Name = "hoursWorkedId")] int hoursWorkedId)
     {
         var entry = await unitOfWork.HoursWorkedRepository.GetByID(hoursWorkedId).ConfigureAwait(false);
@@ -73,7 +73,7 @@ public class HoursWorkedEndpoints
 
     public static async Task<Results<Ok<ValidatedPayload<HoursWorked>>, BadRequest<ValidatedForm<HoursWorkedValidationFailures>>>>
         CreateHoursWorkedAsync(
-            IAssignmentUnitOfWork unitOfWork,
+            ITimekeepingUnitOfWork unitOfWork,
             [FromBody] HoursWorkedCreateEdit input)
     {
         var validationFailures = ValidateHoursWorked(input);
@@ -94,7 +94,7 @@ public class HoursWorkedEndpoints
 
     public static async Task<Results<Ok<ValidatedPayload<HoursWorked>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<HoursWorkedValidationFailures>>>>
         UpdateHoursWorkedAsync(
-            IAssignmentUnitOfWork unitOfWork,
+            ITimekeepingUnitOfWork unitOfWork,
             [FromRoute(Name = "hoursWorkedId")] int hoursWorkedId,
             [FromBody] HoursWorkedCreateEdit input)
     {
@@ -116,7 +116,7 @@ public class HoursWorkedEndpoints
 
     public static async Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>>>
         DeleteHoursWorkedAsync(
-            IAssignmentUnitOfWork unitOfWork,
+            ITimekeepingUnitOfWork unitOfWork,
             [FromRoute(Name = "hoursWorkedId")] int hoursWorkedId)
     {
         var deleteResult = unitOfWork.HoursWorkedRepository.Delete(hoursWorkedId);

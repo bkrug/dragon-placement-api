@@ -31,7 +31,7 @@ public class HoursWorkedTests
             EndDateTimeUnix = VALID_END_UNIX
         };
         var insertedEntry = new Immutable<HoursWorked>();
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(u => u.HoursWorkedRepository.Insert(It.IsAny<HoursWorked>()))
             .Callback<HoursWorked>(insertedEntry.Set);
 
@@ -71,7 +71,7 @@ public class HoursWorkedTests
             StartDateTimeUnix = START_UNIX + 7_200,
             EndDateTimeUnix = START_UNIX + 14_400
         };
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(u => u.HoursWorkedRepository.GetByID(HOURS_WORKED_ID)).ReturnsAsync(existingEntry);
 
         // Act
@@ -93,7 +93,7 @@ public class HoursWorkedTests
             StartDateTimeUnix = START_UNIX,
             EndDateTimeUnix = START_UNIX - 1
         };
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(m => m.HoursWorkedRepository).Returns(new Mock<IGenericRepository<HoursWorked>>().Object);
 
         // Act
@@ -128,7 +128,7 @@ public class HoursWorkedTests
             StartDateTimeUnix = START_UNIX,
             EndDateTimeUnix = START_UNIX - 1
         };
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(u => u.HoursWorkedRepository.GetByID(HOURS_WORKED_ID)).ReturnsAsync(existingEntry);
 
         // Act
@@ -156,7 +156,7 @@ public class HoursWorkedTests
             StartDateTimeUnix = START_UNIX,
             EndDateTimeUnix = START_UNIX + durationSeconds
         };
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(m => m.HoursWorkedRepository).Returns(new Mock<IGenericRepository<HoursWorked>>().Object);
 
         // Act
@@ -193,7 +193,7 @@ public class HoursWorkedTests
             StartDateTimeUnix = START_UNIX,
             EndDateTimeUnix = START_UNIX + durationSeconds
         };
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(u => u.HoursWorkedRepository.GetByID(HOURS_WORKED_ID)).ReturnsAsync(existingEntry);
 
         // Act

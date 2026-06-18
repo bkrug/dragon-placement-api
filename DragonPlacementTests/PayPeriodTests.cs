@@ -52,7 +52,7 @@ public class PayPeriodTests
             ]
         };
         var insertedPayPeriod = new Immutable<PayPeriod>();
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(u => u.PayPeriodRepository.Insert(It.IsAny<PayPeriod>()))
             .Callback<PayPeriod>(insertedPayPeriod.Set);
 
@@ -76,7 +76,7 @@ public class PayPeriodTests
     {
         var input = MakeValidInput();
         typeof(PayPeriodCreateEdit).GetProperty(expectedFailureField)!.SetValue(input, invalidValue);
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(m => m.PayPeriodRepository).Returns(new Mock<IGenericRepository<PayPeriod>>().Object);
 
         //Act
@@ -105,7 +105,7 @@ public class PayPeriodTests
                 EndDateTimeUnix = input.StartDateUnix + 3600
             }
         ];
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(m => m.PayPeriodRepository).Returns(new Mock<IGenericRepository<PayPeriod>>().Object);
 
         //Act
@@ -133,7 +133,7 @@ public class PayPeriodTests
                 EndDateTimeUnix = input.EndDateUnix + Const.SECONDS_IN_A_DAY
             }
         ];
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(m => m.PayPeriodRepository).Returns(new Mock<IGenericRepository<PayPeriod>>().Object);
 
         //Act
@@ -168,7 +168,7 @@ public class PayPeriodTests
                 }
             ]
         };
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(m => m.PayPeriodRepository).Returns(new Mock<IGenericRepository<PayPeriod>>().Object);
 
         //Act
@@ -221,7 +221,7 @@ public class PayPeriodTests
                 }
             ]
         };
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(u => u.PayPeriodRepository.GetByID(PAY_PERIOD_ID)).ReturnsAsync(existingEntry);
 
         //Act
@@ -236,7 +236,7 @@ public class PayPeriodTests
     [Fact]
     public async Task UpdatePayPeriod_NotFound_ExpectNotFoundAndDoesNotSave()
     {
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(u => u.PayPeriodRepository.GetByID(It.IsAny<int>())).ReturnsAsync((PayPeriod?)null);
 
         //Act
@@ -268,7 +268,7 @@ public class PayPeriodTests
         };
         var input = MakeValidInput();
         typeof(PayPeriodCreateEdit).GetProperty(expectedFailureField)!.SetValue(input, invalidValue);
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(u => u.PayPeriodRepository.GetByID(PAY_PERIOD_ID)).ReturnsAsync(existingEntry);
 
         //Act
@@ -307,7 +307,7 @@ public class PayPeriodTests
                 EndDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY + 3600
             }
         ];
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(u => u.PayPeriodRepository.GetByID(PAY_PERIOD_ID)).ReturnsAsync(existingEntry);
 
         //Act
@@ -345,7 +345,7 @@ public class PayPeriodTests
                 EndDateTimeUnix = 9 * Const.SECONDS_IN_A_DAY
             }
         ];
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(u => u.PayPeriodRepository.GetByID(PAY_PERIOD_ID)).ReturnsAsync(existingEntry);
 
         //Act
@@ -390,7 +390,7 @@ public class PayPeriodTests
                 }
             ]
         };
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(u => u.PayPeriodRepository.GetByID(PAY_PERIOD_ID)).ReturnsAsync(existingEntry);
 
         //Act
@@ -413,7 +413,7 @@ public class PayPeriodTests
     public async Task DeletePayPeriod_Exists_ExpectOkAndSavesOnce()
     {
         const int PAY_PERIOD_ID = 42;
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(u => u.PayPeriodRepository.Delete(PAY_PERIOD_ID)).Returns(DeleteResult.Deleted);
 
         //Act
@@ -428,7 +428,7 @@ public class PayPeriodTests
     public async Task DeletePayPeriod_NotFound_ExpectNotFoundAndDoesNotSave()
     {
         const int PAY_PERIOD_ID = 999;
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(u => u.PayPeriodRepository.Delete(PAY_PERIOD_ID)).Returns(DeleteResult.NotFound);
 
         //Act

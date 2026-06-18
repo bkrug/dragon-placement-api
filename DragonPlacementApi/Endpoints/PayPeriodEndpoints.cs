@@ -10,7 +10,7 @@ public class PayPeriodEndpoints
 {
     public static async Task<Results<Ok<ValidatedPayload<PayPeriod>>, NotFound<ValidatedResponse>>>
         GetPayPeriodAsync(
-            IAssignmentUnitOfWork unitOfWork,
+            ITimekeepingUnitOfWork unitOfWork,
             [FromRoute(Name = "payPeriodId")] int payPeriodId)
     {
         //TODO: Create a method that includes the HoursWorked records with the PayPeriod.
@@ -22,7 +22,7 @@ public class PayPeriodEndpoints
 
     public static async Task<Results<Ok<ValidatedPayload<PayPeriod>>, BadRequest<ValidatedForm<PayPeriodValidationFailures>>>>
         CreatePayPeriodAsync(
-            IAssignmentUnitOfWork unitOfWork,
+            ITimekeepingUnitOfWork unitOfWork,
             [FromBody] PayPeriodCreateEdit input)
     {
         var validationFailures = ValidatePayPeriod(input);
@@ -52,7 +52,7 @@ public class PayPeriodEndpoints
 
     public static async Task<Results<Ok<ValidatedPayload<PayPeriod>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<PayPeriodValidationFailures>>>>
         UpdatePayPeriodAsync(
-            IAssignmentUnitOfWork unitOfWork,
+            ITimekeepingUnitOfWork unitOfWork,
             [FromRoute(Name = "payPeriodId")] int payPeriodId,
             [FromBody] PayPeriodCreateEdit input)
     {
@@ -102,7 +102,7 @@ public class PayPeriodEndpoints
 
     public static async Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>, Conflict<ValidatedResponse>>>
         DeletePayPeriodAsync(
-            IAssignmentUnitOfWork unitOfWork,
+            ITimekeepingUnitOfWork unitOfWork,
             [FromRoute(Name = "payPeriodId")] int payPeriodId)
     {
         var deleteResult = unitOfWork.PayPeriodRepository.Delete(payPeriodId);
