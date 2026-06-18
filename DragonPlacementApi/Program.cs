@@ -56,4 +56,9 @@ app.MapPost("/hoursworked", HoursWorkedEndpoints.CreateHoursWorkedAsync);
 app.MapPut("/hoursworked/{hoursWorkedId}", HoursWorkedEndpoints.UpdateHoursWorkedAsync);
 app.MapDelete("/hoursworked/{hoursWorkedId}", HoursWorkedEndpoints.DeleteHoursWorkedAsync);
 
+app.MapGet("/payperiod/{payPeriodId}", PayPeriodEndpoints.GetPayPeriodAsync);
+app.MapPost("/payperiod", PayPeriodEndpoints.CreatePayPeriodAsync);
+app.MapPut("/payperiod/{payPeriodId}", PayPeriodEndpoints.UpdatePayPeriodAsync);
+app.MapDelete("/payperiod/{payPeriodId}", PayPeriodEndpoints.DeletePayPeriodAsync);
+
 app.Run();

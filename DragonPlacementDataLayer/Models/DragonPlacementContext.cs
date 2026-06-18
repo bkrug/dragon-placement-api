@@ -113,7 +113,7 @@ public partial class DragonPlacementContext : DbContext
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasOne(e => e.PayPeriod)
-                .WithMany()
+                .WithMany(p => p.HoursWorked)
                 .HasForeignKey(e => e.PayPeriodId)
                 .OnDelete(DeleteBehavior.Cascade);
         });

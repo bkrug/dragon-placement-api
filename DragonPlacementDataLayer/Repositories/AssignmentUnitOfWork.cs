@@ -15,6 +15,7 @@ public interface IAssignmentUnitOfWork
     IGenericRepository<Assignment> AssignmentRepository { get; }
     IGenericRepository<SkillTag> SkillTagRespository { get; }
     IGenericRepository<HoursWorked> HoursWorkedRepository { get; }
+    IGenericRepository<PayPeriod> PayPeriodRepository { get; }
 
     void Dispose();
     Task SaveAsync();
@@ -32,6 +33,7 @@ public interface IAssignmentUnitOfWork
     //
     Task<bool> DragonHasAnAssignment(int dragonId);
     Task<bool> JobHasAnAssignment(int jobId);
+    Task<bool> PayPeriodHasHoursWorked(int payPeriodId);
 }
 
 public class AssignmentUnitOfWork(DragonPlacementContext context, ILogger<AssignmentUnitOfWork> logger) : IDisposable, IAssignmentUnitOfWork
@@ -42,6 +44,7 @@ public class AssignmentUnitOfWork(DragonPlacementContext context, ILogger<Assign
     public IGenericRepository<Assignment> AssignmentRepository { get; } = new GenericRepository<Assignment>(context);
     public IGenericRepository<SkillTag> SkillTagRespository { get; } = new GenericRepository<SkillTag>(context);
     public IGenericRepository<HoursWorked> HoursWorkedRepository { get; } = new GenericRepository<HoursWorked>(context);
+    public IGenericRepository<PayPeriod> PayPeriodRepository { get; } = new GenericRepository<PayPeriod>(context);
     private readonly ILogger<AssignmentUnitOfWork> _logger = logger;
 
     public async Task SaveAsync()
@@ -185,5 +188,10 @@ public class AssignmentUnitOfWork(DragonPlacementContext context, ILogger<Assign
     public async Task<bool> JobHasAnAssignment(int jobId)
     {
         return await _context.Assignments.AnyAsync(a => a.JobId == jobId);
+    }
+
+    public async Task<bool> PayPeriodHasHoursWorked(int payPeriodId)
+    {
+        return await _context.HoursWorked.AnyAsync(hw => hw.PayPeriodId == payPeriodId);
     }
 }
