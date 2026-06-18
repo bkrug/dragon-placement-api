@@ -41,21 +41,17 @@ public class PayPeriodEndpoints
             .ToHashSet();
 
         const long SECONDS_IN_A_WEEK = 7 * Const.SECONDS_IN_A_DAY;
-        var candidates = new List<PayPeriod>();
-        for (int weeksAgo = 0; weeksAgo < 4; weeksAgo++)
-        {
-            var startDateUnix = mondayUnix - weeksAgo * SECONDS_IN_A_WEEK;
-            if (!existingStarts.Contains(startDateUnix))
+        var candidates = Enumerable.Range(0, 4)
+            .Select(weeksAgo => mondayUnix - weeksAgo * SECONDS_IN_A_WEEK)
+            .Where(startDateUnix => !existingStarts.Contains(startDateUnix))
+            .Select(startDateUnix => new PayPeriod
             {
-                candidates.Add(new PayPeriod
-                {
-                    AssignmentId = assignmentId,
-                    DragonId = dragonId,
-                    StartDateUnix = startDateUnix,
-                    EndDateUnix = startDateUnix + 6 * Const.SECONDS_IN_A_DAY
-                });
-            }
-        }
+                AssignmentId = assignmentId,
+                DragonId = dragonId,
+                StartDateUnix = startDateUnix,
+                EndDateUnix = startDateUnix + 6 * Const.SECONDS_IN_A_DAY
+            })
+            .ToList();
 
         return TypedResults.Ok(ValidatedPayload<List<PayPeriod>>.FromPayload(candidates));
     }
