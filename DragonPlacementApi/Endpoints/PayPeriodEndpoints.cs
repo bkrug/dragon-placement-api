@@ -31,7 +31,33 @@ public class PayPeriodEndpoints
             [FromRoute(Name = "dragonId")] int dragonId,
             [FromRoute(Name = "assignmentId")] int assignmentId)
     {
-        return TypedResults.Ok(ValidatedPayload<List<PayPeriod>>.FromPayload([]));
+        var today = DateTime.UtcNow.Date;
+        var daysToSubtract = ((int)today.DayOfWeek + 6) % 7;
+        var mondayUnix = new DateTimeOffset(today.AddDays(-daysToSubtract), TimeSpan.Zero).ToUnixTimeSeconds();
+
+        var existingStarts = unitOfWork.PayPeriodRepository
+            .Get(pp => pp.DragonId == dragonId && pp.AssignmentId == assignmentId)
+            .Select(pp => pp.StartDateUnix)
+            .ToHashSet();
+
+        const long SECONDS_IN_A_WEEK = 7 * Const.SECONDS_IN_A_DAY;
+        var candidates = new List<PayPeriod>();
+        for (int weeksAgo = 0; weeksAgo < 4; weeksAgo++)
+        {
+            var startDateUnix = mondayUnix - weeksAgo * SECONDS_IN_A_WEEK;
+            if (!existingStarts.Contains(startDateUnix))
+            {
+                candidates.Add(new PayPeriod
+                {
+                    AssignmentId = assignmentId,
+                    DragonId = dragonId,
+                    StartDateUnix = startDateUnix,
+                    EndDateUnix = startDateUnix + 6 * Const.SECONDS_IN_A_DAY
+                });
+            }
+        }
+
+        return TypedResults.Ok(ValidatedPayload<List<PayPeriod>>.FromPayload(candidates));
     }
 
     public static async Task<Results<Ok<ValidatedPayload<PayPeriod>>, NotFound<ValidatedResponse>>>
