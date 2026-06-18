@@ -141,8 +141,8 @@ public class AssignmentUnitOfWork(DragonPlacementContext context, ILogger<Assign
                 DragonId = hw.DragonId,
                 StartDateTimeUnix = hw.StartDateTimeUnix,
                 EndDateTimeUnix = hw.EndDateTimeUnix,
-                JobTitle = hw.Assignment.Job.JobTitle,
-                EmployerName = hw.Assignment.Job.EmployerName
+                JobTitle = "Placeholder",
+                EmployerName = "Placeholder"
             });
     } 
 
