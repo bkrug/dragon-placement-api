@@ -13,7 +13,6 @@ public class PayPeriodEndpoints
             ITimekeepingUnitOfWork unitOfWork,
             [FromRoute(Name = "payPeriodId")] int payPeriodId)
     {
-        //TODO: Create a method that includes the HoursWorked records with the PayPeriod.
         var entry = await unitOfWork.GetPayPeriodWithHoursWorkedAsync(payPeriodId).ConfigureAwait(false);
         return entry == null
             ? TypedResults.NotFound(ValidatedResponse.NotFound)
@@ -72,7 +71,8 @@ public class PayPeriodEndpoints
 
         foreach (var hw in input.HoursWorked)
         {
-            if (hw.HoursWorkedId == 0)
+            var existingClockPunch = entry.HoursWorked.FirstOrDefault(h => h.HoursWorkedId == hw.HoursWorkedId);
+            if (existingClockPunch == null)
             {
                 entry.HoursWorked.Add(new HoursWorked
                 {
@@ -84,15 +84,10 @@ public class PayPeriodEndpoints
             }
             else
             {
-                //TODO: Search for this record from entry.HoursWorked, not a new query
-                var existing = await unitOfWork.HoursWorkedRepository.GetByID(hw.HoursWorkedId).ConfigureAwait(false);
-                if (existing != null)
-                {
-                    existing.AssignmentId = input.AssignmentId;
-                    existing.DragonId = input.DragonId;
-                    existing.StartDateTimeUnix = hw.StartDateTimeUnix;
-                    existing.EndDateTimeUnix = hw.EndDateTimeUnix;
-                }
+                existingClockPunch.AssignmentId = input.AssignmentId;
+                existingClockPunch.DragonId = input.DragonId;
+                existingClockPunch.StartDateTimeUnix = hw.StartDateTimeUnix;
+                existingClockPunch.EndDateTimeUnix = hw.EndDateTimeUnix;
             }
         }
 
