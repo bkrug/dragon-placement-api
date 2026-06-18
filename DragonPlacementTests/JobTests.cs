@@ -23,8 +23,8 @@ public class JobTests
             JobTitle = "Dragon Wrangler",
             EmployerName = "Dragonscale Inc.",
             NumberOfPositions = 3,
-            StartDateUnix = 1 * JobEndpoints.SECONDS_IN_A_DAY,
-            EndDateUnix = 2 * JobEndpoints.SECONDS_IN_A_DAY,
+            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
+            EndDateUnix = 2 * Const.SECONDS_IN_A_DAY,
             SkillTagIds = skillIds
         };
         var expectedJob = new Job
@@ -32,8 +32,8 @@ public class JobTests
             JobTitle = "Dragon Wrangler",
             EmployerName = "Dragonscale Inc.",
             NumberOfPositions = 3,
-            StartDateUnix = 1 * JobEndpoints.SECONDS_IN_A_DAY,
-            EndDateUnix = 2 * JobEndpoints.SECONDS_IN_A_DAY,
+            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
+            EndDateUnix = 2 * Const.SECONDS_IN_A_DAY,
             SkillTags = skills
         };
         var insertedJob = new Immutable<Job>();
@@ -67,8 +67,8 @@ public class JobTests
             JobTitle = "Dragon Wrangler",
             EmployerName = "Dragonscale Inc.",
             NumberOfPositions = 3,
-            StartDateUnix = 1 * JobEndpoints.SECONDS_IN_A_DAY,
-            EndDateUnix = 2 * JobEndpoints.SECONDS_IN_A_DAY
+            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
+            EndDateUnix = 2 * Const.SECONDS_IN_A_DAY
         };
         typeof(JobCreateEdit).GetProperty(expectedFailureField)!.SetValue(inputJob, invalidValue);
         var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
@@ -136,8 +136,8 @@ public class JobTests
             JobTitle = "Old Title",
             EmployerName = "Old Employer",
             NumberOfPositions = 1,
-            StartDateUnix = 1 * JobEndpoints.SECONDS_IN_A_DAY,
-            EndDateUnix = 2 * JobEndpoints.SECONDS_IN_A_DAY,
+            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
+            EndDateUnix = 2 * Const.SECONDS_IN_A_DAY,
             SkillTags = oldSkills
         };
         var inputJob = new JobCreateEdit
@@ -202,16 +202,16 @@ public class JobTests
             JobTitle = "Dragon Wrangler",
             EmployerName = "Dragonscale Inc.",
             NumberOfPositions = 3,
-            StartDateUnix = 1 * JobEndpoints.SECONDS_IN_A_DAY,
-            EndDateUnix = 2 * JobEndpoints.SECONDS_IN_A_DAY
+            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
+            EndDateUnix = 2 * Const.SECONDS_IN_A_DAY
         };
         var inputJob = new JobCreateEdit
         {
             JobTitle = "Dragon Wrangler",
             EmployerName = "Dragonscale Inc.",
             NumberOfPositions = 3,
-            StartDateUnix = 1 * JobEndpoints.SECONDS_IN_A_DAY,
-            EndDateUnix = 2 * JobEndpoints.SECONDS_IN_A_DAY
+            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
+            EndDateUnix = 2 * Const.SECONDS_IN_A_DAY
         };
         typeof(JobCreateEdit).GetProperty(expectedFailureField)!.SetValue(inputJob, invalidValue);
         var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
@@ -239,8 +239,8 @@ public class JobTests
             JobTitle = "Dragon Wrangler",
             EmployerName = "Dragonscale Inc.",
             NumberOfPositions = 3,
-            StartDateUnix = 1 * JobEndpoints.SECONDS_IN_A_DAY,
-            EndDateUnix = 2 * JobEndpoints.SECONDS_IN_A_DAY
+            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
+            EndDateUnix = 2 * Const.SECONDS_IN_A_DAY
         };
         var inputJob = new JobCreateEdit
         {
