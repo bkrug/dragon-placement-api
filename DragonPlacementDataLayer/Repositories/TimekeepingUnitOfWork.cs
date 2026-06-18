@@ -13,6 +13,7 @@ public interface ITimekeepingUnitOfWork
     Task SaveAsync();
 
     IEnumerable<HoursWorkedWithJob> GetHoursWorkedWithJob(int dragonId, int? assignmentId);
+    Task<PayPeriod?> GetPayPeriodWithHoursWorkedAsync(int payPeriodId);
 }
 
 public class TimekeepingUnitOfWork(TimekeepingContext context) : IDisposable, ITimekeepingUnitOfWork
@@ -44,6 +45,13 @@ public class TimekeepingUnitOfWork(TimekeepingContext context) : IDisposable, IT
     {
         Dispose(true);
         GC.SuppressFinalize(this);
+    }
+
+    public async Task<PayPeriod?> GetPayPeriodWithHoursWorkedAsync(int payPeriodId)
+    {
+        return await _context.PayPeriods
+            .Include(p => p.HoursWorked)
+            .FirstOrDefaultAsync(p => p.PayPeriodId == payPeriodId);
     }
 
     public IEnumerable<HoursWorkedWithJob> GetHoursWorkedWithJob(int dragonId, int? assignmentId)

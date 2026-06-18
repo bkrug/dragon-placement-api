@@ -14,7 +14,7 @@ public class PayPeriodEndpoints
             [FromRoute(Name = "payPeriodId")] int payPeriodId)
     {
         //TODO: Create a method that includes the HoursWorked records with the PayPeriod.
-        var entry = await unitOfWork.PayPeriodRepository.GetByID(payPeriodId).ConfigureAwait(false);
+        var entry = await unitOfWork.GetPayPeriodWithHoursWorkedAsync(payPeriodId).ConfigureAwait(false);
         return entry == null
             ? TypedResults.NotFound(ValidatedResponse.NotFound)
             : TypedResults.Ok(ValidatedPayload<PayPeriod>.FromPayload(entry));
@@ -56,7 +56,7 @@ public class PayPeriodEndpoints
             [FromRoute(Name = "payPeriodId")] int payPeriodId,
             [FromBody] PayPeriodCreateEdit input)
     {
-        var entry = await unitOfWork.PayPeriodRepository.GetByID(payPeriodId).ConfigureAwait(false);
+        var entry = await unitOfWork.GetPayPeriodWithHoursWorkedAsync(payPeriodId).ConfigureAwait(false);
         if (entry == null)
             return TypedResults.NotFound(ValidatedResponse.NotFound);
 
