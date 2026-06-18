@@ -7,6 +7,8 @@ public partial class HoursWorked
     public int DragonId { get; set; }
     public long StartDateTimeUnix { get; set; }
     public long EndDateTimeUnix { get; set; }
+    public int PayPeriodId { get; set; }
 
     public virtual Assignment Assignment { get; set; } = null!;
+    public virtual PayPeriod PayPeriod { get; set; } = null!;
 }

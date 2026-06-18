@@ -23,6 +23,8 @@ public partial class DragonPlacementContext : DbContext
 
     public virtual DbSet<HoursWorked> HoursWorked { get; set; }
 
+    public virtual DbSet<PayPeriod> PayPeriods { get; set; }
+
     public virtual DbSet<SkillTag> SkillTags { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -38,11 +40,11 @@ public partial class DragonPlacementContext : DbContext
 
             entity.HasOne(d => d.Dragon).WithMany(p => p.Assignments)
                 .HasForeignKey(d => d.DragonId)
-                .OnDelete(DeleteBehavior.ClientSetNull);
+                .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasOne(d => d.Job).WithMany(p => p.Assignments)
                 .HasForeignKey(d => d.JobId)
-                .OnDelete(DeleteBehavior.ClientSetNull);
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<Dragon>(entity =>
@@ -59,10 +61,10 @@ public partial class DragonPlacementContext : DbContext
                     "DragonSkillTag",
                     r => r.HasOne<SkillTag>().WithMany()
                         .HasForeignKey("SkillTagId")
-                        .OnDelete(DeleteBehavior.ClientSetNull),
+                        .OnDelete(DeleteBehavior.Restrict),
                     l => l.HasOne<Dragon>().WithMany()
                         .HasForeignKey("DragonId")
-                        .OnDelete(DeleteBehavior.ClientSetNull),
+                        .OnDelete(DeleteBehavior.Restrict),
                     j =>
                     {
                         j.HasKey("DragonId", "SkillTagId");
@@ -83,10 +85,10 @@ public partial class DragonPlacementContext : DbContext
                     "JobSkillTag",
                     r => r.HasOne<SkillTag>().WithMany()
                         .HasForeignKey("SkillTagId")
-                        .OnDelete(DeleteBehavior.ClientSetNull),
+                        .OnDelete(DeleteBehavior.Restrict),
                     l => l.HasOne<Job>().WithMany()
                         .HasForeignKey("JobId")
-                        .OnDelete(DeleteBehavior.ClientSetNull),
+                        .OnDelete(DeleteBehavior.Restrict),
                     j =>
                     {
                         j.HasKey("JobId", "SkillTagId");
@@ -103,12 +105,34 @@ public partial class DragonPlacementContext : DbContext
             entity.HasOne(e => e.Assignment)
                 .WithMany()
                 .HasForeignKey(e => e.AssignmentId)
-                .OnDelete(DeleteBehavior.ClientSetNull);
+                .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasOne<Dragon>()
                 .WithMany()
                 .HasForeignKey(e => e.DragonId)
-                .OnDelete(DeleteBehavior.ClientSetNull);
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.PayPeriod)
+                .WithMany()
+                .HasForeignKey(e => e.PayPeriodId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<PayPeriod>(entity =>
+        {
+            entity.ToTable("PayPeriod");
+
+            entity.HasKey(e => e.PayPeriodId);
+
+            entity.HasOne(e => e.Assignment)
+                .WithMany()
+                .HasForeignKey(e => e.AssignmentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne<Dragon>()
+                .WithMany()
+                .HasForeignKey(e => e.DragonId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<SkillTag>(entity =>
