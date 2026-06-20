@@ -16,7 +16,10 @@ public class PayPeriodEndpoints
             [FromQuery(Name = "limit")] int limit = 20)
     {
         var results = unitOfWork.PayPeriodRepository
-            .Get(pp => pp.DragonId == dragonId && pp.AssignmentId == assignmentId);
+            .Get(
+                filter: pp => pp.DragonId == dragonId && pp.AssignmentId == assignmentId,
+                orderBy: q => q.OrderByDescending(pp => pp.StartDateUnix)
+            );
         return new()
         {
             Offset = offset,
