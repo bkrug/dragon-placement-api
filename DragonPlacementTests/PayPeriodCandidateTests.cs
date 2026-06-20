@@ -29,14 +29,6 @@ public class PayPeriodCandidateTests
         return new DateTimeOffset(monday, TimeSpan.Zero).ToUnixTimeSeconds();
     }
 
-    private static PayPeriod MakeExpectedCandidate(long mondayUnix, int weeksAgo) => new()
-    {
-        AssignmentId = ASSIGNMENT_ID,
-        DragonId = DRAGON_ID,
-        StartDateUnix = mondayUnix - weeksAgo * SECONDS_IN_A_WEEK,
-        EndDateUnix = mondayUnix - weeksAgo * SECONDS_IN_A_WEEK + 6 * Const.SECONDS_IN_A_DAY
-    };
-
     private static ValidPaySpan MakeExpectedValidPaySpan(long mondayUnix, int weeksAgo)
     {
         var start = DateTimeOffset.FromUnixTimeSeconds(mondayUnix - weeksAgo * SECONDS_IN_A_WEEK).UtcDateTime;

@@ -562,13 +562,13 @@ public class PayPeriodTests
             [
                 new HoursWorkedView
                 {
-                    StartDateTime = "1970-01-02 09:00:00",
-                    EndDateTime = "1970-01-02 17:00:00"
+                    StartDateTime = "1970-01-02T09:00:00",
+                    EndDateTime = "1970-01-02T17:00:00"
                 },
                 new HoursWorkedView
                 {
-                    StartDateTime = "1970-01-03 09:00:00",
-                    EndDateTime = "1970-01-03 17:00:00"
+                    StartDateTime = "1970-01-03T09:00:00",
+                    EndDateTime = "1970-01-03T17:00:00"
                 }
             ]
         });
