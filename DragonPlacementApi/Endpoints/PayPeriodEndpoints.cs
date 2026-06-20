@@ -153,6 +153,7 @@ public class PayPeriodEndpoints
         return TypedResults.Ok(ValidatedPayload<PayPeriod>.FromPayload(entry));
     }
 
+    //TODO: Only allow pay periods to be deleted if they have not yet been submitted.
     public static async Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>, Conflict<ValidatedResponse>>>
         DeletePayPeriodAsync(
             ITimekeepingUnitOfWork unitOfWork,
