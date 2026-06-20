@@ -9,6 +9,11 @@ using Shouldly;
 
 namespace DragonPlacementTests;
 
+/// <summary>
+/// GetValidPayPeriodsOld() is depricated.
+/// We will eventually delete it.
+/// Use GetValidPayPeriodsNew() in the future.
+/// </summary>
 public class PayPeriodCandidateTests
 {
     private const int DRAGON_ID = 20;
