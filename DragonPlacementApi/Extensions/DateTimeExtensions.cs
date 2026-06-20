@@ -1,4 +1,4 @@
-namespace DragonPlacementApi;
+namespace DragonPlacementApi.Extensions;
 
 public static class DateTimeExtentions
 {

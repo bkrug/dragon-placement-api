@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using DragonPlacementApi;
 using DragonPlacementApi.Endpoints;
+using DragonPlacementApi.Extensions;
 using DragonPlacementApi.Poco;
 using DragonPlacementDataLayer.Models;
 using DragonPlacementDataLayer.Repositories;
