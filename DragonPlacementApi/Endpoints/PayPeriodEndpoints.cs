@@ -29,7 +29,7 @@ public class PayPeriodEndpoints
         };
     }
 
-    public static Ok<ValidatedPayload<List<PayPeriod>>> GetValidPayPeriods(
+    public static Ok<ValidatedPayload<List<PayPeriod>>> GetValidPayPeriodsOld(
             ITimekeepingUnitOfWork unitOfWork,
             [FromRoute(Name = "dragonId")] int dragonId,
             [FromRoute(Name = "assignmentId")] int assignmentId)
@@ -57,6 +57,34 @@ public class PayPeriodEndpoints
             .ToList();
 
         return TypedResults.Ok(ValidatedPayload<List<PayPeriod>>.FromPayload(candidates));
+    }    
+
+    public static Ok<ValidatedPayload<List<ValidPaySpan>>> GetValidPayPeriodsNew(
+            ITimekeepingUnitOfWork unitOfWork,
+            [FromRoute(Name = "dragonId")] int dragonId,
+            [FromRoute(Name = "assignmentId")] int assignmentId)
+    {
+        var today = DateTime.UtcNow.Date;
+        var daysToSubtract = ((int)today.DayOfWeek + 6) % 7;
+        var mondayUnix = new DateTimeOffset(today.AddDays(-daysToSubtract), TimeSpan.Zero).ToUnixTimeSeconds();
+
+        var existingStarts = unitOfWork.PayPeriodRepository
+            .Get(pp => pp.DragonId == dragonId && pp.AssignmentId == assignmentId)
+            .Select(pp => pp.StartDateUnix)
+            .ToHashSet();
+
+        const long SECONDS_IN_A_WEEK = 7 * Const.SECONDS_IN_A_DAY;
+        var candidates = Enumerable.Range(0, 4)
+            .Select(weeksAgo => mondayUnix - weeksAgo * SECONDS_IN_A_WEEK)
+            .Where(startDateUnix => !existingStarts.Contains(startDateUnix))
+            .Select(startDateUnix => new ValidPaySpan
+            {
+                StartDate = DateTimeOffset.FromUnixTimeSeconds(startDateUnix).UtcDateTime.ToIsoDateString(),
+                EndDate = DateTimeOffset.FromUnixTimeSeconds(startDateUnix).AddDays(6).UtcDateTime.ToIsoDateString()
+            })
+            .ToList();
+
+        return TypedResults.Ok(ValidatedPayload<List<ValidPaySpan>>.FromPayload(candidates));
     }
 
     public static async Task<Results<Ok<ValidatedPayload<PayPeriod>>, NotFound<ValidatedResponse>>>

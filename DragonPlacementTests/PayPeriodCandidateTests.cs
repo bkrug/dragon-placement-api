@@ -46,7 +46,7 @@ public class PayPeriodCandidateTests
         var unitOfWorkMock = MockWithExistingPayPeriods([]);
 
         //Act
-        var response = PayPeriodEndpoints.GetValidPayPeriods(unitOfWorkMock.Object, DRAGON_ID, ASSIGNMENT_ID);
+        var response = PayPeriodEndpoints.GetValidPayPeriodsOld(unitOfWorkMock.Object, DRAGON_ID, ASSIGNMENT_ID);
 
         //Assert
         var payload = response.Value!.Payload;
@@ -81,7 +81,7 @@ public class PayPeriodCandidateTests
         var unitOfWorkMock = MockWithExistingPayPeriods(existing);
 
         //Act
-        var response = PayPeriodEndpoints.GetValidPayPeriods(unitOfWorkMock.Object, DRAGON_ID, ASSIGNMENT_ID);
+        var response = PayPeriodEndpoints.GetValidPayPeriodsOld(unitOfWorkMock.Object, DRAGON_ID, ASSIGNMENT_ID);
 
         //Assert
         var payload = response.Value!.Payload;
@@ -114,7 +114,7 @@ public class PayPeriodCandidateTests
         var unitOfWorkMock = MockWithExistingPayPeriods(existing);
 
         //Act
-        var response = PayPeriodEndpoints.GetValidPayPeriods(unitOfWorkMock.Object, DRAGON_ID, ASSIGNMENT_ID);
+        var response = PayPeriodEndpoints.GetValidPayPeriodsOld(unitOfWorkMock.Object, DRAGON_ID, ASSIGNMENT_ID);
 
         //Assert
         var payload = response.Value!.Payload;
