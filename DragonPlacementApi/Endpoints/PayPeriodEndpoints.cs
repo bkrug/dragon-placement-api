@@ -116,8 +116,6 @@ public class PayPeriodEndpoints
             SubmissionStatus = input.SubmissionStatus,
             HoursWorked = input.HoursWorked.Select(hw => new HoursWorked
             {
-                AssignmentId = input.AssignmentId,
-                DragonId = input.DragonId,
                 StartDateTimeUnix = hw.StartDateTimeUnix,
                 EndDateTimeUnix = hw.EndDateTimeUnix
             }).ToList()
@@ -162,16 +160,12 @@ public class PayPeriodEndpoints
             {
                 entry.HoursWorked.Add(new HoursWorked
                 {
-                    AssignmentId = input.AssignmentId,
-                    DragonId = input.DragonId,
                     StartDateTimeUnix = inputHw.StartDateTimeUnix,
                     EndDateTimeUnix = inputHw.EndDateTimeUnix
                 });
             }
             else
             {
-                existingClockPunch.AssignmentId = input.AssignmentId;
-                existingClockPunch.DragonId = input.DragonId;
                 existingClockPunch.StartDateTimeUnix = inputHw.StartDateTimeUnix;
                 existingClockPunch.EndDateTimeUnix = inputHw.EndDateTimeUnix;
             }

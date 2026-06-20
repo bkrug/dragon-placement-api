@@ -56,15 +56,11 @@ CREATE TABLE PayPeriod (
     CONSTRAINT FK_AssignmentId FOREIGN KEY (AssignmentId) REFERENCES Assignment(AssignmentId),
     CONSTRAINT FK_DragonId FOREIGN KEY (DragonId) REFERENCES Dragon(DragonId)
 );
-CREATE TABLE HoursWorked (
+CREATE TABLE IF NOT EXISTS "HoursWorked" (
     HoursWorkedId     INTEGER NOT NULL,
-    AssignmentId      INTEGER NOT NULL,
-    DragonId          INTEGER NOT NULL,
     StartDateTimeUnix INTEGER NOT NULL,
     EndDateTimeUnix   INTEGER NOT NULL,
     PayPeriodId       INTEGER NOT NULL,
     CONSTRAINT PK_HoursWorkedId PRIMARY KEY (HoursWorkedId),
-    CONSTRAINT FK_AssignmentId FOREIGN KEY (AssignmentId) REFERENCES Assignment(AssignmentId),
-    CONSTRAINT FK_DragonId FOREIGN KEY (DragonId) REFERENCES Dragon(DragonId)
     CONSTRAINT FK_PayPeriodId FOREIGN KEY (PayPeriodId) REFERENCES PayPeriod(PayPeriodId)
 );

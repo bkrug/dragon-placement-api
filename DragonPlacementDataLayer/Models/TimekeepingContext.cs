@@ -25,8 +25,6 @@ public partial class TimekeepingContext : DbContext
 
             entity.HasKey(e => e.HoursWorkedId);
 
-            entity.Ignore(e => e.Assignment);
-
             entity.HasOne(e => e.PayPeriod)
                 .WithMany(p => p.HoursWorked)
                 .HasForeignKey(e => e.PayPeriodId)

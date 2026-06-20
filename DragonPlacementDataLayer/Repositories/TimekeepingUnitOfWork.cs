@@ -12,7 +12,6 @@ public interface ITimekeepingUnitOfWork
     void Dispose();
     Task SaveAsync();
 
-    IEnumerable<HoursWorkedWithJob> GetHoursWorkedWithJob(int dragonId, int? assignmentId);
     Task<PayPeriod?> GetPayPeriodWithHoursWorkedAsync(int payPeriodId);
 }
 
@@ -52,21 +51,5 @@ public class TimekeepingUnitOfWork(TimekeepingContext context) : IDisposable, IT
         return await _context.PayPeriods
             .Include(p => p.HoursWorked.OrderBy(hw => hw.StartDateTimeUnix))
             .FirstOrDefaultAsync(p => p.PayPeriodId == payPeriodId);
-    }
-
-    public IEnumerable<HoursWorkedWithJob> GetHoursWorkedWithJob(int dragonId, int? assignmentId)
-    {
-        return _context.HoursWorked
-            .Where(hw => hw.DragonId == dragonId && (assignmentId == null || hw.AssignmentId == assignmentId))
-            .Select(hw => new HoursWorkedWithJob
-            {
-                HoursWorkedId = hw.HoursWorkedId,
-                AssignmentId = hw.AssignmentId,
-                DragonId = hw.DragonId,
-                StartDateTimeUnix = hw.StartDateTimeUnix,
-                EndDateTimeUnix = hw.EndDateTimeUnix,
-                JobTitle = "Placeholder",
-                EmployerName = "Placeholder"
-            });
     }
 }

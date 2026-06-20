@@ -44,8 +44,6 @@ public class PayPeriodTests
             [
                 new HoursWorked
                 {
-                    AssignmentId = 10,
-                    DragonId = 20,
                     StartDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY,
                     EndDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY + 3600
                 }
@@ -214,8 +212,6 @@ public class PayPeriodTests
             [
                 new HoursWorked
                 {
-                    AssignmentId = 10,
-                    DragonId = 20,
                     StartDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY,
                     EndDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY + 3600
                 }
@@ -253,14 +249,12 @@ public class PayPeriodTests
                 new HoursWorked
                 {
                     HoursWorkedId = 301,
-                    AssignmentId = 10, DragonId = 20,
                     StartDateTimeUnix = MONDAY_START,
                     EndDateTimeUnix = MONDAY_START + 3600
                 },
                 new HoursWorked
                 {
                     HoursWorkedId = 302,
-                    AssignmentId = 10, DragonId = 20,
                     StartDateTimeUnix = TUESDAY_START,
                     EndDateTimeUnix = TUESDAY_START + 3600
                 }
@@ -294,13 +288,11 @@ public class PayPeriodTests
             new()
             {
                 HoursWorkedId = 301,
-                AssignmentId = 10, DragonId = 20,
                 StartDateTimeUnix = MONDAY_START,
                 EndDateTimeUnix = MONDAY_START + 7200
             },
             new()
             {
-                AssignmentId = 10, DragonId = 20,
                 StartDateTimeUnix = WEDNESDAY_START,
                 EndDateTimeUnix = WEDNESDAY_START + 3600
             }
