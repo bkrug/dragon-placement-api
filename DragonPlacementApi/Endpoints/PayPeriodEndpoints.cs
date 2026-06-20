@@ -117,25 +117,32 @@ public class PayPeriodEndpoints
         entry.EndDateUnix = input.EndDateUnix;
         entry.SubmissionStatus = input.SubmissionStatus;
 
-        foreach (var hw in input.HoursWorked)
+        var recordsNotToDelete = input.HoursWorked.Select(inputHw => inputHw.StartDateTimeUnix).ToList();
+        var deletedHours = entry.HoursWorked
+            .Where(existingHw => !recordsNotToDelete.Contains(existingHw.StartDateTimeUnix))
+            .ToList();
+        foreach (var recToDelete in deletedHours)
+            entry.HoursWorked.Remove(recToDelete);
+
+        foreach (var inputHw in input.HoursWorked)
         {
-            var existingClockPunch = entry.HoursWorked.FirstOrDefault(h => h.StartDateTimeUnix == hw.StartDateTimeUnix);
+            var existingClockPunch = entry.HoursWorked.FirstOrDefault(h => h.StartDateTimeUnix == inputHw.StartDateTimeUnix);
             if (existingClockPunch == null)
             {
                 entry.HoursWorked.Add(new HoursWorked
                 {
                     AssignmentId = input.AssignmentId,
                     DragonId = input.DragonId,
-                    StartDateTimeUnix = hw.StartDateTimeUnix,
-                    EndDateTimeUnix = hw.EndDateTimeUnix
+                    StartDateTimeUnix = inputHw.StartDateTimeUnix,
+                    EndDateTimeUnix = inputHw.EndDateTimeUnix
                 });
             }
             else
             {
                 existingClockPunch.AssignmentId = input.AssignmentId;
                 existingClockPunch.DragonId = input.DragonId;
-                existingClockPunch.StartDateTimeUnix = hw.StartDateTimeUnix;
-                existingClockPunch.EndDateTimeUnix = hw.EndDateTimeUnix;
+                existingClockPunch.StartDateTimeUnix = inputHw.StartDateTimeUnix;
+                existingClockPunch.EndDateTimeUnix = inputHw.EndDateTimeUnix;
             }
         }
 
