@@ -76,10 +76,28 @@ public class PayPeriodEndpoints
             [FromRoute(Name = "payPeriodId")] int payPeriodId)
     {
         var entry = await unitOfWork.GetPayPeriodWithHoursWorkedAsync(payPeriodId).ConfigureAwait(false);
-        var transformedEntry = new PayPeriodView();
-        return entry == null
-            ? TypedResults.NotFound(ValidatedResponse.NotFound)
-            : TypedResults.Ok(ValidatedPayload<PayPeriodView>.FromPayload(transformedEntry));
+        if (entry == null)
+            return TypedResults.NotFound(ValidatedResponse.NotFound);
+
+        var dragon = await assignmentUnitOfWork.DragonRepository.GetByID(entry.DragonId).ConfigureAwait(false);
+        var assignment = await assignmentUnitOfWork.AssignmentRepository.GetByID(entry.AssignmentId).ConfigureAwait(false);
+
+        var transformedEntry = new PayPeriodView
+        {
+            AssignmentId = entry.AssignmentId,
+            DragonId = entry.DragonId,
+            StartDate = UnixDateConvert.ToIsoDate(entry.StartDateUnix),
+            EndDate = UnixDateConvert.ToIsoDate(entry.EndDateUnix),
+            SubmissionStatus = entry.SubmissionStatus,
+            DragonName = $"{dragon?.GivenName} {dragon?.FamilyName}",
+            AssignmentDescription = $"{assignment?.Job.JobTitle} at {assignment?.Job.EmployerName}",
+            HoursWorked = entry.HoursWorked.Select(hw => new HoursWorkedView
+            {
+                StartDateTime = UnixDateConvert.ToIsoDateTime(hw.StartDateTimeUnix),
+                EndDateTime = UnixDateConvert.ToIsoDateTime(hw.EndDateTimeUnix)
+            }).ToList()
+        };
+        return TypedResults.Ok(ValidatedPayload<PayPeriodView>.FromPayload(transformedEntry));
     }
 
 

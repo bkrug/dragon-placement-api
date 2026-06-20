@@ -1,5 +1,7 @@
 namespace DragonPlacementApi.Extensions;
 
+//All Date, Time, and DateTime objects are currently unaware of timezones.
+//This will probably be the case throughout this project for a long time.
 public static class UnixDateConvert
 {
     public static string ToIsoDate(long unixSeconds)
