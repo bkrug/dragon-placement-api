@@ -234,6 +234,90 @@ public class PayPeriodTests
     }
 
     [Fact]
+    public async Task UpdatePayPeriod_InputReplacesOneRecordAndDropsAnother_ExpectOnlyInputRecordsRemain()
+    {
+        const int PAY_PERIOD_ID = 55;
+        const long MONDAY_START = 1 * Const.SECONDS_IN_A_DAY;
+        const long TUESDAY_START = 2 * Const.SECONDS_IN_A_DAY;
+        const long WEDNESDAY_START = 3 * Const.SECONDS_IN_A_DAY;
+        var existingEntry = new PayPeriod
+        {
+            PayPeriodId = PAY_PERIOD_ID,
+            AssignmentId = 10,
+            DragonId = 20,
+            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
+            EndDateUnix = 8 * Const.SECONDS_IN_A_DAY,
+            SubmissionStatus = "Draft",
+            HoursWorked =
+            [
+                new HoursWorked
+                {
+                    HoursWorkedId = 301,
+                    AssignmentId = 10, DragonId = 20,
+                    StartDateTimeUnix = MONDAY_START,
+                    EndDateTimeUnix = MONDAY_START + 3600
+                },
+                new HoursWorked
+                {
+                    HoursWorkedId = 302,
+                    AssignmentId = 10, DragonId = 20,
+                    StartDateTimeUnix = TUESDAY_START,
+                    EndDateTimeUnix = TUESDAY_START + 3600
+                }
+            ]
+        };
+        var input = new PayPeriodCreateEdit
+        {
+            AssignmentId = 10,
+            DragonId = 20,
+            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
+            EndDateUnix = 8 * Const.SECONDS_IN_A_DAY,
+            SubmissionStatus = "Draft",
+            HoursWorked =
+            [
+                new HoursWorkedCreateEdit
+                {
+                    AssignmentId = 10, DragonId = 20,
+                    StartDateTimeUnix = MONDAY_START,
+                    EndDateTimeUnix = MONDAY_START + 7200
+                },
+                new HoursWorkedCreateEdit
+                {
+                    AssignmentId = 10, DragonId = 20,
+                    StartDateTimeUnix = WEDNESDAY_START,
+                    EndDateTimeUnix = WEDNESDAY_START + 3600
+                }
+            ]
+        };
+        var expectedHoursWorked = new List<HoursWorked>
+        {
+            new()
+            {
+                HoursWorkedId = 301,
+                AssignmentId = 10, DragonId = 20,
+                StartDateTimeUnix = MONDAY_START,
+                EndDateTimeUnix = MONDAY_START + 7200
+            },
+            new()
+            {
+                AssignmentId = 10, DragonId = 20,
+                StartDateTimeUnix = WEDNESDAY_START,
+                EndDateTimeUnix = WEDNESDAY_START + 3600
+            }
+        };
+        var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
+        unitOfWorkMock.Setup(u => u.GetPayPeriodWithHoursWorkedAsync(PAY_PERIOD_ID)).ReturnsAsync(existingEntry);
+
+        //Act
+        var response = await PayPeriodEndpoints.UpdatePayPeriodAsync(unitOfWorkMock.Object, PAY_PERIOD_ID, input);
+
+        //Assert
+        response.Result.ShouldBeOfType<Ok<ValidatedPayload<PayPeriod>>>();
+        existingEntry.HoursWorked.ShouldBeEquivalentTo(expectedHoursWorked);
+        unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Once);
+    }
+
+    [Fact]
     public async Task UpdatePayPeriod_NotFound_ExpectNotFoundAndDoesNotSave()
     {
         var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
