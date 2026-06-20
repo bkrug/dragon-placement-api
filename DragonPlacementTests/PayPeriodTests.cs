@@ -21,8 +21,6 @@ public class PayPeriodTests
         [
             new HoursWorkedCreateEdit
             {
-                AssignmentId = 10,
-                DragonId = 20,
                 StartDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY,
                 EndDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY + 3600
             }
@@ -97,8 +95,6 @@ public class PayPeriodTests
         [
             new HoursWorkedCreateEdit
             {
-                AssignmentId = 10,
-                DragonId = 20,
                 StartDateTimeUnix = input.StartDateUnix - 1,
                 EndDateTimeUnix = input.StartDateUnix + 3600
             }
@@ -125,8 +121,6 @@ public class PayPeriodTests
         [
             new HoursWorkedCreateEdit
             {
-                AssignmentId = 10,
-                DragonId = 20,
                 StartDateTimeUnix = input.EndDateUnix + Const.SECONDS_IN_A_DAY - 3600,
                 EndDateTimeUnix = input.EndDateUnix + Const.SECONDS_IN_A_DAY
             }
@@ -159,8 +153,6 @@ public class PayPeriodTests
             [
                 new HoursWorkedCreateEdit
                 {
-                    AssignmentId = 10,
-                    DragonId = 20,
                     StartDateTimeUnix = 0,
                     EndDateTimeUnix = 9_000_000
                 }
@@ -271,13 +263,11 @@ public class PayPeriodTests
             [
                 new HoursWorkedCreateEdit
                 {
-                    AssignmentId = 10, DragonId = 20,
                     StartDateTimeUnix = MONDAY_START,
                     EndDateTimeUnix = MONDAY_START + 7200
                 },
                 new HoursWorkedCreateEdit
                 {
-                    AssignmentId = 10, DragonId = 20,
                     StartDateTimeUnix = WEDNESDAY_START,
                     EndDateTimeUnix = WEDNESDAY_START + 3600
                 }
@@ -377,8 +367,6 @@ public class PayPeriodTests
         [
             new HoursWorkedCreateEdit
             {
-                AssignmentId = 10,
-                DragonId = 20,
                 StartDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY - 1,
                 EndDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY + 3600
             }
@@ -415,8 +403,6 @@ public class PayPeriodTests
         [
             new HoursWorkedCreateEdit
             {
-                AssignmentId = 10,
-                DragonId = 20,
                 StartDateTimeUnix = 8 * Const.SECONDS_IN_A_DAY,
                 EndDateTimeUnix = 9 * Const.SECONDS_IN_A_DAY
             }
@@ -459,8 +445,6 @@ public class PayPeriodTests
             [
                 new HoursWorkedCreateEdit
                 {
-                    AssignmentId = 10,
-                    DragonId = 20,
                     StartDateTimeUnix = 0,
                     EndDateTimeUnix = 9_000_000
                 }
