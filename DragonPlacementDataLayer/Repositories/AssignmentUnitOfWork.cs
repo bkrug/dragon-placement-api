@@ -29,6 +29,7 @@ public interface IAssignmentUnitOfWork
     //
     Task<bool> DragonHasAnAssignment(int dragonId);
     Task<bool> JobHasAnAssignment(int jobId);
+    Task<Assignment?> GetAssignmentWithDragonAndJobAsync(int assignmentId);
 }
 
 public class AssignmentUnitOfWork(DragonPlacementContext context, ILogger<AssignmentUnitOfWork> logger) : IDisposable, IAssignmentUnitOfWork
@@ -165,5 +166,13 @@ public class AssignmentUnitOfWork(DragonPlacementContext context, ILogger<Assign
     public async Task<bool> JobHasAnAssignment(int jobId)
     {
         return await _context.Assignments.AnyAsync(a => a.JobId == jobId);
+    }
+
+    public async Task<Assignment?> GetAssignmentWithDragonAndJobAsync(int assignmentId)
+    {
+        return await _context.Assignments
+            .Include(a => a.Dragon)
+            .Include(a => a.Job)
+            .FirstOrDefaultAsync(a => a.AssignmentId == assignmentId);
     }
 }

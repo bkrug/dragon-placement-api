@@ -534,13 +534,13 @@ public class PayPeriodTests
         var job = new Job { JobId = JOB_ID, JobTitle = "Guard", EmployerName = "Castle Corp" };
         var assignment = new Assignment
         {
-            AssignmentId = ASSIGNMENT_ID, DragonId = DRAGON_ID, JobId = JOB_ID, Job = job
+            AssignmentId = ASSIGNMENT_ID, DragonId = DRAGON_ID, JobId = JOB_ID,
+            Dragon = dragon, Job = job
         };
         var timekeepingMock = new Mock<ITimekeepingUnitOfWork>();
         timekeepingMock.Setup(u => u.GetPayPeriodWithHoursWorkedAsync(PAY_PERIOD_ID)).ReturnsAsync(payPeriod);
         var assignmentMock = new Mock<IAssignmentUnitOfWork>();
-        assignmentMock.Setup(u => u.DragonRepository.GetByID(DRAGON_ID)).ReturnsAsync(dragon);
-        assignmentMock.Setup(u => u.AssignmentRepository.GetByID(ASSIGNMENT_ID)).ReturnsAsync(assignment);
+        assignmentMock.Setup(u => u.GetAssignmentWithDragonAndJobAsync(ASSIGNMENT_ID)).ReturnsAsync(assignment);
 
         //Act
         var response = await PayPeriodEndpoints.GetPayPeriodNewAsync(

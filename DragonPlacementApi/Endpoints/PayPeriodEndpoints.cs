@@ -79,8 +79,7 @@ public class PayPeriodEndpoints
         if (entry == null)
             return TypedResults.NotFound(ValidatedResponse.NotFound);
 
-        var dragon = await assignmentUnitOfWork.DragonRepository.GetByID(entry.DragonId).ConfigureAwait(false);
-        var assignment = await assignmentUnitOfWork.AssignmentRepository.GetByID(entry.AssignmentId).ConfigureAwait(false);
+        var assignment = await assignmentUnitOfWork.GetAssignmentWithDragonAndJobAsync(entry.AssignmentId).ConfigureAwait(false);
 
         var transformedEntry = new PayPeriodView
         {
@@ -89,7 +88,7 @@ public class PayPeriodEndpoints
             StartDate = UnixDateConvert.ToIsoDate(entry.StartDateUnix),
             EndDate = UnixDateConvert.ToIsoDate(entry.EndDateUnix),
             SubmissionStatus = entry.SubmissionStatus,
-            DragonName = $"{dragon?.GivenName} {dragon?.FamilyName}",
+            DragonName = $"{assignment?.Dragon.GivenName} {assignment?.Dragon.FamilyName}",
             AssignmentDescription = $"{assignment?.Job.JobTitle} at {assignment?.Job.EmployerName}",
             HoursWorked = entry.HoursWorked.Select(hw => new HoursWorkedView
             {
