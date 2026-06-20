@@ -499,4 +499,79 @@ public class PayPeriodTests
         unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Never);
     }
 
+    [Fact]
+    public async Task GetPayPeriodNewAsync_PayPeriodWithHoursWorked_ExpectTransformedView()
+    {
+        const int PAY_PERIOD_ID = 77;
+        const int DRAGON_ID = 20;
+        const int ASSIGNMENT_ID = 10;
+        const int JOB_ID = 30;
+        var payPeriod = new PayPeriod
+        {
+            PayPeriodId = PAY_PERIOD_ID,
+            AssignmentId = ASSIGNMENT_ID,
+            DragonId = DRAGON_ID,
+            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
+            EndDateUnix = 7 * Const.SECONDS_IN_A_DAY,
+            SubmissionStatus = "Draft",
+            HoursWorked =
+            [
+                new HoursWorked
+                {
+                    HoursWorkedId = 401,
+                    StartDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY + 32400,
+                    EndDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY + 61200
+                },
+                new HoursWorked
+                {
+                    HoursWorkedId = 402,
+                    StartDateTimeUnix = 2 * Const.SECONDS_IN_A_DAY + 32400,
+                    EndDateTimeUnix = 2 * Const.SECONDS_IN_A_DAY + 61200
+                }
+            ]
+        };
+        var dragon = new Dragon { DragonId = DRAGON_ID, GivenName = "Smaug", FamilyName = "the Terrible" };
+        var job = new Job { JobId = JOB_ID, JobTitle = "Guard", EmployerName = "Castle Corp" };
+        var assignment = new Assignment
+        {
+            AssignmentId = ASSIGNMENT_ID, DragonId = DRAGON_ID, JobId = JOB_ID, Job = job
+        };
+        var timekeepingMock = new Mock<ITimekeepingUnitOfWork>();
+        timekeepingMock.Setup(u => u.GetPayPeriodWithHoursWorkedAsync(PAY_PERIOD_ID)).ReturnsAsync(payPeriod);
+        var assignmentMock = new Mock<IAssignmentUnitOfWork>();
+        assignmentMock.Setup(u => u.DragonRepository.GetByID(DRAGON_ID)).ReturnsAsync(dragon);
+        assignmentMock.Setup(u => u.AssignmentRepository.GetByID(ASSIGNMENT_ID)).ReturnsAsync(assignment);
+
+        //Act
+        var response = await PayPeriodEndpoints.GetPayPeriodNewAsync(
+            timekeepingMock.Object, assignmentMock.Object, PAY_PERIOD_ID);
+
+        //Assert
+        response.Result.ShouldBeOfType<Ok<ValidatedPayload<PayPeriodView>>>();
+        var payload = ((Ok<ValidatedPayload<PayPeriodView>>)response.Result).Value!.Payload;
+        payload.ShouldBeEquivalentTo(new PayPeriodView
+        {
+            AssignmentId = ASSIGNMENT_ID,
+            DragonId = DRAGON_ID,
+            StartDate = "1970-01-02",
+            EndDate = "1970-01-08",
+            SubmissionStatus = "Draft",
+            DragonName = "Smaug the Terrible",
+            AssignmentDescription = "Guard at Castle Corp",
+            HoursWorked =
+            [
+                new HoursWorkedView
+                {
+                    StartDateTime = "1970-01-02 09:00:00",
+                    EndDateTime = "1970-01-02 17:00:00"
+                },
+                new HoursWorkedView
+                {
+                    StartDateTime = "1970-01-03 09:00:00",
+                    EndDateTime = "1970-01-03 17:00:00"
+                }
+            ]
+        });
+    }
+
 }

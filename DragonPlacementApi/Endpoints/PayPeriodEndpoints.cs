@@ -68,6 +68,20 @@ public class PayPeriodEndpoints
             : TypedResults.Ok(ValidatedPayload<PayPeriod>.FromPayload(entry));
     }
 
+    public static async Task<Results<Ok<ValidatedPayload<PayPeriodView>>, NotFound<ValidatedResponse>>>
+        GetPayPeriodNewAsync(
+            ITimekeepingUnitOfWork unitOfWork,
+            IAssignmentUnitOfWork assignmentUnitOfWork,
+            [FromRoute(Name = "payPeriodId")] int payPeriodId)
+    {
+        var entry = await unitOfWork.GetPayPeriodWithHoursWorkedAsync(payPeriodId).ConfigureAwait(false);
+        var transformedEntry = new PayPeriodView();
+        return entry == null
+            ? TypedResults.NotFound(ValidatedResponse.NotFound)
+            : TypedResults.Ok(ValidatedPayload<PayPeriodView>.FromPayload(transformedEntry));
+    }
+
+
     public static async Task<Results<Ok<ValidatedPayload<PayPeriod>>, BadRequest<ValidatedForm<PayPeriodValidationFailures>>>>
         CreatePayPeriodAsync(
             ITimekeepingUnitOfWork unitOfWork,
