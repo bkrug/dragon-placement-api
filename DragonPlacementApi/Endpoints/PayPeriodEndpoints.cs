@@ -119,7 +119,7 @@ public class PayPeriodEndpoints
 
         foreach (var hw in input.HoursWorked)
         {
-            var existingClockPunch = entry.HoursWorked.FirstOrDefault(h => h.HoursWorkedId == hw.HoursWorkedId);
+            var existingClockPunch = entry.HoursWorked.FirstOrDefault(h => h.StartDateTimeUnix == hw.StartDateTimeUnix);
             if (existingClockPunch == null)
             {
                 entry.HoursWorked.Add(new HoursWorked
