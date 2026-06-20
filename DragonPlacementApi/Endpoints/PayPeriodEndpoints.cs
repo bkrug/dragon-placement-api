@@ -29,37 +29,7 @@ public class PayPeriodEndpoints
         };
     }
 
-    public static Ok<ValidatedPayload<List<PayPeriod>>> GetValidPayPeriodsOld(
-            ITimekeepingUnitOfWork unitOfWork,
-            [FromRoute(Name = "dragonId")] int dragonId,
-            [FromRoute(Name = "assignmentId")] int assignmentId)
-    {
-        var today = DateTime.UtcNow.Date;
-        var daysToSubtract = ((int)today.DayOfWeek + 6) % 7;
-        var mondayUnix = new DateTimeOffset(today.AddDays(-daysToSubtract), TimeSpan.Zero).ToUnixTimeSeconds();
-
-        var existingStarts = unitOfWork.PayPeriodRepository
-            .Get(pp => pp.DragonId == dragonId && pp.AssignmentId == assignmentId)
-            .Select(pp => pp.StartDateUnix)
-            .ToHashSet();
-
-        const long SECONDS_IN_A_WEEK = 7 * Const.SECONDS_IN_A_DAY;
-        var candidates = Enumerable.Range(0, 4)
-            .Select(weeksAgo => mondayUnix - weeksAgo * SECONDS_IN_A_WEEK)
-            .Where(startDateUnix => !existingStarts.Contains(startDateUnix))
-            .Select(startDateUnix => new PayPeriod
-            {
-                AssignmentId = assignmentId,
-                DragonId = dragonId,
-                StartDateUnix = startDateUnix,
-                EndDateUnix = startDateUnix + 6 * Const.SECONDS_IN_A_DAY
-            })
-            .ToList();
-
-        return TypedResults.Ok(ValidatedPayload<List<PayPeriod>>.FromPayload(candidates));
-    }    
-
-    public static Ok<ValidatedPayload<List<ValidPaySpan>>> GetValidPayPeriodsNew(
+    public static Ok<ValidatedPayload<List<ValidPaySpan>>> GetValidPayPeriods(
             ITimekeepingUnitOfWork unitOfWork,
             [FromRoute(Name = "dragonId")] int dragonId,
             [FromRoute(Name = "assignmentId")] int assignmentId)

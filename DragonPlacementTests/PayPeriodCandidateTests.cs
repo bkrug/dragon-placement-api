@@ -62,16 +62,16 @@ public class PayPeriodCandidateTests
         var unitOfWorkMock = MockWithExistingPayPeriods([]);
 
         //Act
-        var response = PayPeriodEndpoints.GetValidPayPeriodsOld(unitOfWorkMock.Object, DRAGON_ID, ASSIGNMENT_ID);
+        var response = PayPeriodEndpoints.GetValidPayPeriods(unitOfWorkMock.Object, DRAGON_ID, ASSIGNMENT_ID);
 
         //Assert
         var payload = response.Value!.Payload;
-        payload.ShouldBeEquivalentTo(new List<PayPeriod>
+        payload.ShouldBeEquivalentTo(new List<ValidPaySpan>
         {
-            MakeExpectedCandidate(mondayUnix, weeksAgo: 0),
-            MakeExpectedCandidate(mondayUnix, weeksAgo: 1),
-            MakeExpectedCandidate(mondayUnix, weeksAgo: 2),
-            MakeExpectedCandidate(mondayUnix, weeksAgo: 3)
+            MakeExpectedValidPaySpan(mondayUnix, weeksAgo: 0),
+            MakeExpectedValidPaySpan(mondayUnix, weeksAgo: 1),
+            MakeExpectedValidPaySpan(mondayUnix, weeksAgo: 2),
+            MakeExpectedValidPaySpan(mondayUnix, weeksAgo: 3)
         });
     }
 
@@ -97,14 +97,14 @@ public class PayPeriodCandidateTests
         var unitOfWorkMock = MockWithExistingPayPeriods(existing);
 
         //Act
-        var response = PayPeriodEndpoints.GetValidPayPeriodsOld(unitOfWorkMock.Object, DRAGON_ID, ASSIGNMENT_ID);
+        var response = PayPeriodEndpoints.GetValidPayPeriods(unitOfWorkMock.Object, DRAGON_ID, ASSIGNMENT_ID);
 
         //Assert
         var payload = response.Value!.Payload;
-        payload.ShouldBeEquivalentTo(new List<PayPeriod>
+        payload.ShouldBeEquivalentTo(new List<ValidPaySpan>
         {
-            MakeExpectedCandidate(mondayUnix, weeksAgo: 0),
-            MakeExpectedCandidate(mondayUnix, weeksAgo: 2)
+            MakeExpectedValidPaySpan(mondayUnix, weeksAgo: 0),
+            MakeExpectedValidPaySpan(mondayUnix, weeksAgo: 2)
         });
     }
 
@@ -130,93 +130,7 @@ public class PayPeriodCandidateTests
         var unitOfWorkMock = MockWithExistingPayPeriods(existing);
 
         //Act
-        var response = PayPeriodEndpoints.GetValidPayPeriodsOld(unitOfWorkMock.Object, DRAGON_ID, ASSIGNMENT_ID);
-
-        //Assert
-        var payload = response.Value!.Payload;
-        payload.ShouldBeEquivalentTo(new List<PayPeriod>
-        {
-            MakeExpectedCandidate(mondayUnix, weeksAgo: 2),
-            MakeExpectedCandidate(mondayUnix, weeksAgo: 3)
-        });
-    }
-
-    [Fact]
-    public void GetValidPayPeriodsNew_NoExistingPayPeriods_ExpectFourWeeklyCandidates()
-    {
-        var mondayUnix = GetMondayOfCurrentWeekUnix();
-        var unitOfWorkMock = MockWithExistingPayPeriods([]);
-
-        //Act
-        var response = PayPeriodEndpoints.GetValidPayPeriodsNew(unitOfWorkMock.Object, DRAGON_ID, ASSIGNMENT_ID);
-
-        //Assert
-        var payload = response.Value!.Payload;
-        payload.ShouldBeEquivalentTo(new List<ValidPaySpan>
-        {
-            MakeExpectedValidPaySpan(mondayUnix, weeksAgo: 0),
-            MakeExpectedValidPaySpan(mondayUnix, weeksAgo: 1),
-            MakeExpectedValidPaySpan(mondayUnix, weeksAgo: 2),
-            MakeExpectedValidPaySpan(mondayUnix, weeksAgo: 3)
-        });
-    }
-
-    [Fact]
-    public void GetValidPayPeriodsNew_ExistingLastWeekAndTwoWeeksAgo_ExpectCurrentWeekAndThreeWeeksAgo()
-    {
-        var mondayUnix = GetMondayOfCurrentWeekUnix();
-        var existing = new List<PayPeriod>
-        {
-            new()
-            {
-                PayPeriodId = 101, AssignmentId = ASSIGNMENT_ID, DragonId = DRAGON_ID,
-                StartDateUnix = mondayUnix - 1 * SECONDS_IN_A_WEEK,
-                EndDateUnix = mondayUnix - 1 * SECONDS_IN_A_WEEK + 6 * Const.SECONDS_IN_A_DAY
-            },
-            new()
-            {
-                PayPeriodId = 102, AssignmentId = ASSIGNMENT_ID, DragonId = DRAGON_ID,
-                StartDateUnix = mondayUnix - 3 * SECONDS_IN_A_WEEK,
-                EndDateUnix = mondayUnix - 3 * SECONDS_IN_A_WEEK + 6 * Const.SECONDS_IN_A_DAY
-            }
-        };
-        var unitOfWorkMock = MockWithExistingPayPeriods(existing);
-
-        //Act
-        var response = PayPeriodEndpoints.GetValidPayPeriodsNew(unitOfWorkMock.Object, DRAGON_ID, ASSIGNMENT_ID);
-
-        //Assert
-        var payload = response.Value!.Payload;
-        payload.ShouldBeEquivalentTo(new List<ValidPaySpan>
-        {
-            MakeExpectedValidPaySpan(mondayUnix, weeksAgo: 0),
-            MakeExpectedValidPaySpan(mondayUnix, weeksAgo: 2)
-        });
-    }
-
-    [Fact]
-    public void GetValidPayPeriodsNew_ExistingCurrentWeekAndLastWeek_ExpectTwoAndThreeWeeksAgo()
-    {
-        var mondayUnix = GetMondayOfCurrentWeekUnix();
-        var existing = new List<PayPeriod>
-        {
-            new()
-            {
-                PayPeriodId = 201, AssignmentId = ASSIGNMENT_ID, DragonId = DRAGON_ID,
-                StartDateUnix = mondayUnix,
-                EndDateUnix = mondayUnix + 6 * Const.SECONDS_IN_A_DAY
-            },
-            new()
-            {
-                PayPeriodId = 202, AssignmentId = ASSIGNMENT_ID, DragonId = DRAGON_ID,
-                StartDateUnix = mondayUnix - 1 * SECONDS_IN_A_WEEK,
-                EndDateUnix = mondayUnix - 1 * SECONDS_IN_A_WEEK + 6 * Const.SECONDS_IN_A_DAY
-            }
-        };
-        var unitOfWorkMock = MockWithExistingPayPeriods(existing);
-
-        //Act
-        var response = PayPeriodEndpoints.GetValidPayPeriodsNew(unitOfWorkMock.Object, DRAGON_ID, ASSIGNMENT_ID);
+        var response = PayPeriodEndpoints.GetValidPayPeriods(unitOfWorkMock.Object, DRAGON_ID, ASSIGNMENT_ID);
 
         //Assert
         var payload = response.Value!.Payload;
