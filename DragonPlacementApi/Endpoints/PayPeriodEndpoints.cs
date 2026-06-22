@@ -338,7 +338,9 @@ public class PayPeriodEndpoints
             .Where(hwf => !string.IsNullOrEmpty(hwf.StartDateTime) || !string.IsNullOrEmpty(hwf.EndDateTime))
             .ToList();
 
-        return failures.StartDate != null || failures.EndDate != null || failures.HoursWorked.Count > 0
+        return !string.IsNullOrEmpty(failures.StartDate)
+            || !string.IsNullOrEmpty(failures.EndDate)
+            || failures.HoursWorked.Count > 0
             ? new ValidatedForm<PayPeriodValidationFailuresNew>
                 {
                     IsSuccess = false,

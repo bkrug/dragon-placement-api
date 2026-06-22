@@ -58,8 +58,8 @@ public class HoursWorkedValidationFailures
 
 public class PayPeriodValidationFailuresNew
 {
-    public string StartDate { get; set; } = null!;
-    public string EndDate { get; set; } = null!;
+    public string StartDate { get; set; } = string.Empty;
+    public string EndDate { get; set; } = string.Empty;
     public IList<HoursWorkedValidationFailures> HoursWorked { get; set; } = [];
 }
 
