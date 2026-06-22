@@ -305,52 +305,47 @@ public class PayPeriodEndpoints
         bool hasFailure = false;
 
         long startDateUnix = 0;
-        if (!DateTime.TryParseExact(input.StartDate, "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out var startDate))
+        if (DateTime.TryParse(input.StartDate, out var parsedStart))
         {
-            if (DateTime.TryParse(input.StartDate, out var parsedStart))
-            {
-                startDateUnix = new DateTimeOffset(parsedStart, TimeSpan.Zero).ToUnixTimeSeconds();
-                if (startDateUnix % Const.SECONDS_IN_A_DAY != 0)
-                    failures.StartDate = "must exclude time-of-day or be midnight UTC";
-                else
-                    failures.StartDate = "must be an ISO Date";
+            startDateUnix = new DateTimeOffset(parsedStart, TimeSpan.Zero).ToUnixTimeSeconds();
+
+            if (parsedStart.DayOfWeek != DayOfWeek.Monday) {
+                failures.StartDate = "must be a Monday";
+                hasFailure = true;
             }
-            else
-            {
-                failures.StartDate = "must be an ISO Date";
+            else if (parsedStart.TimeOfDay.TotalSeconds != 0) {
+                failures.StartDate = "must exclude time-of-day or be midnight UTC";
+                hasFailure = true;
             }
-            hasFailure = true;
         }
         else
         {
-            startDateUnix = new DateTimeOffset(startDate, TimeSpan.Zero).ToUnixTimeSeconds();
+            failures.StartDate = "must be an ISO Date";
+            hasFailure = true;
         }
 
         long endDateUnix = 0;
-        if (!DateTime.TryParseExact(input.EndDate, "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out var endDate))
+        if (DateTime.TryParse(input.EndDate, out var parsedEnd))
         {
-            if (DateTime.TryParse(input.EndDate, out var parsedEnd))
-            {
-                endDateUnix = new DateTimeOffset(parsedEnd, TimeSpan.Zero).ToUnixTimeSeconds();
-                if (endDateUnix % Const.SECONDS_IN_A_DAY != 0)
-                    failures.EndDate = "must exclude time-of-day or be midnight UTC";
-                else
-                    failures.EndDate = "must be an ISO Date";
+            endDateUnix = new DateTimeOffset(parsedEnd, TimeSpan.Zero).ToUnixTimeSeconds();
+
+            if (parsedEnd.DayOfWeek != DayOfWeek.Sunday) {
+                failures.EndDate = "must be a Sunday";
+                hasFailure = true;
             }
-            else
-            {
-                failures.EndDate = "must be an ISO Date";
+            else if (parsedEnd.TimeOfDay.TotalSeconds != 0) {
+                failures.EndDate = "must exclude time-of-day or be midnight UTC";
+                hasFailure = true;
             }
-            hasFailure = true;
-        }
-        else
-        {
-            endDateUnix = new DateTimeOffset(endDate, TimeSpan.Zero).ToUnixTimeSeconds();
-            if (endDateUnix <= startDateUnix)
-            {
+            else if (endDateUnix < startDateUnix) {
                 failures.EndDate = "must be greater than StartDate";
                 hasFailure = true;
             }
+        }
+        else
+        {
+            failures.EndDate = "must be an ISO Date";
+            hasFailure = true;
         }
 
         var hwFailures = new List<HoursWorkedValidationFailures>();
