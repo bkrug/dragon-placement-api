@@ -227,13 +227,6 @@ public class PayPeriodEndpoints
         entry.EndDateUnix = UnixDateConvert.FromIsoDate(input.EndDate);
         entry.SubmissionStatus = input.SubmissionStatus;
 
-        var incomingStarts = input.HoursWorked.Select(hw => UnixDateConvert.FromIsoDateTime(hw.StartDateTime)).ToList();
-        var deletedHours = entry.HoursWorked
-            .Where(existingHw => !incomingStarts.Contains(existingHw.StartDateTimeUnix))
-            .ToList();
-        foreach (var recToDelete in deletedHours)
-            entry.HoursWorked.Remove(recToDelete);
-
         foreach (var inputHw in input.HoursWorked)
         {
             var startUnix = UnixDateConvert.FromIsoDateTime(inputHw.StartDateTime);
@@ -253,6 +246,13 @@ public class PayPeriodEndpoints
                 existingClockPunch.EndDateTimeUnix = endUnix;
             }
         }
+
+        var incomingStarts = input.HoursWorked.Select(hw => UnixDateConvert.FromIsoDateTime(hw.StartDateTime)).ToList();
+        var deletedHours = entry.HoursWorked
+            .Where(existingHw => !incomingStarts.Contains(existingHw.StartDateTimeUnix))
+            .ToList();
+        foreach (var recToDelete in deletedHours)
+            entry.HoursWorked.Remove(recToDelete);
 
         await unitOfWork.SaveAsync().ConfigureAwait(false);
         return TypedResults.Ok(ValidatedPayload<PayPeriod>.FromPayload(entry));
