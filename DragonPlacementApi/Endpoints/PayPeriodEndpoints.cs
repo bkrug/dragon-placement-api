@@ -213,7 +213,49 @@ public class PayPeriodEndpoints
             [FromRoute(Name = "payPeriodId")] int payPeriodId,
             [FromBody] PayPeriodCreateEditNew input)
     {
-        return TypedResults.Ok(ValidatedPayload<PayPeriod>.FromPayload(new PayPeriod()));
+        var entry = await unitOfWork.GetPayPeriodWithHoursWorkedAsync(payPeriodId).ConfigureAwait(false);
+        if (entry == null)
+            return TypedResults.NotFound(ValidatedResponse.NotFound);
+
+        var validationFailures = ValidatePayPeriodNew(input);
+        if (validationFailures != null)
+            return TypedResults.BadRequest(validationFailures);
+
+        entry.AssignmentId = input.AssignmentId;
+        entry.DragonId = input.DragonId;
+        entry.StartDateUnix = UnixDateConvert.FromIsoDate(input.StartDate);
+        entry.EndDateUnix = UnixDateConvert.FromIsoDate(input.EndDate);
+        entry.SubmissionStatus = input.SubmissionStatus;
+
+        var incomingStarts = input.HoursWorked.Select(hw => UnixDateConvert.FromIsoDateTime(hw.StartDateTime)).ToList();
+        var deletedHours = entry.HoursWorked
+            .Where(existingHw => !incomingStarts.Contains(existingHw.StartDateTimeUnix))
+            .ToList();
+        foreach (var recToDelete in deletedHours)
+            entry.HoursWorked.Remove(recToDelete);
+
+        foreach (var inputHw in input.HoursWorked)
+        {
+            var startUnix = UnixDateConvert.FromIsoDateTime(inputHw.StartDateTime);
+            var endUnix = UnixDateConvert.FromIsoDateTime(inputHw.EndDateTime);
+            var existingClockPunch = entry.HoursWorked.FirstOrDefault(h => h.StartDateTimeUnix == startUnix);
+            if (existingClockPunch == null)
+            {
+                entry.HoursWorked.Add(new HoursWorked
+                {
+                    StartDateTimeUnix = startUnix,
+                    EndDateTimeUnix = endUnix
+                });
+            }
+            else
+            {
+                existingClockPunch.StartDateTimeUnix = startUnix;
+                existingClockPunch.EndDateTimeUnix = endUnix;
+            }
+        }
+
+        await unitOfWork.SaveAsync().ConfigureAwait(false);
+        return TypedResults.Ok(ValidatedPayload<PayPeriod>.FromPayload(entry));
     }
 
     //TODO: Only allow pay periods to be deleted if they have not yet been submitted.
@@ -263,36 +305,48 @@ public class PayPeriodEndpoints
         bool hasFailure = false;
 
         long startDateUnix = 0;
-        if (!DateTime.TryParse(input.StartDate, out var startDate))
+        if (!DateTime.TryParseExact(input.StartDate, "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out var startDate))
         {
-            failures.StartDate = "must be an ISO Date";
+            if (DateTime.TryParse(input.StartDate, out var parsedStart))
+            {
+                startDateUnix = new DateTimeOffset(parsedStart, TimeSpan.Zero).ToUnixTimeSeconds();
+                if (startDateUnix % Const.SECONDS_IN_A_DAY != 0)
+                    failures.StartDate = "must exclude time-of-day or be midnight UTC";
+                else
+                    failures.StartDate = "must be an ISO Date";
+            }
+            else
+            {
+                failures.StartDate = "must be an ISO Date";
+            }
             hasFailure = true;
         }
         else
         {
             startDateUnix = new DateTimeOffset(startDate, TimeSpan.Zero).ToUnixTimeSeconds();
-            if (startDateUnix % Const.SECONDS_IN_A_DAY != 0)
-            {
-                failures.StartDate = "must exclude time-of-day or be midnight UTC";
-                hasFailure = true;
-            }
         }
 
         long endDateUnix = 0;
-        if (!DateTime.TryParse(input.EndDate, out var endDate))
+        if (!DateTime.TryParseExact(input.EndDate, "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out var endDate))
         {
-            failures.EndDate = "must be an ISO Date";
+            if (DateTime.TryParse(input.EndDate, out var parsedEnd))
+            {
+                endDateUnix = new DateTimeOffset(parsedEnd, TimeSpan.Zero).ToUnixTimeSeconds();
+                if (endDateUnix % Const.SECONDS_IN_A_DAY != 0)
+                    failures.EndDate = "must exclude time-of-day or be midnight UTC";
+                else
+                    failures.EndDate = "must be an ISO Date";
+            }
+            else
+            {
+                failures.EndDate = "must be an ISO Date";
+            }
             hasFailure = true;
         }
         else
         {
             endDateUnix = new DateTimeOffset(endDate, TimeSpan.Zero).ToUnixTimeSeconds();
-            if (endDateUnix % Const.SECONDS_IN_A_DAY != 0)
-            {
-                failures.EndDate = "must exclude time-of-day or be midnight UTC";
-                hasFailure = true;
-            }
-            else if (endDateUnix <= startDateUnix)
+            if (endDateUnix <= startDateUnix)
             {
                 failures.EndDate = "must be greater than StartDate";
                 hasFailure = true;
