@@ -318,12 +318,15 @@ public class PayPeriodEndpoints
         long endDateUnix = new DateTimeOffset(parsedEnd, TimeSpan.Zero).ToUnixTimeSeconds();
 
         failures.HoursWorked = input.HoursWorked
-            .Select(hw =>
+            .Select((hw, index) =>
             {
                 var hwStartUnix = UnixDateConvert.FromIsoDateTime(hw.StartDateTime);
                 var hwEndUnix = UnixDateConvert.FromIsoDateTime(hw.EndDateTime);
 
-                var hwf = new HoursWorkedValidationFailures();
+                var hwf = new HoursWorkedValidationFailures()
+                {
+                    Index = index,
+                };
                 if (hwStartUnix < startDateUnix)
                     hwf.StartDateTime = "Clock-in time is outside of the pay period";
                 if (hwEndUnix >= endDateUnix + Const.SECONDS_IN_A_DAY)
