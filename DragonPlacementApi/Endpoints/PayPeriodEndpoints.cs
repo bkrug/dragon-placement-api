@@ -184,7 +184,27 @@ public class PayPeriodEndpoints
             ITimekeepingUnitOfWork unitOfWork,
             [FromBody] PayPeriodCreateEditNew input)
     {
-        return TypedResults.Ok(ValidatedPayload<PayPeriod>.FromPayload(new PayPeriod()));
+        var validationFailures = ValidatePayPeriodNew(input);
+        if (validationFailures != null)
+            return TypedResults.BadRequest(validationFailures);
+
+        var payPeriod = new PayPeriod
+        {
+            AssignmentId = input.AssignmentId,
+            DragonId = input.DragonId,
+            StartDateUnix = UnixDateConvert.FromIsoDate(input.StartDate),
+            EndDateUnix = UnixDateConvert.FromIsoDate(input.EndDate),
+            SubmissionStatus = input.SubmissionStatus,
+            HoursWorked = input.HoursWorked.Select(hw => new HoursWorked
+            {
+                StartDateTimeUnix = UnixDateConvert.FromIsoDateTime(hw.StartDateTime),
+                EndDateTimeUnix = UnixDateConvert.FromIsoDateTime(hw.EndDateTime)
+            }).ToList()
+        };
+        unitOfWork.PayPeriodRepository.Insert(payPeriod);
+
+        await unitOfWork.SaveAsync().ConfigureAwait(false);
+        return TypedResults.Ok(ValidatedPayload<PayPeriod>.FromPayload(payPeriod));
     }
 
     public static async Task<Results<Ok<ValidatedPayload<PayPeriod>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<PayPeriodValidationFailuresNew>>>>
@@ -235,5 +255,81 @@ public class PayPeriodEndpoints
             };
 
         return null;
+    }
+
+    private static ValidatedForm<PayPeriodValidationFailuresNew>? ValidatePayPeriodNew(PayPeriodCreateEditNew input)
+    {
+        var failures = new PayPeriodValidationFailuresNew();
+        bool hasFailure = false;
+
+        long startDateUnix = 0;
+        if (!DateTime.TryParse(input.StartDate, out var startDate))
+        {
+            failures.StartDate = "must be an ISO Date";
+            hasFailure = true;
+        }
+        else
+        {
+            startDateUnix = new DateTimeOffset(startDate, TimeSpan.Zero).ToUnixTimeSeconds();
+            if (startDateUnix % Const.SECONDS_IN_A_DAY != 0)
+            {
+                failures.StartDate = "must exclude time-of-day or be midnight UTC";
+                hasFailure = true;
+            }
+        }
+
+        long endDateUnix = 0;
+        if (!DateTime.TryParse(input.EndDate, out var endDate))
+        {
+            failures.EndDate = "must be an ISO Date";
+            hasFailure = true;
+        }
+        else
+        {
+            endDateUnix = new DateTimeOffset(endDate, TimeSpan.Zero).ToUnixTimeSeconds();
+            if (endDateUnix % Const.SECONDS_IN_A_DAY != 0)
+            {
+                failures.EndDate = "must exclude time-of-day or be midnight UTC";
+                hasFailure = true;
+            }
+            else if (endDateUnix <= startDateUnix)
+            {
+                failures.EndDate = "must be greater than StartDate";
+                hasFailure = true;
+            }
+        }
+
+        var hwFailures = new List<HoursWorkedValidationFailures>();
+        bool anyHwFailure = false;
+        foreach (var hw in input.HoursWorked)
+        {
+            var hwf = new HoursWorkedValidationFailures();
+            var hwStartUnix = UnixDateConvert.FromIsoDateTime(hw.StartDateTime);
+            var hwEndUnix = UnixDateConvert.FromIsoDateTime(hw.EndDateTime);
+
+            if (hwStartUnix < startDateUnix)
+            {
+                hwf.StartDateTime = "Clock-in time is outside of the pay period";
+                anyHwFailure = true;
+            }
+            if (hwEndUnix >= endDateUnix + Const.SECONDS_IN_A_DAY)
+            {
+                hwf.EndDateTime = "Clock-out time is outside of the pay period";
+                anyHwFailure = true;
+            }
+            hwFailures.Add(hwf);
+        }
+        if (anyHwFailure)
+        {
+            failures.HoursWorked = hwFailures;
+            hasFailure = true;
+        }
+
+        return hasFailure ? new ValidatedForm<PayPeriodValidationFailuresNew>
+        {
+            IsSuccess = false,
+            IsInternalError = false,
+            ValidationFailures = failures
+        } : null;
     }
 }

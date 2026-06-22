@@ -645,8 +645,8 @@ public class PayPeriodTests
         var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailuresNew>>)response.Result).Value!.ValidationFailures;
         failures.ShouldBeEquivalentTo(new PayPeriodValidationFailuresNew
         {
-            StartDate = "must be midnight UTC",
-            EndDate = "must be midnight UTC",
+            StartDate = "must exclude time-of-day or be midnight UTC",
+            EndDate = "must exclude time-of-day or be midnight UTC",
             HoursWorked = [
                 new HoursWorkedValidationFailures {
                     StartDateTime = "Clock-in time is outside of the pay period",
