@@ -524,9 +524,11 @@ public class PayPeriodTests
     }
 
     [Theory]
-    [InlineData("1970-01-02T05:00:00", "StartDate",  "StartDateUnix",  "must exclude time-of-day or be midnight UTC")]
-    [InlineData("1970-01-02T05:00:00", "EndDate",    "EndDateUnix",    "must exclude time-of-day or be midnight UTC")]
-    [InlineData("1970-01-02",          "EndDate",    "EndDateUnix",    "must be greater than StartDateUnix")]
+    [InlineData("1970-01-02T05:00:00", "StartDate",  "StartDate",  "must exclude time-of-day or be midnight UTC")]
+    [InlineData("Januar 1, 1970",      "StartDate",  "StartDate",  "must be an ISO Date")]
+    [InlineData("1970-01-02T05:00:00", "EndDate",    "EndDate",    "must exclude time-of-day or be midnight UTC")]
+    [InlineData("Januar 2, 1970",      "EndDate",    "EndDate",    "must be an ISO Date")]
+    [InlineData("1970-01-02",          "EndDate",    "EndDate",    "must be greater than StartDate")]
     public async Task CreatePayPeriodNew_InvalidInput_ExpectBadRequestWithValidationFailure(
         string invalidValue,
         string inputField,
@@ -791,9 +793,11 @@ public class PayPeriodTests
     }
 
     [Theory]
-    [InlineData("1970-01-02T05:00:00", "StartDate",  "StartDateUnix",  "must exclude time-of-day or be midnight UTC")]
-    [InlineData("1970-01-02T05:00:00", "EndDate",    "EndDateUnix",    "must exclude time-of-day or be midnight UTC")]
-    [InlineData("1970-01-02",          "EndDate",    "EndDateUnix",    "must be greater than StartDateUnix")]
+    [InlineData("1970-01-02T05:00:00", "StartDate",  "StartDate",  "must exclude time-of-day or be midnight UTC")]
+    [InlineData("January 1, 1970",     "StartDate",  "StartDate",  "must be an ISO Date")]
+    [InlineData("1970-01-02T05:00:00", "EndDate",    "EndDate",    "must exclude time-of-day or be midnight UTC")]
+    [InlineData("January 2, 1970",     "EndDate",    "EndDate",    "must be an ISO Date")]
+    [InlineData("1970-01-02",          "EndDate",    "EndDate",    "must be greater than StartDate")]
     public async Task UpdatePayPeriodNew_InvalidInput_ExpectBadRequestWithValidationFailure(
         string invalidValue,
         string inputField,
