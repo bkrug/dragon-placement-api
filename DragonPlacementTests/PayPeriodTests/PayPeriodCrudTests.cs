@@ -34,22 +34,12 @@ public class PayPeriodCrudTests
     public async Task CreatePayPeriod_ValidInput_ExpectInsertionAndSavesOnce()
     {
         var input = MakeValidInput();
-        var expectedPayPeriod = new PayPeriod
-        {
-            AssignmentId = 10,
-            DragonId = 20,
-            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
-            EndDateUnix = 8 * Const.SECONDS_IN_A_DAY,
-            SubmissionStatus = "Draft",
-            HoursWorked =
-            [
-                new HoursWorked
-                {
-                    StartDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY,
-                    EndDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY + 3600
-                }
-            ]
-        };
+        var expectedPayPeriod = new PayPeriodBuilder()
+            .WithHoursWorked(new HoursWorked
+            {
+                StartDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY,
+                EndDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY + 3600
+            }).Build();
         var insertedPayPeriod = new Immutable<PayPeriod>();
         var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(u => u.PayPeriodRepository.Insert(It.IsAny<PayPeriod>()))
@@ -184,34 +174,17 @@ public class PayPeriodCrudTests
     public async Task UpdatePayPeriod_ValidInput_ExpectUpdateAndSavesOnce()
     {
         const int PAY_PERIOD_ID = 55;
-        var existingEntry = new PayPeriod
-        {
-            PayPeriodId = PAY_PERIOD_ID,
-            AssignmentId = 5,
-            DragonId = 15,
-            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
-            EndDateUnix = 8 * Const.SECONDS_IN_A_DAY,
-            SubmissionStatus = "Draft"
-        };
+        var existingEntry = new PayPeriodBuilder()
+            .WithPayPeriodId(PAY_PERIOD_ID).WithAssignmentId(5).WithDragonId(15).Build();
         var input = MakeValidInput();
         input.SubmissionStatus = "Submitted";
-        var expectedEntry = new PayPeriod
-        {
-            PayPeriodId = PAY_PERIOD_ID,
-            AssignmentId = 10,
-            DragonId = 20,
-            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
-            EndDateUnix = 8 * Const.SECONDS_IN_A_DAY,
-            SubmissionStatus = "Submitted",
-            HoursWorked =
-            [
-                new HoursWorked
-                {
-                    StartDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY,
-                    EndDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY + 3600
-                }
-            ]
-        };
+        var expectedEntry = new PayPeriodBuilder()
+            .WithPayPeriodId(PAY_PERIOD_ID).WithSubmissionStatus("Submitted")
+            .WithHoursWorked(new HoursWorked
+            {
+                StartDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY,
+                EndDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY + 3600
+            }).Build();
         var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(u => u.GetPayPeriodWithHoursWorkedAsync(PAY_PERIOD_ID)).ReturnsAsync(existingEntry);
 
@@ -231,30 +204,11 @@ public class PayPeriodCrudTests
         const long MONDAY_START = 1 * Const.SECONDS_IN_A_DAY;
         const long TUESDAY_START = 2 * Const.SECONDS_IN_A_DAY;
         const long WEDNESDAY_START = 3 * Const.SECONDS_IN_A_DAY;
-        var existingEntry = new PayPeriod
-        {
-            PayPeriodId = PAY_PERIOD_ID,
-            AssignmentId = 10,
-            DragonId = 20,
-            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
-            EndDateUnix = 8 * Const.SECONDS_IN_A_DAY,
-            SubmissionStatus = "Draft",
-            HoursWorked =
-            [
-                new HoursWorked
-                {
-                    HoursWorkedId = 301,
-                    StartDateTimeUnix = MONDAY_START,
-                    EndDateTimeUnix = MONDAY_START + 3600
-                },
-                new HoursWorked
-                {
-                    HoursWorkedId = 302,
-                    StartDateTimeUnix = TUESDAY_START,
-                    EndDateTimeUnix = TUESDAY_START + 3600
-                }
-            ]
-        };
+        var existingEntry = new PayPeriodBuilder().WithPayPeriodId(PAY_PERIOD_ID)
+            .WithHoursWorked(
+                new HoursWorked { HoursWorkedId = 301, StartDateTimeUnix = MONDAY_START, EndDateTimeUnix = MONDAY_START + 3600 },
+                new HoursWorked { HoursWorkedId = 302, StartDateTimeUnix = TUESDAY_START, EndDateTimeUnix = TUESDAY_START + 3600 }
+            ).Build();
         var input = new PayPeriodCreateEdit
         {
             AssignmentId = 10,
@@ -326,15 +280,7 @@ public class PayPeriodCrudTests
         string expectedFailureMessage)
     {
         const int PAY_PERIOD_ID = 55;
-        var existingEntry = new PayPeriod
-        {
-            PayPeriodId = PAY_PERIOD_ID,
-            AssignmentId = 10,
-            DragonId = 20,
-            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
-            EndDateUnix = 8 * Const.SECONDS_IN_A_DAY,
-            SubmissionStatus = "Draft"
-        };
+        var existingEntry = new PayPeriodBuilder().WithPayPeriodId(PAY_PERIOD_ID).Build();
         var input = MakeValidInput();
         typeof(PayPeriodCreateEdit).GetProperty(expectedFailureField)!.SetValue(input, invalidValue);
         var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
@@ -356,15 +302,7 @@ public class PayPeriodCrudTests
     public async Task UpdatePayPeriod_HoursWorkedStartBeforePayPeriod_ExpectBadRequest()
     {
         const int PAY_PERIOD_ID = 55;
-        var existingEntry = new PayPeriod
-        {
-            PayPeriodId = PAY_PERIOD_ID,
-            AssignmentId = 10,
-            DragonId = 20,
-            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
-            EndDateUnix = 8 * Const.SECONDS_IN_A_DAY,
-            SubmissionStatus = "Draft"
-        };
+        var existingEntry = new PayPeriodBuilder().WithPayPeriodId(PAY_PERIOD_ID).Build();
         var input = MakeValidInput();
         input.HoursWorked =
         [
@@ -392,15 +330,7 @@ public class PayPeriodCrudTests
     public async Task UpdatePayPeriod_HoursWorkedEndAfterPayPeriodPlusOneDay_ExpectBadRequest()
     {
         const int PAY_PERIOD_ID = 55;
-        var existingEntry = new PayPeriod
-        {
-            PayPeriodId = PAY_PERIOD_ID,
-            AssignmentId = 10,
-            DragonId = 20,
-            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
-            EndDateUnix = 8 * Const.SECONDS_IN_A_DAY,
-            SubmissionStatus = "Draft"
-        };
+        var existingEntry = new PayPeriodBuilder().WithPayPeriodId(PAY_PERIOD_ID).Build();
         var input = MakeValidInput();
         input.HoursWorked =
         [
@@ -428,15 +358,7 @@ public class PayPeriodCrudTests
     public async Task UpdatePayPeriod_AllFieldsInvalid_ExpectBadRequestWithAllValidationFailures()
     {
         const int PAY_PERIOD_ID = 55;
-        var existingEntry = new PayPeriod
-        {
-            PayPeriodId = PAY_PERIOD_ID,
-            AssignmentId = 10,
-            DragonId = 20,
-            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
-            EndDateUnix = 8 * Const.SECONDS_IN_A_DAY,
-            SubmissionStatus = "Draft"
-        };
+        var existingEntry = new PayPeriodBuilder().WithPayPeriodId(PAY_PERIOD_ID).Build();
         var input = new PayPeriodCreateEdit
         {
             AssignmentId = 10,
@@ -472,43 +394,16 @@ public class PayPeriodCrudTests
         });
     }
 
-    private static PayPeriodCreateEditNew MakeValidInputNew() => new()
-    {
-        AssignmentId = 10,
-        DragonId = 20,
-        StartDate = "1970-01-02",
-        EndDate = "1970-01-09",
-        SubmissionStatus = "Draft",
-        HoursWorked =
-        [
-            new HoursWorkedCreateEditNew
-            {
-                StartDateTime = "1970-01-02T00:00:00",
-                EndDateTime = "1970-01-02T01:00:00"
-            }
-        ]
-    };
-
     [Fact]
     public async Task CreatePayPeriodNew_ValidInput_ExpectInsertionAndSavesOnce()
     {
-        var input = MakeValidInputNew();
-        var expectedPayPeriod = new PayPeriod
-        {
-            AssignmentId = 10,
-            DragonId = 20,
-            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
-            EndDateUnix = 8 * Const.SECONDS_IN_A_DAY,
-            SubmissionStatus = "Draft",
-            HoursWorked =
-            [
-                new HoursWorked
-                {
-                    StartDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY,
-                    EndDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY + 3600
-                }
-            ]
-        };
+        var input = new PayPeriodCreateEditNewBuilder().Build();
+        var expectedPayPeriod = new PayPeriodBuilder()
+            .WithHoursWorked(new HoursWorked
+            {
+                StartDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY,
+                EndDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY + 3600
+            }).Build();
         var insertedPayPeriod = new Immutable<PayPeriod>();
         var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(u => u.PayPeriodRepository.Insert(It.IsAny<PayPeriod>()))
@@ -535,7 +430,7 @@ public class PayPeriodCrudTests
         string expectedFailureField,
         string expectedFailureMessage)
     {
-        var input = MakeValidInputNew();
+        var input = new PayPeriodCreateEditNewBuilder().Build();
         typeof(PayPeriodCreateEditNew).GetProperty(inputField)!.SetValue(input, invalidValue);
         var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(m => m.PayPeriodRepository).Returns(new Mock<IGenericRepository<PayPeriod>>().Object);
@@ -555,15 +450,12 @@ public class PayPeriodCrudTests
     [Fact]
     public async Task CreatePayPeriodNew_HoursWorkedStartBeforePayPeriod_ExpectBadRequest()
     {
-        var input = MakeValidInputNew();
-        input.HoursWorked =
-        [
-            new HoursWorkedCreateEditNew
+        var input = new PayPeriodCreateEditNewBuilder()
+            .WithHoursWorked(new HoursWorkedCreateEditNew
             {
                 StartDateTime = "1970-01-01T23:59:59",
                 EndDateTime = "1970-01-02T01:00:00"
-            }
-        ];
+            }).Build();
         var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(m => m.PayPeriodRepository).Returns(new Mock<IGenericRepository<PayPeriod>>().Object);
 
@@ -586,15 +478,12 @@ public class PayPeriodCrudTests
     [Fact]
     public async Task CreatePayPeriodNew_HoursWorkedEndAfterPayPeriodPlusOneDay_ExpectBadRequest()
     {
-        var input = MakeValidInputNew();
-        input.HoursWorked =
-        [
-            new HoursWorkedCreateEditNew
+        var input = new PayPeriodCreateEditNewBuilder()
+            .WithHoursWorked(new HoursWorkedCreateEditNew
             {
                 StartDateTime = "1970-01-09T23:00:00",
                 EndDateTime = "1970-01-10T00:00:00"
-            }
-        ];
+            }).Build();
         var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(m => m.PayPeriodRepository).Returns(new Mock<IGenericRepository<PayPeriod>>().Object);
 
@@ -618,22 +507,14 @@ public class PayPeriodCrudTests
     [Fact]
     public async Task CreatePayPeriodNew_AllFieldsInvalid_ExpectBadRequestWithAllValidationFailures()
     {
-        var input = new PayPeriodCreateEditNew
-        {
-            AssignmentId = 10,
-            DragonId = 20,
-            StartDate = "1970-01-12T13:46:41",
-            EndDate = "1970-01-24T03:33:21",
-            SubmissionStatus = "Draft",
-            HoursWorked =
-            [
-                new HoursWorkedCreateEditNew
-                {
-                    StartDateTime = "1970-01-01T00:00:00",
-                    EndDateTime = "1970-04-15T10:00:00"
-                }
-            ]
-        };
+        var input = new PayPeriodCreateEditNewBuilder()
+            .WithStartDate("1970-01-12T13:46:41")
+            .WithEndDate("1970-01-24T03:33:21")
+            .WithHoursWorked(new HoursWorkedCreateEditNew
+            {
+                StartDateTime = "1970-01-01T00:00:00",
+                EndDateTime = "1970-04-15T10:00:00"
+            }).Build();
         var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(m => m.PayPeriodRepository).Returns(new Mock<IGenericRepository<PayPeriod>>().Object);
 
@@ -660,34 +541,16 @@ public class PayPeriodCrudTests
     public async Task UpdatePayPeriodNew_ValidInput_ExpectUpdateAndSavesOnce()
     {
         const int PAY_PERIOD_ID = 55;
-        var existingEntry = new PayPeriod
-        {
-            PayPeriodId = PAY_PERIOD_ID,
-            AssignmentId = 5,
-            DragonId = 15,
-            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
-            EndDateUnix = 8 * Const.SECONDS_IN_A_DAY,
-            SubmissionStatus = "Draft"
-        };
-        var input = MakeValidInputNew();
-        input.SubmissionStatus = "Submitted";
-        var expectedEntry = new PayPeriod
-        {
-            PayPeriodId = PAY_PERIOD_ID,
-            AssignmentId = 10,
-            DragonId = 20,
-            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
-            EndDateUnix = 8 * Const.SECONDS_IN_A_DAY,
-            SubmissionStatus = "Submitted",
-            HoursWorked =
-            [
-                new HoursWorked
-                {
-                    StartDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY,
-                    EndDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY + 3600
-                }
-            ]
-        };
+        var existingEntry = new PayPeriodBuilder()
+            .WithPayPeriodId(PAY_PERIOD_ID).WithAssignmentId(5).WithDragonId(15).Build();
+        var input = new PayPeriodCreateEditNewBuilder().WithSubmissionStatus("Submitted").Build();
+        var expectedEntry = new PayPeriodBuilder()
+            .WithPayPeriodId(PAY_PERIOD_ID).WithSubmissionStatus("Submitted")
+            .WithHoursWorked(new HoursWorked
+            {
+                StartDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY,
+                EndDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY + 3600
+            }).Build();
         var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(u => u.GetPayPeriodWithHoursWorkedAsync(PAY_PERIOD_ID)).ReturnsAsync(existingEntry);
 
@@ -707,51 +570,16 @@ public class PayPeriodCrudTests
         const long MONDAY_START = 1 * Const.SECONDS_IN_A_DAY;
         const long TUESDAY_START = 2 * Const.SECONDS_IN_A_DAY;
         const long WEDNESDAY_START = 3 * Const.SECONDS_IN_A_DAY;
-        var existingEntry = new PayPeriod
-        {
-            PayPeriodId = PAY_PERIOD_ID,
-            AssignmentId = 10,
-            DragonId = 20,
-            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
-            EndDateUnix = 8 * Const.SECONDS_IN_A_DAY,
-            SubmissionStatus = "Draft",
-            HoursWorked =
-            [
-                new HoursWorked
-                {
-                    HoursWorkedId = 301,
-                    StartDateTimeUnix = MONDAY_START,
-                    EndDateTimeUnix = MONDAY_START + 3600
-                },
-                new HoursWorked
-                {
-                    HoursWorkedId = 302,
-                    StartDateTimeUnix = TUESDAY_START,
-                    EndDateTimeUnix = TUESDAY_START + 3600
-                }
-            ]
-        };
-        var input = new PayPeriodCreateEditNew
-        {
-            AssignmentId = 10,
-            DragonId = 20,
-            StartDate = "1970-01-02",
-            EndDate = "1970-01-09",
-            SubmissionStatus = "Draft",
-            HoursWorked =
-            [
-                new HoursWorkedCreateEditNew
-                {
-                    StartDateTime = "1970-01-02T00:00:00",
-                    EndDateTime = "1970-01-02T02:00:00"
-                },
-                new HoursWorkedCreateEditNew
-                {
-                    StartDateTime = "1970-01-04T00:00:00",
-                    EndDateTime = "1970-01-04T01:00:00"
-                }
-            ]
-        };
+        var existingEntry = new PayPeriodBuilder().WithPayPeriodId(PAY_PERIOD_ID)
+            .WithHoursWorked(
+                new HoursWorked { HoursWorkedId = 301, StartDateTimeUnix = MONDAY_START, EndDateTimeUnix = MONDAY_START + 3600 },
+                new HoursWorked { HoursWorkedId = 302, StartDateTimeUnix = TUESDAY_START, EndDateTimeUnix = TUESDAY_START + 3600 }
+            ).Build();
+        var input = new PayPeriodCreateEditNewBuilder()
+            .WithHoursWorked(
+                new HoursWorkedCreateEditNew { StartDateTime = "1970-01-02T00:00:00", EndDateTime = "1970-01-02T02:00:00" },
+                new HoursWorkedCreateEditNew { StartDateTime = "1970-01-04T00:00:00", EndDateTime = "1970-01-04T01:00:00" }
+            ).Build();
         var expectedHoursWorked = new List<HoursWorked>
         {
             new()
@@ -785,7 +613,7 @@ public class PayPeriodCrudTests
         unitOfWorkMock.Setup(u => u.GetPayPeriodWithHoursWorkedAsync(It.IsAny<int>())).ReturnsAsync((PayPeriod?)null);
 
         //Act
-        var response = await PayPeriodEndpoints.UpdatePayPeriodNewAsync(unitOfWorkMock.Object, 999, MakeValidInputNew());
+        var response = await PayPeriodEndpoints.UpdatePayPeriodNewAsync(unitOfWorkMock.Object, 999, new PayPeriodCreateEditNewBuilder().Build());
 
         //Assert
         response.Result.ShouldBeOfType<NotFound<ValidatedResponse>>();
@@ -805,16 +633,8 @@ public class PayPeriodCrudTests
         string expectedFailureMessage)
     {
         const int PAY_PERIOD_ID = 55;
-        var existingEntry = new PayPeriod
-        {
-            PayPeriodId = PAY_PERIOD_ID,
-            AssignmentId = 10,
-            DragonId = 20,
-            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
-            EndDateUnix = 8 * Const.SECONDS_IN_A_DAY,
-            SubmissionStatus = "Draft"
-        };
-        var input = MakeValidInputNew();
+        var existingEntry = new PayPeriodBuilder().WithPayPeriodId(PAY_PERIOD_ID).Build();
+        var input = new PayPeriodCreateEditNewBuilder().Build();
         typeof(PayPeriodCreateEditNew).GetProperty(inputField)!.SetValue(input, invalidValue);
         var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(u => u.GetPayPeriodWithHoursWorkedAsync(PAY_PERIOD_ID)).ReturnsAsync(existingEntry);
@@ -835,24 +655,13 @@ public class PayPeriodCrudTests
     public async Task UpdatePayPeriodNew_HoursWorkedStartBeforePayPeriod_ExpectBadRequest()
     {
         const int PAY_PERIOD_ID = 55;
-        var existingEntry = new PayPeriod
-        {
-            PayPeriodId = PAY_PERIOD_ID,
-            AssignmentId = 10,
-            DragonId = 20,
-            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
-            EndDateUnix = 8 * Const.SECONDS_IN_A_DAY,
-            SubmissionStatus = "Draft"
-        };
-        var input = MakeValidInputNew();
-        input.HoursWorked =
-        [
-            new HoursWorkedCreateEditNew
+        var existingEntry = new PayPeriodBuilder().WithPayPeriodId(PAY_PERIOD_ID).Build();
+        var input = new PayPeriodCreateEditNewBuilder()
+            .WithHoursWorked(new HoursWorkedCreateEditNew
             {
                 StartDateTime = "1970-01-01T23:59:59",
                 EndDateTime = "1970-01-02T01:00:00"
-            }
-        ];
+            }).Build();
         var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(u => u.GetPayPeriodWithHoursWorkedAsync(PAY_PERIOD_ID)).ReturnsAsync(existingEntry);
 
@@ -876,24 +685,13 @@ public class PayPeriodCrudTests
     public async Task UpdatePayPeriodNew_HoursWorkedEndAfterPayPeriodPlusOneDay_ExpectBadRequest()
     {
         const int PAY_PERIOD_ID = 55;
-        var existingEntry = new PayPeriod
-        {
-            PayPeriodId = PAY_PERIOD_ID,
-            AssignmentId = 10,
-            DragonId = 20,
-            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
-            EndDateUnix = 8 * Const.SECONDS_IN_A_DAY,
-            SubmissionStatus = "Draft"
-        };
-        var input = MakeValidInputNew();
-        input.HoursWorked =
-        [
-            new HoursWorkedCreateEditNew
+        var existingEntry = new PayPeriodBuilder().WithPayPeriodId(PAY_PERIOD_ID).Build();
+        var input = new PayPeriodCreateEditNewBuilder()
+            .WithHoursWorked(new HoursWorkedCreateEditNew
             {
                 StartDateTime = "1970-01-09T23:00:00",
                 EndDateTime = "1970-01-10T00:00:00"
-            }
-        ];
+            }).Build();
         var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(u => u.GetPayPeriodWithHoursWorkedAsync(PAY_PERIOD_ID)).ReturnsAsync(existingEntry);
 
@@ -917,31 +715,15 @@ public class PayPeriodCrudTests
     public async Task UpdatePayPeriodNew_AllFieldsInvalid_ExpectBadRequestWithAllValidationFailures()
     {
         const int PAY_PERIOD_ID = 55;
-        var existingEntry = new PayPeriod
-        {
-            PayPeriodId = PAY_PERIOD_ID,
-            AssignmentId = 10,
-            DragonId = 20,
-            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
-            EndDateUnix = 8 * Const.SECONDS_IN_A_DAY,
-            SubmissionStatus = "Draft"
-        };
-        var input = new PayPeriodCreateEditNew
-        {
-            AssignmentId = 10,
-            DragonId = 20,
-            StartDate = "1970-01-12T13:46:41",
-            EndDate = "1970-01-24T03:33:21",
-            SubmissionStatus = "Draft",
-            HoursWorked =
-            [
-                new HoursWorkedCreateEditNew
-                {
-                    StartDateTime = "1970-01-01T00:00:00",
-                    EndDateTime = "1970-04-15T10:00:00"
-                }
-            ]
-        };
+        var existingEntry = new PayPeriodBuilder().WithPayPeriodId(PAY_PERIOD_ID).Build();
+        var input = new PayPeriodCreateEditNewBuilder()
+            .WithStartDate("1970-01-12T13:46:41")
+            .WithEndDate("1970-01-24T03:33:21")
+            .WithHoursWorked(new HoursWorkedCreateEditNew
+            {
+                StartDateTime = "1970-01-01T00:00:00",
+                EndDateTime = "1970-04-15T10:00:00"
+            }).Build();
         var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(u => u.GetPayPeriodWithHoursWorkedAsync(PAY_PERIOD_ID)).ReturnsAsync(existingEntry);
 
@@ -1001,30 +783,12 @@ public class PayPeriodCrudTests
         const int DRAGON_ID = 20;
         const int ASSIGNMENT_ID = 10;
         const int JOB_ID = 30;
-        var payPeriod = new PayPeriod
-        {
-            PayPeriodId = PAY_PERIOD_ID,
-            AssignmentId = ASSIGNMENT_ID,
-            DragonId = DRAGON_ID,
-            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
-            EndDateUnix = 7 * Const.SECONDS_IN_A_DAY,
-            SubmissionStatus = "Draft",
-            HoursWorked =
-            [
-                new HoursWorked
-                {
-                    HoursWorkedId = 401,
-                    StartDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY + 32400,
-                    EndDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY + 61200
-                },
-                new HoursWorked
-                {
-                    HoursWorkedId = 402,
-                    StartDateTimeUnix = 2 * Const.SECONDS_IN_A_DAY + 32400,
-                    EndDateTimeUnix = 2 * Const.SECONDS_IN_A_DAY + 61200
-                }
-            ]
-        };
+        var payPeriod = new PayPeriodBuilder()
+            .WithPayPeriodId(PAY_PERIOD_ID).WithEndDateUnix(7 * Const.SECONDS_IN_A_DAY)
+            .WithHoursWorked(
+                new HoursWorked { HoursWorkedId = 401, StartDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY + 32400, EndDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY + 61200 },
+                new HoursWorked { HoursWorkedId = 402, StartDateTimeUnix = 2 * Const.SECONDS_IN_A_DAY + 32400, EndDateTimeUnix = 2 * Const.SECONDS_IN_A_DAY + 61200 }
+            ).Build();
         var dragon = new Dragon { DragonId = DRAGON_ID, GivenName = "Smaug", FamilyName = "the Terrible" };
         var job = new Job { JobId = JOB_ID, JobTitle = "Guard", EmployerName = "Castle Corp" };
         var assignment = new Assignment
