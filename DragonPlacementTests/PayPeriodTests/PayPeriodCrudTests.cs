@@ -4,6 +4,7 @@ using DragonPlacementApi.Poco;
 using DragonPlacementDataLayer.Models;
 using DragonPlacementDataLayer.Repositories;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.Extensions.Options;
 using Moq;
 using Shouldly;
 using TimekeepingDataLayer.Models;
@@ -203,10 +204,9 @@ public class PayPeriodCrudTests
         const long TUESDAY_START = 2 * Const.SECONDS_IN_A_DAY;
         const long WEDNESDAY_START = 3 * Const.SECONDS_IN_A_DAY;
         var existingEntry = new PayPeriodBuilder().WithPayPeriodId(PAY_PERIOD_ID)
-            .WithHoursWorked(
-                new HoursWorked { HoursWorkedId = 301, StartDateTimeUnix = MONDAY_START, EndDateTimeUnix = MONDAY_START + 3600 },
-                new HoursWorked { HoursWorkedId = 302, StartDateTimeUnix = TUESDAY_START, EndDateTimeUnix = TUESDAY_START + 3600 }
-            ).Build();
+            .AddHoursWorked(301, 0, 3600)
+            .AddHoursWorked(302, 1 * Const.SECONDS_IN_A_DAY, 1 * Const.SECONDS_IN_A_DAY + 3600)        
+            .Build();
         var input = new PayPeriodCreateEdit
         {
             AssignmentId = 10,
@@ -577,10 +577,9 @@ public class PayPeriodCrudTests
         const long TUESDAY_START = 2 * Const.SECONDS_IN_A_DAY;
         const long WEDNESDAY_START = 3 * Const.SECONDS_IN_A_DAY;
         var existingEntry = new PayPeriodBuilder().WithPayPeriodId(PAY_PERIOD_ID)
-            .WithHoursWorked(
-                new HoursWorked { HoursWorkedId = 301, StartDateTimeUnix = MONDAY_START, EndDateTimeUnix = MONDAY_START + 3600 },
-                new HoursWorked { HoursWorkedId = 302, StartDateTimeUnix = TUESDAY_START, EndDateTimeUnix = TUESDAY_START + 3600 }
-            ).Build();
+            .AddHoursWorked(301, 0, 3600)
+            .AddHoursWorked(302, 1 * Const.SECONDS_IN_A_DAY, 1 * Const.SECONDS_IN_A_DAY + 3600)        
+            .Build();
         var input = new PayPeriodCreateEditNewBuilder()
             .WithHoursWorked(
                 new HoursWorkedCreateEditNew { StartDateTime = "1970-01-02T00:00:00", EndDateTime = "1970-01-02T02:00:00" },
@@ -799,11 +798,11 @@ public class PayPeriodCrudTests
         const int JOB_ID = 30;
         var payPeriod = new PayPeriodBuilder()
             .WithPayPeriodId(PAY_PERIOD_ID)
+            .WithStartDateUnix(1 * Const.SECONDS_IN_A_DAY)
             .WithEndDateUnix(7 * Const.SECONDS_IN_A_DAY)
-            .WithHoursWorked(
-                new HoursWorked { HoursWorkedId = 401, StartDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY + 32400, EndDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY + 61200 },
-                new HoursWorked { HoursWorkedId = 402, StartDateTimeUnix = 2 * Const.SECONDS_IN_A_DAY + 32400, EndDateTimeUnix = 2 * Const.SECONDS_IN_A_DAY + 61200 }
-            ).Build();
+            .AddHoursWorked(401, 32400, 61200)
+            .AddHoursWorked(402, 1 * Const.SECONDS_IN_A_DAY + 32400, 1 * Const.SECONDS_IN_A_DAY + 61200)
+            .Build();
         var dragon = new Dragon { DragonId = DRAGON_ID, GivenName = "Smaug", FamilyName = "the Terrible" };
         var job = new Job { JobId = JOB_ID, JobTitle = "Guard", EmployerName = "Castle Corp" };
         var assignment = new Assignment
