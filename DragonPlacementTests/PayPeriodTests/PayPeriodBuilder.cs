@@ -16,20 +16,42 @@ public class PayPeriodBuilder
     public PayPeriodBuilder WithPayPeriodId(int id) { _payPeriodId = id; return this; }
     public PayPeriodBuilder WithAssignmentId(int id) { _assignmentId = id; return this; }
     public PayPeriodBuilder WithDragonId(int id) { _dragonId = id; return this; }
+    public PayPeriodBuilder WithStartDateUnix(long unitCount, long secondsPerUnit) {
+        _startDateUnix = unitCount * secondsPerUnit;
+        return this;
+    }
     public PayPeriodBuilder WithStartDateUnix(long val) { _startDateUnix = val; return this; }
+    public PayPeriodBuilder WithEndDateUnix(long unitCount, long secondsPerUnit) {
+        _endDateUnix = unitCount * secondsPerUnit;
+        return this;
+    }
     public PayPeriodBuilder WithEndDateUnix(long val) { _endDateUnix = val; return this; }
     public PayPeriodBuilder WithSubmissionStatus(string val) { _submissionStatus = val; return this; }
-    /// <param name="clockInSeconds">A number of seconds relative to the pay period start</param>
-    /// <param name="clockOutSeconds">A number of seconds relative to the pay period start</param>
-    /// <returns></returns>
     public PayPeriodBuilder AddHoursWorked(long clockInSeconds, long clockOutSeconds)
     {
         return AddHoursWorked(0, clockInSeconds, clockOutSeconds);
     }
+    public PayPeriodBuilder AddHoursWorked(int hoursWorkedId, long clockInSeconds, long clockOutSeconds)
+    {
+        _hoursWorked.Add(new HoursWorked
+        {
+            HoursWorkedId = hoursWorkedId,
+            StartDateTimeUnix = clockInSeconds,
+            EndDateTimeUnix = clockOutSeconds 
+        });
+        return this;
+    }    
     /// <param name="clockInSeconds">A number of seconds relative to the pay period start</param>
     /// <param name="clockOutSeconds">A number of seconds relative to the pay period start</param>
     /// <returns></returns>
-    public PayPeriodBuilder AddHoursWorked(int hoursWorkedId, long clockInSeconds, long clockOutSeconds)
+    public PayPeriodBuilder AddHoursWorkedRelative(long clockInSeconds, long clockOutSeconds)
+    {
+        return AddHoursWorkedRelative(0, clockInSeconds, clockOutSeconds);
+    }
+    /// <param name="clockInSeconds">A number of seconds relative to the pay period start</param>
+    /// <param name="clockOutSeconds">A number of seconds relative to the pay period start</param>
+    /// <returns></returns>
+    public PayPeriodBuilder AddHoursWorkedRelative(int hoursWorkedId, long clockInSeconds, long clockOutSeconds)
     {
         _hoursWorked.Add(new HoursWorked
         {

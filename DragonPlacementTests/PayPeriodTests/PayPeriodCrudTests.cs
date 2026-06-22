@@ -36,7 +36,7 @@ public class PayPeriodCrudTests
     {
         var input = MakeValidInput();
         var expectedPayPeriod = new PayPeriodBuilder()
-            .AddHoursWorked(clockInSeconds: 0, clockOutSeconds: 3600)
+            .AddHoursWorkedRelative(clockInSeconds: 0, clockOutSeconds: 3600)
             .Build();
         var insertedPayPeriod = new Immutable<PayPeriod>();
         var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
@@ -182,7 +182,7 @@ public class PayPeriodCrudTests
         var expectedEntry = new PayPeriodBuilder()
             .WithPayPeriodId(PAY_PERIOD_ID)
             .WithSubmissionStatus("Submitted")
-            .AddHoursWorked(clockInSeconds: 0, clockOutSeconds: 3600)
+            .AddHoursWorkedRelative(clockInSeconds: 0, clockOutSeconds: 3600)
             .Build();
         var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(u => u.GetPayPeriodWithHoursWorkedAsync(PAY_PERIOD_ID)).ReturnsAsync(existingEntry);
@@ -204,8 +204,8 @@ public class PayPeriodCrudTests
         const long TUESDAY_START = 2 * Const.SECONDS_IN_A_DAY;
         const long WEDNESDAY_START = 3 * Const.SECONDS_IN_A_DAY;
         var existingEntry = new PayPeriodBuilder().WithPayPeriodId(PAY_PERIOD_ID)
-            .AddHoursWorked(301, 0, 3600)
-            .AddHoursWorked(302, 1 * Const.SECONDS_IN_A_DAY, 1 * Const.SECONDS_IN_A_DAY + 3600)        
+            .AddHoursWorkedRelative(301, 0, 3600)
+            .AddHoursWorkedRelative(302, 1 * Const.SECONDS_IN_A_DAY, 1 * Const.SECONDS_IN_A_DAY + 3600)        
             .Build();
         var input = new PayPeriodCreateEdit
         {
@@ -404,10 +404,18 @@ public class PayPeriodCrudTests
     public async Task CreatePayPeriodNew_ValidInput_ExpectInsertionAndSavesOnce()
     {
         var input = new PayPeriodCreateEditNewBuilder()
-            .AddHoursWorked("1970-01-02T00:00:00", "1970-01-02T01:00:00")
+            .WithStartDate("1970-01-05")
+            .WithEndDate("1970-01-11")
+            .WithAssignmentId(1827)
+            .WithDragonId(382)
+            .AddHoursWorked("1970-01-05T09:00:00", "1970-01-05T17:00:00")
             .Build();
         var expectedPayPeriod = new PayPeriodBuilder()
-            .AddHoursWorked(clockInSeconds: 0, clockOutSeconds: 3600)
+            .WithStartDateUnix(4, Const.SECONDS_IN_A_DAY)
+            .WithEndDateUnix(10, Const.SECONDS_IN_A_DAY)
+            .WithAssignmentId(1827)
+            .WithDragonId(382)
+            .AddHoursWorkedRelative(clockInSeconds: 9 * 3600, clockOutSeconds: 17 * 3600)
             .Build();
         var insertedPayPeriod = new Immutable<PayPeriod>();
         var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
@@ -424,10 +432,10 @@ public class PayPeriodCrudTests
     }
 
     [Theory]
-    [InlineData("1970-01-02T05:00:00", "StartDate",  "StartDate",  "must exclude time-of-day or be midnight UTC")]
-    [InlineData("Januar 1, 1970",      "StartDate",  "StartDate",  "must be an ISO Date")]
-    [InlineData("1970-01-02T05:00:00", "EndDate",    "EndDate",    "must exclude time-of-day or be midnight UTC")]
-    [InlineData("Januar 2, 1970",      "EndDate",    "EndDate",    "must be an ISO Date")]
+    [InlineData("1970-01-05T05:00:00", "StartDate",  "StartDate",  "must exclude time-of-day or be midnight UTC")]
+    [InlineData("Januar 5, 1970",      "StartDate",  "StartDate",  "must be an ISO Date")]
+    [InlineData("1970-01-11T05:00:00", "EndDate",    "EndDate",    "must exclude time-of-day or be midnight UTC")]
+    [InlineData("Januar 11, 1970",     "EndDate",    "EndDate",    "must be an ISO Date")]
     [InlineData("1970-01-02",          "EndDate",    "EndDate",    "must be greater than StartDate")]
     public async Task CreatePayPeriodNew_InvalidInput_ExpectBadRequestWithValidationFailure(
         string invalidValue,
@@ -435,9 +443,7 @@ public class PayPeriodCrudTests
         string expectedFailureField,
         string expectedFailureMessage)
     {
-        var input = new PayPeriodCreateEditNewBuilder()
-            .AddHoursWorked("1970-01-02T00:00:00", "1970-01-02T01:00:00")
-            .Build();
+        var input = new PayPeriodCreateEditNewBuilder().Build();
         typeof(PayPeriodCreateEditNew).GetProperty(inputField)!.SetValue(input, invalidValue);
         var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(m => m.PayPeriodRepository).Returns(new Mock<IGenericRepository<PayPeriod>>().Object);
@@ -551,7 +557,7 @@ public class PayPeriodCrudTests
         var expectedEntry = new PayPeriodBuilder()
             .WithPayPeriodId(PAY_PERIOD_ID)
             .WithSubmissionStatus("Submitted")
-            .AddHoursWorked(clockInSeconds: 0, clockOutSeconds: 3600)
+            .AddHoursWorkedRelative(clockInSeconds: 0, clockOutSeconds: 3600)
             .Build();
         var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(u => u.GetPayPeriodWithHoursWorkedAsync(PAY_PERIOD_ID)).ReturnsAsync(existingEntry);
@@ -573,8 +579,8 @@ public class PayPeriodCrudTests
         const long WEDNESDAY_START = 3 * Const.SECONDS_IN_A_DAY;
         var existingEntry = new PayPeriodBuilder()
             .WithPayPeriodId(PAY_PERIOD_ID)
-            .AddHoursWorked(301, 0, 3600)
-            .AddHoursWorked(302, 1 * Const.SECONDS_IN_A_DAY, 1 * Const.SECONDS_IN_A_DAY + 3600)        
+            .AddHoursWorkedRelative(301, 0, 3600)
+            .AddHoursWorkedRelative(302, 1 * Const.SECONDS_IN_A_DAY, 1 * Const.SECONDS_IN_A_DAY + 3600)        
             .Build();
         var input = new PayPeriodCreateEditNewBuilder()
             .AddHoursWorked("1970-01-02T00:00:00", "1970-01-02T02:00:00")
@@ -791,8 +797,8 @@ public class PayPeriodCrudTests
             .WithPayPeriodId(PAY_PERIOD_ID)
             .WithStartDateUnix(1 * Const.SECONDS_IN_A_DAY)
             .WithEndDateUnix(7 * Const.SECONDS_IN_A_DAY)
-            .AddHoursWorked(401, 32400, 61200)
-            .AddHoursWorked(402, 1 * Const.SECONDS_IN_A_DAY + 32400, 1 * Const.SECONDS_IN_A_DAY + 61200)
+            .AddHoursWorkedRelative(401, 32400, 61200)
+            .AddHoursWorkedRelative(402, 1 * Const.SECONDS_IN_A_DAY + 32400, 1 * Const.SECONDS_IN_A_DAY + 61200)
             .Build();
         var dragon = new Dragon { DragonId = DRAGON_ID, GivenName = "Smaug", FamilyName = "the Terrible" };
         var job = new Job { JobId = JOB_ID, JobTitle = "Guard", EmployerName = "Castle Corp" };
