@@ -3,6 +3,8 @@ using DragonPlacementApi.Endpoints;
 using DragonPlacementDataLayer.Models;
 using DragonPlacementDataLayer.Repositories;
 using Microsoft.EntityFrameworkCore;
+using TimekeepingDataLayer.Models;
+using TimekeepingDataLayer.Repositories;
 
 const string allowedOriginsPolicy = "DragonPlacementAllowedOrigins";
 

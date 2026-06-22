@@ -6,6 +6,8 @@ using DragonPlacementDataLayer.Repositories;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Moq;
 using Shouldly;
+using TimekeepingDataLayer.Models;
+using TimekeepingDataLayer.Repositories;
 
 namespace DragonPlacementTests;
 

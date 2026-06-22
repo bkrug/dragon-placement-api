@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace DragonPlacementDataLayer.Models;
+namespace TimekeepingDataLayer.Models;
 
 public partial class TimekeepingContext : DbContext
 {
@@ -36,8 +36,6 @@ public partial class TimekeepingContext : DbContext
             entity.ToTable("PayPeriod");
 
             entity.HasKey(e => e.PayPeriodId);
-
-            entity.Ignore(e => e.Assignment);
         });
 
         OnModelCreatingPartial(modelBuilder);

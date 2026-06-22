@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../DragonPlacementDataLayer/DragonPlacementDataLayer.csproj" />
+    <ProjectReference Include="../TimekeepingDataLayer/TimekeepingDataLayer.csproj" />
   </ItemGroup>
 
   <ItemGroup>

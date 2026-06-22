@@ -1,4 +1,4 @@
-namespace DragonPlacementDataLayer.Models;
+namespace TimekeepingDataLayer.Models;
 
 public partial class PayPeriod
 {
@@ -9,6 +9,5 @@ public partial class PayPeriod
     public long EndDateUnix { get; set; }
     public string SubmissionStatus { get; set; } = null!;
 
-    public virtual Assignment Assignment { get; set; } = null!;
     public virtual ICollection<HoursWorked> HoursWorked { get; set; } = [];
 }

@@ -1,8 +1,8 @@
 using CommonDataLayer.Repositories;
-using DragonPlacementDataLayer.Models;
+using TimekeepingDataLayer.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace DragonPlacementDataLayer.Repositories;
+namespace TimekeepingDataLayer.Repositories;
 
 public interface ITimekeepingUnitOfWork
 {

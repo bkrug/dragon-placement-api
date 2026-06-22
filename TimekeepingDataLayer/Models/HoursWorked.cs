@@ -1,4 +1,4 @@
-namespace DragonPlacementDataLayer.Models;
+namespace TimekeepingDataLayer.Models;
 
 public partial class HoursWorked
 {
