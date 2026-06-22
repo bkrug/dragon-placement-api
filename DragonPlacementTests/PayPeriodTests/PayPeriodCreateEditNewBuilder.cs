@@ -16,12 +16,6 @@ public class PayPeriodCreateEditNewBuilder
     public PayPeriodCreateEditNewBuilder WithStartDate(string val) { _startDate = val; return this; }
     public PayPeriodCreateEditNewBuilder WithEndDate(string val) { _endDate = val; return this; }
     public PayPeriodCreateEditNewBuilder WithSubmissionStatus(string val) { _submissionStatus = val; return this; }
-    public PayPeriodCreateEditNewBuilder WithHoursWorked(params HoursWorkedCreateEditNew[] items) { _hoursWorked = [..items]; return this; }
-    public PayPeriodCreateEditNewBuilder ClearHoursWorked()
-    {
-        _hoursWorked.Clear();
-        return this;
-    }
     public PayPeriodCreateEditNewBuilder AddHoursWorked(string clockInTime, string clockOutTime)
     {
         _hoursWorked.Add(new HoursWorkedCreateEditNew
