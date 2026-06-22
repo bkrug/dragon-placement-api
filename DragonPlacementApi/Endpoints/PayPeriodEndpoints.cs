@@ -179,7 +179,7 @@ public class PayPeriodEndpoints
         return TypedResults.Ok(ValidatedPayload<PayPeriod>.FromPayload(entry));
     }
 
-    public static async Task<Results<Ok<ValidatedPayload<PayPeriod>>, BadRequest<ValidatedForm<PayPeriodValidationFailures>>>>
+    public static async Task<Results<Ok<ValidatedPayload<PayPeriod>>, BadRequest<ValidatedForm<PayPeriodValidationFailuresNew>>>>
         CreatePayPeriodNewAsync(
             ITimekeepingUnitOfWork unitOfWork,
             [FromBody] PayPeriodCreateEditNew input)
@@ -187,7 +187,7 @@ public class PayPeriodEndpoints
         return TypedResults.Ok(ValidatedPayload<PayPeriod>.FromPayload(new PayPeriod()));
     }
 
-    public static async Task<Results<Ok<ValidatedPayload<PayPeriod>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<PayPeriodValidationFailures>>>>
+    public static async Task<Results<Ok<ValidatedPayload<PayPeriod>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<PayPeriodValidationFailuresNew>>>>
         UpdatePayPeriodNewAsync(
             ITimekeepingUnitOfWork unitOfWork,
             [FromRoute(Name = "payPeriodId")] int payPeriodId,

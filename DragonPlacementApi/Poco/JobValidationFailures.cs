@@ -15,17 +15,3 @@ public class DragonValidationFailures
     public string LengthInMeters { get; set; } = null!;
     public string FightingSkills { get; set; } = null!;
 }
-
-public class HoursWorkedValidationFailures
-{
-    public string StartDateTimeUnix { get; set; } = string.Empty;
-    public string EndDateTimeUnix { get; set; } = string.Empty;
-}
-
-public class PayPeriodValidationFailures
-{
-    public string StartDateUnix { get; set; } = null!;
-    public string EndDateUnix { get; set; } = null!;
-    public string HoursWorkedStartDateTimeUnix { get; set; } = null!;
-    public string HoursWorkedEndDateTimeUnix { get; set; } = null!;
-}

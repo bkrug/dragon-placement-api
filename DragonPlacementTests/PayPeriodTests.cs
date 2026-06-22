@@ -542,9 +542,9 @@ public class PayPeriodTests
         var response = await PayPeriodEndpoints.CreatePayPeriodNewAsync(unitOfWorkMock.Object, input);
 
         //Assert
-        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailures>>>();
-        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailures>>)response.Result).Value!.ValidationFailures;
-        var actualMessage = typeof(PayPeriodValidationFailures)
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailuresNew>>>();
+        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailuresNew>>)response.Result).Value!.ValidationFailures;
+        var actualMessage = typeof(PayPeriodValidationFailuresNew)
             .GetProperty(expectedFailureField)!
             .GetValue(failures) as string;
         actualMessage.ShouldBe(expectedFailureMessage);
@@ -569,9 +569,16 @@ public class PayPeriodTests
         var response = await PayPeriodEndpoints.CreatePayPeriodNewAsync(unitOfWorkMock.Object, input);
 
         //Assert
-        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailures>>>();
-        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailures>>)response.Result).Value!.ValidationFailures;
-        failures.HoursWorkedStartDateTimeUnix.ShouldNotBeNull();
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailuresNew>>>();
+        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailuresNew>>)response.Result).Value!.ValidationFailures;
+        failures.ShouldBeEquivalentTo(new PayPeriodValidationFailuresNew
+        {
+            HoursWorked = [
+                new HoursWorkedValidationFailures {
+                    StartDateTime = "Clock-in time is outside of the pay period"
+                }
+            ]
+        });
     }
 
     [Fact]
@@ -593,9 +600,17 @@ public class PayPeriodTests
         var response = await PayPeriodEndpoints.CreatePayPeriodNewAsync(unitOfWorkMock.Object, input);
 
         //Assert
-        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailures>>>();
-        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailures>>)response.Result).Value!.ValidationFailures;
-        failures.HoursWorkedEndDateTimeUnix.ShouldNotBeNull();
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailuresNew>>>();
+        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailuresNew>>)response.Result).Value!.ValidationFailures;
+                failures.ShouldBeEquivalentTo(new PayPeriodValidationFailuresNew
+        {
+            HoursWorked = [
+                new HoursWorkedValidationFailures {
+                    EndDateTime = "Clock-out time is outside of the pay period"
+                }
+            ]
+        });
+
     }
 
     [Fact]
@@ -624,14 +639,18 @@ public class PayPeriodTests
         var response = await PayPeriodEndpoints.CreatePayPeriodNewAsync(unitOfWorkMock.Object, input);
 
         //Assert
-        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailures>>>();
-        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailures>>)response.Result).Value!.ValidationFailures;
-        failures.ShouldBeEquivalentTo(new PayPeriodValidationFailures
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailuresNew>>>();
+        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailuresNew>>)response.Result).Value!.ValidationFailures;
+        failures.ShouldBeEquivalentTo(new PayPeriodValidationFailuresNew
         {
-            StartDateUnix = "must be midnight UTC",
-            EndDateUnix = "must be midnight UTC",
-            HoursWorkedStartDateTimeUnix = "all must be greater than or equal to pay period StartDateUnix",
-            HoursWorkedEndDateTimeUnix = "all must be less than pay period EndDateUnix plus one day"
+            StartDate = "must be midnight UTC",
+            EndDate = "must be midnight UTC",
+            HoursWorked = [
+                new HoursWorkedValidationFailures {
+                    StartDateTime = "Clock-in time is outside of the pay period",
+                    EndDateTime = "Clock-out time is outside of the pay period"
+                }
+            ]
         });
     }
 
@@ -772,8 +791,8 @@ public class PayPeriodTests
     }
 
     [Theory]
-    [InlineData("1970-01-02T05:00:00", "StartDate",  "StartDateUnix",  "must be midnight UTC")]
-    [InlineData("1970-01-02T05:00:00", "EndDate",    "EndDateUnix",    "must be midnight UTC")]
+    [InlineData("1970-01-02T05:00:00", "StartDate",  "StartDateUnix",  "must exclude time-of-day or be midnight UTC")]
+    [InlineData("1970-01-02T05:00:00", "EndDate",    "EndDateUnix",    "must exclude time-of-day or be midnight UTC")]
     [InlineData("1970-01-02",          "EndDate",    "EndDateUnix",    "must be greater than StartDateUnix")]
     public async Task UpdatePayPeriodNew_InvalidInput_ExpectBadRequestWithValidationFailure(
         string invalidValue,
@@ -800,9 +819,9 @@ public class PayPeriodTests
         var response = await PayPeriodEndpoints.UpdatePayPeriodNewAsync(unitOfWorkMock.Object, PAY_PERIOD_ID, input);
 
         //Assert
-        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailures>>>();
-        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailures>>)response.Result).Value!.ValidationFailures;
-        var actualMessage = typeof(PayPeriodValidationFailures)
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailuresNew>>>();
+        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailuresNew>>)response.Result).Value!.ValidationFailures;
+        var actualMessage = typeof(PayPeriodValidationFailuresNew)
             .GetProperty(expectedFailureField)!
             .GetValue(failures) as string;
         actualMessage.ShouldBe(expectedFailureMessage);
@@ -837,9 +856,16 @@ public class PayPeriodTests
         var response = await PayPeriodEndpoints.UpdatePayPeriodNewAsync(unitOfWorkMock.Object, PAY_PERIOD_ID, input);
 
         //Assert
-        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailures>>>();
-        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailures>>)response.Result).Value!.ValidationFailures;
-        failures.HoursWorkedStartDateTimeUnix.ShouldNotBeNull();
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailuresNew>>>();
+        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailuresNew>>)response.Result).Value!.ValidationFailures;
+        failures.ShouldBeEquivalentTo(new PayPeriodValidationFailuresNew
+        {
+            HoursWorked = [
+                new HoursWorkedValidationFailures {
+                    StartDateTime = "Clock-in time is outside of the pay period"
+                }
+            ]
+        });
     }
 
     [Fact]
@@ -871,9 +897,16 @@ public class PayPeriodTests
         var response = await PayPeriodEndpoints.UpdatePayPeriodNewAsync(unitOfWorkMock.Object, PAY_PERIOD_ID, input);
 
         //Assert
-        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailures>>>();
-        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailures>>)response.Result).Value!.ValidationFailures;
-        failures.HoursWorkedEndDateTimeUnix.ShouldNotBeNull();
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailuresNew>>>();
+        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailuresNew>>)response.Result).Value!.ValidationFailures;
+        failures.ShouldBeEquivalentTo(new PayPeriodValidationFailuresNew
+        {
+            HoursWorked = [
+                new HoursWorkedValidationFailures {
+                    EndDateTime = "Clock-out time is outside of the pay period"
+                }
+            ]
+        });
     }
 
     [Fact]
@@ -912,14 +945,18 @@ public class PayPeriodTests
         var response = await PayPeriodEndpoints.UpdatePayPeriodNewAsync(unitOfWorkMock.Object, PAY_PERIOD_ID, input);
 
         //Assert
-        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailures>>>();
-        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailures>>)response.Result).Value!.ValidationFailures;
-        failures.ShouldBeEquivalentTo(new PayPeriodValidationFailures
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailuresNew>>>();
+        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailuresNew>>)response.Result).Value!.ValidationFailures;
+        failures.ShouldBeEquivalentTo(new PayPeriodValidationFailuresNew
         {
-            StartDateUnix = "must be midnight UTC",
-            EndDateUnix = "must be midnight UTC",
-            HoursWorkedStartDateTimeUnix = "all must be greater than or equal to pay period StartDateUnix",
-            HoursWorkedEndDateTimeUnix = "all must be less than pay period EndDateUnix plus one day"
+            StartDate = "must be midnight UTC",
+            EndDate = "must be midnight UTC",
+            HoursWorked = [
+                new HoursWorkedValidationFailures {
+                    StartDateTime = "Clock-in time is outside of the pay period",
+                    EndDateTime = "Clock-out time is outside of the pay period"
+                }
+            ]
         });
     }
 

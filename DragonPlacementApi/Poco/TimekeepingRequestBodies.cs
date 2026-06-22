@@ -50,6 +50,27 @@ public class PayPeriodView
     public IList<HoursWorkedView> HoursWorked { get; set; } = [];
 }
 
+public class HoursWorkedValidationFailures
+{
+    public string StartDateTime { get; set; } = string.Empty;
+    public string EndDateTime { get; set; } = string.Empty;
+}
+
+public class PayPeriodValidationFailuresNew
+{
+    public string StartDate { get; set; } = null!;
+    public string EndDate { get; set; } = null!;
+    public IList<HoursWorkedValidationFailures> HoursWorked { get; set; } = [];
+}
+
+public class PayPeriodValidationFailures
+{
+    public string StartDateUnix { get; set; } = null!;
+    public string EndDateUnix { get; set; } = null!;
+    public string HoursWorkedStartDateTimeUnix { get; set; } = null!;
+    public string HoursWorkedEndDateTimeUnix { get; set; } = null!;
+}
+
 public class ValidPaySpan
 {
     public string StartDate { get;set; } = string.Empty;
