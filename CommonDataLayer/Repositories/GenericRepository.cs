@@ -1,9 +1,7 @@
 using System.Linq.Expressions;
-using DragonPlacementDataLayer.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
-namespace DragonPlacementDataLayer.Repositories;
+namespace CommonDataLayer.Repositories;
 
 public enum DeleteResult
 {

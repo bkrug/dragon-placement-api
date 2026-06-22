@@ -17,15 +17,6 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="ModelExtensions/" />
-    <Folder Include="Poco/" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="../CommonDataLayer/CommonDataLayer.csproj" />
-  </ItemGroup>
+  </ItemGroup>  
 
 </Project>
