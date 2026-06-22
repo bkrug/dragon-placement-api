@@ -244,14 +244,9 @@ public class PayPeriodEndpoints
         {
             var existingClockPunch = entry.HoursWorked.FirstOrDefault(h => h.StartDateTimeUnix == inputClockIn.StartDateTimeUnix);
             if (existingClockPunch == null)
-            {
                 entry.HoursWorked.Add(inputClockIn);
-            }
             else
-            {
-                existingClockPunch.StartDateTimeUnix = inputClockIn.StartDateTimeUnix;
                 existingClockPunch.EndDateTimeUnix = inputClockIn.EndDateTimeUnix;
-            }
         }
 
         await unitOfWork.SaveAsync().ConfigureAwait(false);
