@@ -302,44 +302,22 @@ public class PayPeriodEndpoints
     private static ValidatedForm<PayPeriodValidationFailuresNew>? ValidatePayPeriodNew(PayPeriodCreateEditNew input)
     {
         var failures = new PayPeriodValidationFailuresNew();
-        bool hasFailure = false;
 
         if (!DateTime.TryParse(input.StartDate, out var parsedStart))
-        {
             failures.StartDate = "must be an ISO Date";
-            hasFailure = true;
-        }
         else if (parsedStart.DayOfWeek != DayOfWeek.Monday)
-        {
             failures.StartDate = "must be a Monday";
-            hasFailure = true;
-        }
         else if (parsedStart.TimeOfDay.TotalSeconds != 0)
-        {
             failures.StartDate = "must exclude time-of-day or be midnight UTC";
-            hasFailure = true;
-        }
 
         if (!DateTime.TryParse(input.EndDate, out var parsedEnd))
-        {
             failures.EndDate = "must be an ISO Date";
-            hasFailure = true;
-        }
         else if (parsedEnd.DayOfWeek != DayOfWeek.Sunday)
-        {
             failures.EndDate = "must be a Sunday";
-            hasFailure = true;
-        }
         else if (parsedEnd.TimeOfDay.TotalSeconds != 0)
-        {
             failures.EndDate = "must exclude time-of-day or be midnight UTC";
-            hasFailure = true;
-        }
         else if (parsedEnd <= parsedStart)
-        {
             failures.EndDate = "must be greater than StartDate";
-            hasFailure = true;
-        }
 
         long startDateUnix = new DateTimeOffset(parsedStart, TimeSpan.Zero).ToUnixTimeSeconds();
         long endDateUnix = new DateTimeOffset(parsedEnd, TimeSpan.Zero).ToUnixTimeSeconds();
@@ -360,14 +338,13 @@ public class PayPeriodEndpoints
             .Where(hwf => !string.IsNullOrEmpty(hwf.StartDateTime) || !string.IsNullOrEmpty(hwf.EndDateTime))
             .ToList();
 
-        if (failures.HoursWorked.Count > 0)
-            hasFailure = true;
-
-        return hasFailure ? new ValidatedForm<PayPeriodValidationFailuresNew>
-        {
-            IsSuccess = false,
-            IsInternalError = false,
-            ValidationFailures = failures
-        } : null;
+        return failures.StartDate != null || failures.EndDate != null || failures.HoursWorked.Count > 0
+            ? new ValidatedForm<PayPeriodValidationFailuresNew>
+                {
+                    IsSuccess = false,
+                    IsInternalError = false,
+                    ValidationFailures = failures
+                }
+            : null;
     }
 }
