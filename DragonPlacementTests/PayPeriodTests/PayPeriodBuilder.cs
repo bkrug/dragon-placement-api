@@ -25,12 +25,15 @@ public class PayPeriodBuilder
         _hoursWorked.Clear();
         return this;
     }
-    public PayPeriodBuilder AddHoursWorked(long clockInSecondsRelativeToPeriodStart, long clockOutSecondsRelativeToPeriodStart)
+    /// <param name="clockInSeconds">A number of seconds relative to the pay period start</param>
+    /// <param name="clockOutSeconds">A number of seconds relative to the pay period start</param>
+    /// <returns></returns>
+    public PayPeriodBuilder AddHoursWorked(long clockInSeconds, long clockOutSeconds)
     {
         _hoursWorked.Add(new HoursWorked
         {
-           StartDateTimeUnix = _startDateUnix + clockInSecondsRelativeToPeriodStart,
-           EndDateTimeUnix = _startDateUnix + clockOutSecondsRelativeToPeriodStart 
+           StartDateTimeUnix = _startDateUnix + clockInSeconds,
+           EndDateTimeUnix = _startDateUnix + clockOutSeconds 
         });
         return this;
     }

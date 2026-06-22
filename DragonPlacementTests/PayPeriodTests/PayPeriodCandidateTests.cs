@@ -74,12 +74,16 @@ public class PayPeriodCandidateTests
         var mondayUnix = GetMondayOfCurrentWeekUnix();
         var existing = new List<PayPeriod>
         {
-            new PayPeriodBuilder().WithPayPeriodId(101)
+            new PayPeriodBuilder()
+                .WithPayPeriodId(101)
                 .WithStartDateUnix(mondayUnix - 1 * SECONDS_IN_A_WEEK)
-                .WithEndDateUnix(mondayUnix - 1 * SECONDS_IN_A_WEEK + 6 * Const.SECONDS_IN_A_DAY).Build(),
-            new PayPeriodBuilder().WithPayPeriodId(102)
+                .WithEndDateUnix(mondayUnix - 1 * SECONDS_IN_A_WEEK + 6 * Const.SECONDS_IN_A_DAY)
+                .Build(),
+            new PayPeriodBuilder()
+                .WithPayPeriodId(102)
                 .WithStartDateUnix(mondayUnix - 3 * SECONDS_IN_A_WEEK)
-                .WithEndDateUnix(mondayUnix - 3 * SECONDS_IN_A_WEEK + 6 * Const.SECONDS_IN_A_DAY).Build()
+                .WithEndDateUnix(mondayUnix - 3 * SECONDS_IN_A_WEEK + 6 * Const.SECONDS_IN_A_DAY)
+                .Build()
         };
         var unitOfWorkMock = MockWithExistingPayPeriods(existing);
 
@@ -101,12 +105,16 @@ public class PayPeriodCandidateTests
         var mondayUnix = GetMondayOfCurrentWeekUnix();
         var existing = new List<PayPeriod>
         {
-            new PayPeriodBuilder().WithPayPeriodId(201)
+            new PayPeriodBuilder()
+                .WithPayPeriodId(201)
                 .WithStartDateUnix(mondayUnix)
-                .WithEndDateUnix(mondayUnix + 6 * Const.SECONDS_IN_A_DAY).Build(),
-            new PayPeriodBuilder().WithPayPeriodId(202)
+                .WithEndDateUnix(mondayUnix + 6 * Const.SECONDS_IN_A_DAY)
+                .Build(),
+            new PayPeriodBuilder()
+                .WithPayPeriodId(202)
                 .WithStartDateUnix(mondayUnix - 1 * SECONDS_IN_A_WEEK)
-                .WithEndDateUnix(mondayUnix - 1 * SECONDS_IN_A_WEEK + 6 * Const.SECONDS_IN_A_DAY).Build()
+                .WithEndDateUnix(mondayUnix - 1 * SECONDS_IN_A_WEEK + 6 * Const.SECONDS_IN_A_DAY)
+                .Build()
         };
         var unitOfWorkMock = MockWithExistingPayPeriods(existing);
 
