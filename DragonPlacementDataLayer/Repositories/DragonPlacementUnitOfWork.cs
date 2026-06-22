@@ -7,6 +7,17 @@ using Microsoft.Extensions.Logging;
 
 namespace DragonPlacementDataLayer.Repositories;
 
+/// <summary>
+/// You see more than one UnitOfWork context in this git-repository.
+/// 
+/// Each UnitOfWork uses GenericRepositories,
+/// which should allow us to do write-operations and select-by-id-operations agaist single talbes with little boiler-plate code.
+/// 
+/// UnitOfWork classes also contain multiple methods for doing select-queries,
+/// which need to be hand-written because their patterns are less consistent than create/update/delete or select-by-id.
+/// Keeping these select-queries in the unit-of-work class means that we don't need to keep writing subclasses of the GenericRepository.
+/// It is also a more logical location for these queries because they often involve joins between two or more tables.
+/// </summary>
 public interface IDragonPlacementUnitOfWork
 {
     IGenericRepository<Dragon> DragonRepository { get; }

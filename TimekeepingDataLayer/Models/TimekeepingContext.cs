@@ -2,6 +2,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace TimekeepingDataLayer.Models;
 
+/// <summary>
+/// There is more than one data domain in this git-repository.
+/// The Timekeeping context has to do with tracking hours,
+/// but it is employe-centric (dragon-centric).
+/// The end user is interested in reporting their own activity and converting their hours into a paycheck.
+/// The end user doesn't care about billing the customer.
+/// </summary>
 public partial class TimekeepingContext : DbContext
 {
     public TimekeepingContext()

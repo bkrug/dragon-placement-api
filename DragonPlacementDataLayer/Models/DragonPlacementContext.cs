@@ -1,9 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace DragonPlacementDataLayer.Models;
 
+/// <summary>
+/// There is more than one data domain in this git-repository.
+/// The Assignment or DragonPlacement context deals with matching dragons with a job or employer.
+/// </summary>
 public partial class DragonPlacementContext : DbContext
 {
     public DragonPlacementContext()
