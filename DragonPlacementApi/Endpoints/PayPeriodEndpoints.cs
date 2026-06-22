@@ -314,23 +314,29 @@ public class PayPeriodEndpoints
         else if (parsedEnd <= parsedStart)
             failures.EndDate = "must be greater than StartDate";
 
-        long startDateUnix = new DateTimeOffset(parsedStart, TimeSpan.Zero).ToUnixTimeSeconds();
-        long endDateUnix = new DateTimeOffset(parsedEnd, TimeSpan.Zero).ToUnixTimeSeconds();
+        long payPeriodStartUnix = new DateTimeOffset(parsedStart, TimeSpan.Zero).ToUnixTimeSeconds();
+        long payPeriodEndUnix = new DateTimeOffset(parsedEnd, TimeSpan.Zero).ToUnixTimeSeconds();
 
-        failures.HoursWorked = input.HoursWorked
+        var parsedHoursWorked = input.HoursWorked
+            .Select(hw => (
+                StartUnix: UnixDateConvert.FromIsoDateTime(hw.StartDateTime),
+                EndUnix: UnixDateConvert.FromIsoDateTime(hw.EndDateTime)
+            ))
+            .ToList();
+
+        failures.HoursWorked = parsedHoursWorked
             .Select((hw, index) =>
             {
-                var hwStartUnix = UnixDateConvert.FromIsoDateTime(hw.StartDateTime);
-                var hwEndUnix = UnixDateConvert.FromIsoDateTime(hw.EndDateTime);
-
                 var hwf = new HoursWorkedValidationFailures()
                 {
                     Index = index,
                 };
-                if (hwStartUnix < startDateUnix)
-                    hwf.StartDateTime = "Clock-in time is outside of the pay period";
-                if (hwEndUnix >= endDateUnix + Const.SECONDS_IN_A_DAY)
+                if (hw.EndUnix >= payPeriodEndUnix + Const.SECONDS_IN_A_DAY)
                     hwf.EndDateTime = "Clock-out time is outside of the pay period";
+                if (hw.StartUnix < payPeriodStartUnix)
+                    hwf.StartDateTime = "Clock-in time is outside of the pay period";
+                else if (parsedHoursWorked.Where((other, i) => i != index && hw.StartUnix < other.EndUnix && other.StartUnix < hw.EndUnix).Any())
+                    hwf.StartDateTime = "Overlaps with another hours-worked record";
                 return hwf;
             })
             .Where(hwf => !string.IsNullOrEmpty(hwf.StartDateTime) || !string.IsNullOrEmpty(hwf.EndDateTime))
