@@ -445,7 +445,10 @@ public class PayPeriodCrudTests
         string expectedFailureField,
         string expectedFailureMessage)
     {
-        var input = new PayPeriodCreateEditNewBuilder().Build();
+        var input = new PayPeriodCreateEditNewBuilder()
+            .WithStartDate("1970-01-05")
+            .WithEndDate("1970-01-11")
+            .Build();
         typeof(PayPeriodCreateEditNew).GetProperty(inputField)!.SetValue(input, invalidValue);
         var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(m => m.PayPeriodRepository).Returns(new Mock<IGenericRepository<PayPeriod>>().Object);
@@ -634,8 +637,10 @@ public class PayPeriodCrudTests
     [Theory]
     [InlineData("1970-01-02T05:00:00", "StartDate",  "StartDate",  "must exclude time-of-day or be midnight UTC")]
     [InlineData("January 1, 1970",     "StartDate",  "StartDate",  "must be an ISO Date")]
+    [InlineData("1970-01-06",          "StartDate",  "StartDate",  "must be a Monday")]
     [InlineData("1970-01-02T05:00:00", "EndDate",    "EndDate",    "must exclude time-of-day or be midnight UTC")]
     [InlineData("January 2, 1970",     "EndDate",    "EndDate",    "must be an ISO Date")]
+    [InlineData("1970-01-10",          "EndDate",    "EndDate",    "must be a Sunday")]
     [InlineData("1970-01-02",          "EndDate",    "EndDate",    "must be greater than StartDate")]
     public async Task UpdatePayPeriodNew_InvalidInput_ExpectBadRequestWithValidationFailure(
         string invalidValue,
@@ -646,9 +651,12 @@ public class PayPeriodCrudTests
         const int PAY_PERIOD_ID = 55;
         var existingEntry = new PayPeriodBuilder()
             .WithPayPeriodId(PAY_PERIOD_ID)
+            .WithStartDateUnix(4, Const.SECONDS_IN_A_DAY)
+            .WithEndDateUnix(0, Const.SECONDS_IN_A_DAY)
             .Build();
         var input = new PayPeriodCreateEditNewBuilder()
-            .AddHoursWorked("1970-01-02T00:00:00", "1970-01-02T01:00:00")
+            .WithStartDate("1970-01-05")
+            .WithEndDate("1970-01-11")
             .Build();
         typeof(PayPeriodCreateEditNew).GetProperty(inputField)!.SetValue(input, invalidValue);
         var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
