@@ -221,11 +221,17 @@ public class PayPeriodEndpoints
         if (validationFailures != null)
             return TypedResults.BadRequest(validationFailures);
 
-        var incomingStarts = input.HoursWorked.Select(hw => UnixDateConvert.FromIsoDateTime(hw.StartDateTime)).ToList();
-        var deletedHours = entry.HoursWorked
-            .Where(existingHw => !incomingStarts.Contains(existingHw.StartDateTimeUnix))
+        var inputClockIns = input.HoursWorked
+            .Select(hw => new HoursWorked {
+                StartDateTimeUnix = UnixDateConvert.FromIsoDateTime(hw.StartDateTime),
+                EndDateTimeUnix = UnixDateConvert.FromIsoDateTime(hw.EndDateTime)
+            })
             .ToList();
-        foreach (var recToDelete in deletedHours)
+
+        var clockInsToDelete = entry.HoursWorked
+            .Where(existingHw => !inputClockIns.Any(ih => ih.StartDateTimeUnix == existingHw.StartDateTimeUnix))
+            .ToList();
+        foreach (var recToDelete in clockInsToDelete)
             entry.HoursWorked.Remove(recToDelete);
 
         entry.AssignmentId = input.AssignmentId;
@@ -234,23 +240,17 @@ public class PayPeriodEndpoints
         entry.EndDateUnix = UnixDateConvert.FromIsoDate(input.EndDate);
         entry.SubmissionStatus = input.SubmissionStatus;
 
-        foreach (var inputHw in input.HoursWorked)
+        foreach (var inputClockIn in inputClockIns)
         {
-            var startUnix = UnixDateConvert.FromIsoDateTime(inputHw.StartDateTime);
-            var endUnix = UnixDateConvert.FromIsoDateTime(inputHw.EndDateTime);
-            var existingClockPunch = entry.HoursWorked.FirstOrDefault(h => h.StartDateTimeUnix == startUnix);
+            var existingClockPunch = entry.HoursWorked.FirstOrDefault(h => h.StartDateTimeUnix == inputClockIn.StartDateTimeUnix);
             if (existingClockPunch == null)
             {
-                entry.HoursWorked.Add(new HoursWorked
-                {
-                    StartDateTimeUnix = startUnix,
-                    EndDateTimeUnix = endUnix
-                });
+                entry.HoursWorked.Add(inputClockIn);
             }
             else
             {
-                existingClockPunch.StartDateTimeUnix = startUnix;
-                existingClockPunch.EndDateTimeUnix = endUnix;
+                existingClockPunch.StartDateTimeUnix = inputClockIn.StartDateTimeUnix;
+                existingClockPunch.EndDateTimeUnix = inputClockIn.EndDateTimeUnix;
             }
         }
 
