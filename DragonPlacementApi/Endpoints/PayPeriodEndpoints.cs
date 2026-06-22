@@ -344,31 +344,24 @@ public class PayPeriodEndpoints
         long startDateUnix = new DateTimeOffset(parsedStart, TimeSpan.Zero).ToUnixTimeSeconds();
         long endDateUnix = new DateTimeOffset(parsedEnd, TimeSpan.Zero).ToUnixTimeSeconds();
 
-        var hwFailures = new List<HoursWorkedValidationFailures>();
-        bool anyHwFailure = false;
-        foreach (var hw in input.HoursWorked)
-        {
-            var hwf = new HoursWorkedValidationFailures();
-            var hwStartUnix = UnixDateConvert.FromIsoDateTime(hw.StartDateTime);
-            var hwEndUnix = UnixDateConvert.FromIsoDateTime(hw.EndDateTime);
+        failures.HoursWorked = input.HoursWorked
+            .Select(hw =>
+            {
+                var hwStartUnix = UnixDateConvert.FromIsoDateTime(hw.StartDateTime);
+                var hwEndUnix = UnixDateConvert.FromIsoDateTime(hw.EndDateTime);
 
-            if (hwStartUnix < startDateUnix)
-            {
-                hwf.StartDateTime = "Clock-in time is outside of the pay period";
-                anyHwFailure = true;
-            }
-            if (hwEndUnix >= endDateUnix + Const.SECONDS_IN_A_DAY)
-            {
-                hwf.EndDateTime = "Clock-out time is outside of the pay period";
-                anyHwFailure = true;
-            }
-            hwFailures.Add(hwf);
-        }
-        if (anyHwFailure)
-        {
-            failures.HoursWorked = hwFailures;
+                var hwf = new HoursWorkedValidationFailures();
+                if (hwStartUnix < startDateUnix)
+                    hwf.StartDateTime = "Clock-in time is outside of the pay period";
+                if (hwEndUnix >= endDateUnix + Const.SECONDS_IN_A_DAY)
+                    hwf.EndDateTime = "Clock-out time is outside of the pay period";
+                return hwf;
+            })
+            .Where(hwf => !string.IsNullOrEmpty(hwf.StartDateTime) || !string.IsNullOrEmpty(hwf.EndDateTime))
+            .ToList();
+
+        if (failures.HoursWorked.Count > 0)
             hasFailure = true;
-        }
 
         return hasFailure ? new ValidatedForm<PayPeriodValidationFailuresNew>
         {
