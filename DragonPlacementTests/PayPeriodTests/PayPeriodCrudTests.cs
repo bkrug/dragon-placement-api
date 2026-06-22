@@ -525,6 +525,41 @@ public class PayPeriodCrudTests
     }
 
     [Fact]
+    public async Task CreatePayPeriodNew_TwoHoursWorkedOverlap_ExpectBadRequestWithOverlapFailures()
+    {
+        var input = new PayPeriodCreateEditNewBuilder()
+            .WithStartDate("1970-01-05")
+            .WithEndDate("1970-01-11")
+            .AddHoursWorked("1970-01-05T09:00:00", "1970-01-05T12:00:00")
+            .AddHoursWorked("1970-01-06T09:00:00", "1970-01-06T14:00:00")
+            .AddHoursWorked("1970-01-06T13:00:00", "1970-01-06T17:00:00")
+            .AddHoursWorked("1970-01-07T09:00:00", "1970-01-07T12:00:00")
+            .Build();
+        var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
+        unitOfWorkMock.Setup(m => m.PayPeriodRepository).Returns(new Mock<IGenericRepository<PayPeriod>>().Object);
+
+        //Act
+        var response = await PayPeriodEndpoints.CreatePayPeriodNewAsync(unitOfWorkMock.Object, input);
+
+        //Assert
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailuresNew>>>();
+        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailuresNew>>)response.Result).Value!.ValidationFailures;
+        failures.ShouldBeEquivalentTo(new PayPeriodValidationFailuresNew
+        {
+            HoursWorked = [
+                new HoursWorkedValidationFailures {
+                    Index = 1,
+                    StartDateTime = "Overlaps with another hours-worked record"
+                },
+                new HoursWorkedValidationFailures {
+                    Index = 2,
+                    StartDateTime = "Overlaps with another hours-worked record"
+                }
+            ]
+        });
+    }
+
+    [Fact]
     public async Task CreatePayPeriodNew_AllFieldsInvalid_ExpectBadRequestWithAllValidationFailures()
     {
         var input = new PayPeriodCreateEditNewBuilder()
