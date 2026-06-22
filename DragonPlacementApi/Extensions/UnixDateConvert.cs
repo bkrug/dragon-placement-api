@@ -17,5 +17,15 @@ public static class UnixDateConvert
     public static string ToIsoTime(long unixSeconds)
     {
         return DateTimeOffset.FromUnixTimeSeconds(unixSeconds).UtcDateTime.ToString("HH:mm:ss");
-    }    
+    }
+
+    public static long FromIsoDate(string isoDate)
+    {
+        return new DateTimeOffset(DateTime.Parse(isoDate), TimeSpan.Zero).ToUnixTimeSeconds();
+    }
+
+    public static long FromIsoDateTime(string isoDateTime)
+    {
+        return new DateTimeOffset(DateTime.Parse(isoDateTime), TimeSpan.Zero).ToUnixTimeSeconds();
+    }
 }
