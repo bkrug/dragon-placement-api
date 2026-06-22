@@ -20,7 +20,7 @@ public class DragonEndpoints
     /// <returns></returns>
     public static Results<Ok<PagedData<Dragon>>, BadRequest<ValidatedResponse>> 
         GetDragons(
-            IAssignmentUnitOfWork unitOfWork,
+            IDragonPlacementUnitOfWork unitOfWork,
             [FromQuery(Name="skillTagId")] int[] skillTagIds,
             [FromQuery(Name="offset")] int offset = 0,
             [FromQuery(Name="limit")] int limit = 20,
@@ -51,7 +51,7 @@ public class DragonEndpoints
 
     public static async Task<Results<Ok<ValidatedPayload<Dragon>>, NotFound<ValidatedResponse>, InternalServerError<ValidatedResponse>>>
         GetDragonAsync(
-            IAssignmentUnitOfWork unitOfWork,
+            IDragonPlacementUnitOfWork unitOfWork,
             [FromRoute(Name="dragonId")] int dragonId,
             [FromQuery(Name="jobInclusions")] JobInclusions jobInclusions = JobInclusions.None
         )
@@ -67,7 +67,7 @@ public class DragonEndpoints
 
     public static async Task<Results<Ok<ValidatedPayload<Dragon>>, BadRequest<ValidatedForm<DragonValidationFailures>>>>
         CreateDragonAsync(
-            IAssignmentUnitOfWork unitOfWork,
+            IDragonPlacementUnitOfWork unitOfWork,
             [FromBody] DragonCreateEdit inputDragon)
     {
         var validationFailures = ValidateDragon(inputDragon);
@@ -91,7 +91,7 @@ public class DragonEndpoints
 
     public static async Task<Results<Ok<ValidatedPayload<Dragon>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<DragonValidationFailures>>, InternalServerError<ValidatedResponse>>>
         UpdateDragonAsync(
-            IAssignmentUnitOfWork unitOfWork,
+            IDragonPlacementUnitOfWork unitOfWork,
             [FromRoute(Name="dragonId")] int dragonId,
             [FromBody] DragonCreateEdit inputDragon)
     {
@@ -146,7 +146,7 @@ public class DragonEndpoints
 
     public static async Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>, Conflict<ValidatedResponse>>>
         DeleteDragonAsync(
-            IAssignmentUnitOfWork unitOfWork,
+            IDragonPlacementUnitOfWork unitOfWork,
             [FromRoute(Name="dragonId")] int dragonId)
     {
         if (await unitOfWork.DragonHasAnAssignment(dragonId).ConfigureAwait(false))

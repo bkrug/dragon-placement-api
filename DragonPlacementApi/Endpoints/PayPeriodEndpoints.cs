@@ -74,7 +74,7 @@ public class PayPeriodEndpoints
     public static async Task<Results<Ok<ValidatedPayload<PayPeriodView>>, NotFound<ValidatedResponse>>>
         GetPayPeriodNewAsync(
             ITimekeepingUnitOfWork unitOfWork,
-            IAssignmentUnitOfWork assignmentUnitOfWork,
+            IDragonPlacementUnitOfWork assignmentUnitOfWork,
             [FromRoute(Name = "payPeriodId")] int payPeriodId)
     {
         var entry = await unitOfWork.GetPayPeriodWithHoursWorkedAsync(payPeriodId).ConfigureAwait(false);

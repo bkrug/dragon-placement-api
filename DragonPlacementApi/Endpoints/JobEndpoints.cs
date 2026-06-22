@@ -13,7 +13,7 @@ public class JobEndpoints
 {
     public static async Task<Results<Ok<ValidatedPayload<Job>>, NotFound<ValidatedResponse>, InternalServerError<ValidatedResponse>>> 
         GetJob(
-            IAssignmentUnitOfWork unitOfWork,
+            IDragonPlacementUnitOfWork unitOfWork,
             [FromRoute(Name="jobId")] int jobId = 0
         )
     {
@@ -28,7 +28,7 @@ public class JobEndpoints
 
     public static PagedData<JobWithCapacity>
         GetJobs(
-            IAssignmentUnitOfWork unitOfWork,
+            IDragonPlacementUnitOfWork unitOfWork,
             [FromQuery(Name="offset")] int offset = 0,
             [FromQuery(Name="limit")] int limit = 20,
             [FromQuery(Name="jobInclusions")] JobInclusions jobInclusions = JobInclusions.All
@@ -45,7 +45,7 @@ public class JobEndpoints
     }
 
     public static PagedData<Dragon> GetAssignedDragons(
-        IAssignmentUnitOfWork unitOfWork,
+        IDragonPlacementUnitOfWork unitOfWork,
         [FromRoute(Name="jobId")] int jobId,
         [FromQuery(Name="offset")] int offset = 0,
         [FromQuery(Name="limit")] int limit = 20)
@@ -61,7 +61,7 @@ public class JobEndpoints
     }
 
     public static async Task<Results<Ok<ValidatedResponse>, BadRequest<ValidatedResponse>, NotFound<ValidatedResponse>>> 
-        AssignDragonToJobAsync(IAssignmentUnitOfWork unitOfWork, [FromRoute(Name="dragonId")] int dragonId, [FromRoute(Name="jobId")] int jobId)
+        AssignDragonToJobAsync(IDragonPlacementUnitOfWork unitOfWork, [FromRoute(Name="dragonId")] int dragonId, [FromRoute(Name="jobId")] int jobId)
 
     {
         var newJob = await unitOfWork.JobRepository.GetByID(jobId).ConfigureAwait(false);
@@ -105,7 +105,7 @@ public class JobEndpoints
 
     public static async Task<Results<Ok<ValidatedPayload<Job>>, BadRequest<ValidatedForm<JobValidationFailures>>>>
         CreateJobAsync(
-            IAssignmentUnitOfWork unitOfWork,
+            IDragonPlacementUnitOfWork unitOfWork,
             [FromBody] JobCreateEdit inputJob)
     {
         var validationFailures = ValidateJob(inputJob);
@@ -128,7 +128,7 @@ public class JobEndpoints
 
     public static async Task<Results<Ok<ValidatedPayload<Job>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<JobValidationFailures>>, InternalServerError<ValidatedResponse>>>
         UpdateJobAsync(
-            IAssignmentUnitOfWork unitOfWork,
+            IDragonPlacementUnitOfWork unitOfWork,
             [FromRoute(Name="jobId")] int jobId,
             [FromBody] JobCreateEdit inputJob)
     {
@@ -156,7 +156,7 @@ public class JobEndpoints
 
     public static async Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>, Conflict<ValidatedResponse>>>
         DeleteJobAsync(
-            IAssignmentUnitOfWork unitOfWork,
+            IDragonPlacementUnitOfWork unitOfWork,
             [FromRoute(Name="jobId")] int jobId)
     {
         if (await unitOfWork.JobHasAnAssignment(jobId).ConfigureAwait(false))
@@ -196,7 +196,7 @@ public class JobEndpoints
     }
 
     public async static Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>, InternalServerError<ValidatedResponse>>> UnassignDragonFromJobAsync(
-        IAssignmentUnitOfWork unitOfWork,
+        IDragonPlacementUnitOfWork unitOfWork,
         [FromRoute(Name="jobId")] int jobId,
         [FromRoute(Name="dragonId")] int dragonId)
     {

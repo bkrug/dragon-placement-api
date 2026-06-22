@@ -38,7 +38,7 @@ public class DragonTests
             SkillTags = skills
         };
         var insertedDragon = new Immutable<Dragon>();
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
         unitOfWorkMock.Setup(u => u.DragonRepository.Insert(It.IsAny<Dragon>()))
             .Callback<Dragon>(insertedDragon.Set);
         unitOfWorkMock.Setup(u => u.GetSkillTagsById(skillIds)).Returns(skills.Clone());
@@ -71,7 +71,7 @@ public class DragonTests
             FightingSkills = "b"
         };
         typeof(DragonCreateEdit).GetProperty(expectedFailureField)!.SetValue(inputDragon, invalidValue);
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
         unitOfWorkMock.Setup(m => m.DragonRepository).Returns(new Mock<IGenericRepository<Dragon>>().Object);
 
         //Act
@@ -97,7 +97,7 @@ public class DragonTests
             LengthInMeters = -1,
             FightingSkills = "x"
         };
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
         unitOfWorkMock.Setup(m => m.DragonRepository).Returns(new Mock<IGenericRepository<Dragon>>().Object);
 
         //Act
@@ -159,7 +159,7 @@ public class DragonTests
             FightingSkills = "a",
             SkillTags = newSkills
         };
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
         unitOfWorkMock.Setup(u => u.GetDragonWithJobAsync(dragonId, JobInclusions.None)).ReturnsAsync([existingDragon]);
         unitOfWorkMock.Setup(u => u.GetSkillTagsById(skillIds)).Returns(newSkills.Clone());
 
@@ -175,7 +175,7 @@ public class DragonTests
     [Fact]
     public async Task UpdateDragon_DragonNotFound_ExpectNotFoundAndDoesNotSave()
     {
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
         unitOfWorkMock.Setup(u => u.GetDragonWithJobAsync(It.IsAny<int>(), JobInclusions.None)).ReturnsAsync([]);
 
         //Act
@@ -212,7 +212,7 @@ public class DragonTests
             FightingSkills = "m"
         };
         typeof(DragonCreateEdit).GetProperty(expectedFailureField)!.SetValue(inputDragon, invalidValue);
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
         unitOfWorkMock.Setup(m => m.GetDragonWithJobAsync(DRAGON_ID, JobInclusions.None)).ReturnsAsync([existingDragon]);
 
         //Act
@@ -246,7 +246,7 @@ public class DragonTests
             LengthInMeters = -10,
             FightingSkills = "c"
         };
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
         unitOfWorkMock.Setup(m => m.GetDragonWithJobAsync(DRAGON_ID, JobInclusions.None)).ReturnsAsync([existingDragon]);
 
         //Act
@@ -269,7 +269,7 @@ public class DragonTests
     public async Task DeleteDragon_DragonExists_ExpectOkAndSavesOnce()
     {
         const int DRAGON_ID = 42;
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
         unitOfWorkMock.Setup(u => u.DragonRepository.Delete(DRAGON_ID)).Returns(DeleteResult.Deleted);
 
         //Act
@@ -284,7 +284,7 @@ public class DragonTests
     public async Task DeleteDragon_DragonNotFound_ExpectNotFoundAndDoesNotSave()
     {
         const int DRAGON_ID = 999;
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
         unitOfWorkMock.Setup(u => u.DragonRepository.Delete(DRAGON_ID)).Returns(DeleteResult.NotFound);
 
         //Act
@@ -299,7 +299,7 @@ public class DragonTests
     public async Task DeleteDragon_DragonHasAssignment_ExpectConflictAndDoesNotSave()
     {
         const int DRAGON_ID = 7;
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
         unitOfWorkMock.Setup(u => u.DragonHasAnAssignment(DRAGON_ID)).ReturnsAsync(true);
         unitOfWorkMock.Setup(u => u.DragonRepository.Delete(DRAGON_ID)).Returns(DeleteResult.Deleted);
 

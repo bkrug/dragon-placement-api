@@ -7,7 +7,7 @@ namespace DragonPlacementApi.Endpoints;
 
 public class SkillEndpoints
 {
-    public static PagedData<SkillTag> GetSkillTagsAsync(IAssignmentUnitOfWork unitOfWork, [FromQuery(Name="offset")] int offset = 0, [FromQuery(Name="limit")] int limit = 20)
+    public static PagedData<SkillTag> GetSkillTagsAsync(IDragonPlacementUnitOfWork unitOfWork, [FromQuery(Name="offset")] int offset = 0, [FromQuery(Name="limit")] int limit = 20)
     {
         var skillTags = unitOfWork.SkillTagRespository.Get(st => true);
         return new PagedData<SkillTag>

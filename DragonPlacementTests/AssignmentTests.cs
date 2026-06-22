@@ -20,7 +20,7 @@ public class AssignmentTests
         jobModel.SetEndDate(DateTime.UtcNow.AddMonths(9));
         Immutable<Assignment> actualInsertedAssignmentRecord = new();
 
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
         unitOfWorkMock.Setup(m => m.DragonRepository.GetByID(DRAGON_ID)).ReturnsAsync(new Dragon { DragonId = DRAGON_ID, GivenName = "Fred" });
         unitOfWorkMock.Setup(m => m.JobRepository.GetByID(JOB_ID)).ReturnsAsync(jobModel);
         unitOfWorkMock.Setup(m => m.GetOverlappingAssignments(DRAGON_ID, jobModel.StartDateUnix, jobModel.EndDateUnix))
@@ -57,7 +57,7 @@ public class AssignmentTests
 
         Immutable<Assignment> actualAssignmentRecord = new();
 
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
         unitOfWorkMock.Setup(m => m.DragonRepository.GetByID(DRAGON_ID)).ReturnsAsync(new Dragon { DragonId = DRAGON_ID, GivenName = "Fred" });
         unitOfWorkMock.Setup(m => m.JobRepository.GetByID(JOB_ID)).ReturnsAsync(jobModel);
         unitOfWorkMock.Setup(m => m.GetOverlappingAssignments(DRAGON_ID, jobModel.StartDateUnix, jobModel.EndDateUnix))

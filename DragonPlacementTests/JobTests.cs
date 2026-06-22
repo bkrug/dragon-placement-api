@@ -38,7 +38,7 @@ public class JobTests
             SkillTags = skills
         };
         var insertedJob = new Immutable<Job>();
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
         unitOfWorkMock.Setup(u => u.JobRepository.Insert(It.IsAny<Job>()))
             .Callback<Job>(insertedJob.Set);
         unitOfWorkMock.Setup(u => u.GetSkillTagsById(skillIds)).Returns(skills.Clone());
@@ -72,7 +72,7 @@ public class JobTests
             EndDateUnix = 2 * Const.SECONDS_IN_A_DAY
         };
         typeof(JobCreateEdit).GetProperty(expectedFailureField)!.SetValue(inputJob, invalidValue);
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
         unitOfWorkMock.Setup(m => m.JobRepository).Returns(new Mock<IGenericRepository<Job>>().Object);
 
         //Act
@@ -98,7 +98,7 @@ public class JobTests
             StartDateUnix = 1000000,
             EndDateUnix = 2000000
         };
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
         unitOfWorkMock.Setup(m => m.JobRepository).Returns(new Mock<IGenericRepository<Job>>().Object);
 
         //Act
@@ -160,7 +160,7 @@ public class JobTests
             EndDateUnix = 3456000,
             SkillTags = newSkills
         };
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
         unitOfWorkMock.Setup(u => u.GetJobWithSkillsAsync(JOB_ID)).ReturnsAsync([existingJob]);
         unitOfWorkMock.Setup(u => u.GetSkillTagsById(skillIds)).Returns(newSkills.Clone());
 
@@ -176,7 +176,7 @@ public class JobTests
     [Fact]
     public async Task UpdateJob_JobNotFound_ExpectNotFoundAndDoesNotSave()
     {
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
         unitOfWorkMock.Setup(u => u.GetJobWithSkillsAsync(It.IsAny<int>())).ReturnsAsync([]);
 
         //Act
@@ -215,7 +215,7 @@ public class JobTests
             EndDateUnix = 2 * Const.SECONDS_IN_A_DAY
         };
         typeof(JobCreateEdit).GetProperty(expectedFailureField)!.SetValue(inputJob, invalidValue);
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
         unitOfWorkMock.Setup(u => u.GetJobWithSkillsAsync(JOB_ID)).ReturnsAsync([existingJob]);
 
         //Act
@@ -250,7 +250,7 @@ public class JobTests
             StartDateUnix = 1000000,
             EndDateUnix = 2000000
         };
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
         unitOfWorkMock.Setup(u => u.GetJobWithSkillsAsync(JOB_ID)).ReturnsAsync([existingJob]);
 
         //Act
@@ -273,7 +273,7 @@ public class JobTests
     public async Task DeleteJob_JobExists_ExpectOkAndSavesOnce()
     {
         const int JOB_ID = 42;
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
         unitOfWorkMock.Setup(u => u.JobRepository.Delete(JOB_ID)).Returns(DeleteResult.Deleted);
 
         //Act
@@ -288,7 +288,7 @@ public class JobTests
     public async Task DeleteJob_JobNotFound_ExpectNotFoundAndDoesNotSave()
     {
         const int JOB_ID = 999;
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
         unitOfWorkMock.Setup(u => u.JobRepository.Delete(JOB_ID)).Returns(DeleteResult.NotFound);
 
         //Act
@@ -303,7 +303,7 @@ public class JobTests
     public async Task DeleteJob_JobHasAssignment_ExpectConflictAndDoesNotSave()
     {
         const int JOB_ID = 7;
-        var unitOfWorkMock = new Mock<IAssignmentUnitOfWork>();
+        var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
         unitOfWorkMock.Setup(u => u.JobHasAnAssignment(JOB_ID)).ReturnsAsync(true);
         unitOfWorkMock.Setup(u => u.JobRepository.Delete(JOB_ID)).Returns(DeleteResult.Deleted);
 

@@ -26,7 +26,7 @@ builder.Services
 builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(o => o.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 builder.Services.AddLogging();
-builder.Services.AddScoped<IAssignmentUnitOfWork, AssignmentUnitOfWork>();
+builder.Services.AddScoped<IDragonPlacementUnitOfWork, DragonPlacementUnitOfWork>();
 builder.Services.AddScoped<ITimekeepingUnitOfWork, TimekeepingUnitOfWork>();
 
 var app = builder.Build();

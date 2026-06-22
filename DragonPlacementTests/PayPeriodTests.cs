@@ -542,7 +542,7 @@ public class PayPeriodTests
         };
         var timekeepingMock = new Mock<ITimekeepingUnitOfWork>();
         timekeepingMock.Setup(u => u.GetPayPeriodWithHoursWorkedAsync(PAY_PERIOD_ID)).ReturnsAsync(payPeriod);
-        var assignmentMock = new Mock<IAssignmentUnitOfWork>();
+        var assignmentMock = new Mock<IDragonPlacementUnitOfWork>();
         assignmentMock.Setup(u => u.GetAssignmentWithDragonAndJobAsync(ASSIGNMENT_ID)).ReturnsAsync(assignment);
 
         //Act

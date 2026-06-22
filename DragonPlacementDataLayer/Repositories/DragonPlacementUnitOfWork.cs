@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DragonPlacementDataLayer.Repositories;
 
-public interface IAssignmentUnitOfWork
+public interface IDragonPlacementUnitOfWork
 {
     IGenericRepository<Dragon> DragonRepository { get; }
     IGenericRepository<Job> JobRepository { get; }
@@ -32,14 +32,14 @@ public interface IAssignmentUnitOfWork
     Task<bool> JobHasAnAssignment(int jobId);
 }
 
-public class AssignmentUnitOfWork(DragonPlacementContext context, ILogger<AssignmentUnitOfWork> logger) : IDisposable, IAssignmentUnitOfWork
+public class DragonPlacementUnitOfWork(DragonPlacementContext context, ILogger<DragonPlacementUnitOfWork> logger) : IDisposable, IDragonPlacementUnitOfWork
 {
     private readonly DragonPlacementContext _context = context;
     public IGenericRepository<Dragon> DragonRepository { get; } = new GenericRepository<Dragon>(context);
     public IGenericRepository<Job> JobRepository { get; } = new GenericRepository<Job>(context);
     public IGenericRepository<Assignment> AssignmentRepository { get; } = new GenericRepository<Assignment>(context);
     public IGenericRepository<SkillTag> SkillTagRespository { get; } = new GenericRepository<SkillTag>(context);
-    private readonly ILogger<AssignmentUnitOfWork> _logger = logger;
+    private readonly ILogger<DragonPlacementUnitOfWork> _logger = logger;
 
     public async Task SaveAsync()
     {
