@@ -433,9 +433,11 @@ public class PayPeriodCrudTests
 
     [Theory]
     [InlineData("1970-01-05T05:00:00", "StartDate",  "StartDate",  "must exclude time-of-day or be midnight UTC")]
-    [InlineData("Januar 5, 1970",      "StartDate",  "StartDate",  "must be an ISO Date")]
+    [InlineData("January 5, 1970",     "StartDate",  "StartDate",  "must be an ISO Date")]
+    [InlineData("1970-01-06",          "StartDate",  "StartDate",  "must be a Monday")]
     [InlineData("1970-01-11T05:00:00", "EndDate",    "EndDate",    "must exclude time-of-day or be midnight UTC")]
     [InlineData("Januar 11, 1970",     "EndDate",    "EndDate",    "must be an ISO Date")]
+    [InlineData("1970-01-09",          "EndDate",    "EndDate",    "must be a Sunday")]
     [InlineData("1970-01-02",          "EndDate",    "EndDate",    "must be greater than StartDate")]
     public async Task CreatePayPeriodNew_InvalidInput_ExpectBadRequestWithValidationFailure(
         string invalidValue,
