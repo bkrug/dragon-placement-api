@@ -8,7 +8,7 @@ using Shouldly;
 using TimekeepingDataLayer.Models;
 using TimekeepingDataLayer.Repositories;
 
-namespace DragonPlacementTests;
+namespace DragonPlacementTests.PayPeriodTests;
 
 /// <summary>
 /// GetValidPayPeriodsOld() is depricated.

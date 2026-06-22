@@ -9,9 +9,9 @@ using Shouldly;
 using TimekeepingDataLayer.Models;
 using TimekeepingDataLayer.Repositories;
 
-namespace DragonPlacementTests;
+namespace DragonPlacementTests.PayPeriodTests;
 
-public class PayPeriodTests
+public class PayPeriodCrudTests
 {
     private static PayPeriodCreateEdit MakeValidInput() => new()
     {
