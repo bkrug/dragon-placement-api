@@ -524,8 +524,8 @@ public class PayPeriodTests
     }
 
     [Theory]
-    [InlineData("1970-01-02T05:00:00", "StartDate",  "StartDateUnix",  "must be midnight UTC")]
-    [InlineData("1970-01-02T05:00:00", "EndDate",    "EndDateUnix",    "must be midnight UTC")]
+    [InlineData("1970-01-02T05:00:00", "StartDate",  "StartDateUnix",  "must exclude time-of-day or be midnight UTC")]
+    [InlineData("1970-01-02T05:00:00", "EndDate",    "EndDateUnix",    "must exclude time-of-day or be midnight UTC")]
     [InlineData("1970-01-02",          "EndDate",    "EndDateUnix",    "must be greater than StartDateUnix")]
     public async Task CreatePayPeriodNew_InvalidInput_ExpectBadRequestWithValidationFailure(
         string invalidValue,
