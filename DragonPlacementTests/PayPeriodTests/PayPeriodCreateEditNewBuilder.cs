@@ -9,14 +9,7 @@ public class PayPeriodCreateEditNewBuilder
     private string _startDate = "1970-01-02";
     private string _endDate = "1970-01-09";
     private string _submissionStatus = "Draft";
-    private List<HoursWorkedCreateEditNew> _hoursWorked =
-    [
-        new HoursWorkedCreateEditNew
-        {
-            StartDateTime = "1970-01-02T00:00:00",
-            EndDateTime = "1970-01-02T01:00:00"
-        }
-    ];
+    private List<HoursWorkedCreateEditNew> _hoursWorked = [];
 
     public PayPeriodCreateEditNewBuilder WithAssignmentId(int id) { _assignmentId = id; return this; }
     public PayPeriodCreateEditNewBuilder WithDragonId(int id) { _dragonId = id; return this; }
@@ -24,6 +17,20 @@ public class PayPeriodCreateEditNewBuilder
     public PayPeriodCreateEditNewBuilder WithEndDate(string val) { _endDate = val; return this; }
     public PayPeriodCreateEditNewBuilder WithSubmissionStatus(string val) { _submissionStatus = val; return this; }
     public PayPeriodCreateEditNewBuilder WithHoursWorked(params HoursWorkedCreateEditNew[] items) { _hoursWorked = [..items]; return this; }
+    public PayPeriodCreateEditNewBuilder ClearHoursWorked()
+    {
+        _hoursWorked.Clear();
+        return this;
+    }
+    public PayPeriodCreateEditNewBuilder AddHoursWorked(string clockInTime, string clockOutTime)
+    {
+        _hoursWorked.Add(new HoursWorkedCreateEditNew
+        {
+            StartDateTime = clockInTime,
+            EndDateTime = clockOutTime
+        });
+        return this;
+    }
 
     public PayPeriodCreateEditNew Build() => new()
     {
