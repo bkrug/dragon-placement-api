@@ -19,12 +19,6 @@ public class PayPeriodBuilder
     public PayPeriodBuilder WithStartDateUnix(long val) { _startDateUnix = val; return this; }
     public PayPeriodBuilder WithEndDateUnix(long val) { _endDateUnix = val; return this; }
     public PayPeriodBuilder WithSubmissionStatus(string val) { _submissionStatus = val; return this; }
-    public PayPeriodBuilder WithHoursWorked(params HoursWorked[] items) { _hoursWorked = [..items]; return this; }
-    public PayPeriodBuilder ClearHoursWorkedList()
-    {
-        _hoursWorked.Clear();
-        return this;
-    }
     /// <param name="clockInSeconds">A number of seconds relative to the pay period start</param>
     /// <param name="clockOutSeconds">A number of seconds relative to the pay period start</param>
     /// <returns></returns>
