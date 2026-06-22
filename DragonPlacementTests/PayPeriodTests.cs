@@ -472,6 +472,457 @@ public class PayPeriodTests
         });
     }
 
+    private static PayPeriodCreateEditNew MakeValidInputNew() => new()
+    {
+        AssignmentId = 10,
+        DragonId = 20,
+        StartDate = "1970-01-02",
+        EndDate = "1970-01-09",
+        SubmissionStatus = "Draft",
+        HoursWorked =
+        [
+            new HoursWorkedCreateEditNew
+            {
+                StartDateTime = "1970-01-02T00:00:00",
+                EndDateTime = "1970-01-02T01:00:00"
+            }
+        ]
+    };
+
+    [Fact]
+    public async Task CreatePayPeriodNew_ValidInput_ExpectInsertionAndSavesOnce()
+    {
+        var input = MakeValidInputNew();
+        var expectedPayPeriod = new PayPeriod
+        {
+            AssignmentId = 10,
+            DragonId = 20,
+            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
+            EndDateUnix = 8 * Const.SECONDS_IN_A_DAY,
+            SubmissionStatus = "Draft",
+            HoursWorked =
+            [
+                new HoursWorked
+                {
+                    StartDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY,
+                    EndDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY + 3600
+                }
+            ]
+        };
+        var insertedPayPeriod = new Immutable<PayPeriod>();
+        var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
+        unitOfWorkMock.Setup(u => u.PayPeriodRepository.Insert(It.IsAny<PayPeriod>()))
+            .Callback<PayPeriod>(insertedPayPeriod.Set);
+
+        //Act
+        var response = await PayPeriodEndpoints.CreatePayPeriodNewAsync(unitOfWorkMock.Object, input);
+
+        //Assert
+        response.Result.ShouldBeOfType<Ok<ValidatedPayload<PayPeriod>>>();
+        insertedPayPeriod.Get().ShouldBeEquivalentTo(expectedPayPeriod);
+        unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Once);
+    }
+
+    [Theory]
+    [InlineData("1970-01-02T05:00:00", "StartDate",  "StartDateUnix",  "must be midnight UTC")]
+    [InlineData("1970-01-02T05:00:00", "EndDate",    "EndDateUnix",    "must be midnight UTC")]
+    [InlineData("1970-01-02",          "EndDate",    "EndDateUnix",    "must be greater than StartDateUnix")]
+    public async Task CreatePayPeriodNew_InvalidInput_ExpectBadRequestWithValidationFailure(
+        string invalidValue,
+        string inputField,
+        string expectedFailureField,
+        string expectedFailureMessage)
+    {
+        var input = MakeValidInputNew();
+        typeof(PayPeriodCreateEditNew).GetProperty(inputField)!.SetValue(input, invalidValue);
+        var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
+        unitOfWorkMock.Setup(m => m.PayPeriodRepository).Returns(new Mock<IGenericRepository<PayPeriod>>().Object);
+
+        //Act
+        var response = await PayPeriodEndpoints.CreatePayPeriodNewAsync(unitOfWorkMock.Object, input);
+
+        //Assert
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailures>>>();
+        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailures>>)response.Result).Value!.ValidationFailures;
+        var actualMessage = typeof(PayPeriodValidationFailures)
+            .GetProperty(expectedFailureField)!
+            .GetValue(failures) as string;
+        actualMessage.ShouldBe(expectedFailureMessage);
+    }
+
+    [Fact]
+    public async Task CreatePayPeriodNew_HoursWorkedStartBeforePayPeriod_ExpectBadRequest()
+    {
+        var input = MakeValidInputNew();
+        input.HoursWorked =
+        [
+            new HoursWorkedCreateEditNew
+            {
+                StartDateTime = "1970-01-01T23:59:59",
+                EndDateTime = "1970-01-02T01:00:00"
+            }
+        ];
+        var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
+        unitOfWorkMock.Setup(m => m.PayPeriodRepository).Returns(new Mock<IGenericRepository<PayPeriod>>().Object);
+
+        //Act
+        var response = await PayPeriodEndpoints.CreatePayPeriodNewAsync(unitOfWorkMock.Object, input);
+
+        //Assert
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailures>>>();
+        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailures>>)response.Result).Value!.ValidationFailures;
+        failures.HoursWorkedStartDateTimeUnix.ShouldNotBeNull();
+    }
+
+    [Fact]
+    public async Task CreatePayPeriodNew_HoursWorkedEndAfterPayPeriodPlusOneDay_ExpectBadRequest()
+    {
+        var input = MakeValidInputNew();
+        input.HoursWorked =
+        [
+            new HoursWorkedCreateEditNew
+            {
+                StartDateTime = "1970-01-09T23:00:00",
+                EndDateTime = "1970-01-10T00:00:00"
+            }
+        ];
+        var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
+        unitOfWorkMock.Setup(m => m.PayPeriodRepository).Returns(new Mock<IGenericRepository<PayPeriod>>().Object);
+
+        //Act
+        var response = await PayPeriodEndpoints.CreatePayPeriodNewAsync(unitOfWorkMock.Object, input);
+
+        //Assert
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailures>>>();
+        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailures>>)response.Result).Value!.ValidationFailures;
+        failures.HoursWorkedEndDateTimeUnix.ShouldNotBeNull();
+    }
+
+    [Fact]
+    public async Task CreatePayPeriodNew_AllFieldsInvalid_ExpectBadRequestWithAllValidationFailures()
+    {
+        var input = new PayPeriodCreateEditNew
+        {
+            AssignmentId = 10,
+            DragonId = 20,
+            StartDate = "1970-01-12T13:46:41",
+            EndDate = "1970-01-24T03:33:21",
+            SubmissionStatus = "Draft",
+            HoursWorked =
+            [
+                new HoursWorkedCreateEditNew
+                {
+                    StartDateTime = "1970-01-01T00:00:00",
+                    EndDateTime = "1970-04-15T10:00:00"
+                }
+            ]
+        };
+        var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
+        unitOfWorkMock.Setup(m => m.PayPeriodRepository).Returns(new Mock<IGenericRepository<PayPeriod>>().Object);
+
+        //Act
+        var response = await PayPeriodEndpoints.CreatePayPeriodNewAsync(unitOfWorkMock.Object, input);
+
+        //Assert
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailures>>>();
+        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailures>>)response.Result).Value!.ValidationFailures;
+        failures.ShouldBeEquivalentTo(new PayPeriodValidationFailures
+        {
+            StartDateUnix = "must be midnight UTC",
+            EndDateUnix = "must be midnight UTC",
+            HoursWorkedStartDateTimeUnix = "all must be greater than or equal to pay period StartDateUnix",
+            HoursWorkedEndDateTimeUnix = "all must be less than pay period EndDateUnix plus one day"
+        });
+    }
+
+    [Fact]
+    public async Task UpdatePayPeriodNew_ValidInput_ExpectUpdateAndSavesOnce()
+    {
+        const int PAY_PERIOD_ID = 55;
+        var existingEntry = new PayPeriod
+        {
+            PayPeriodId = PAY_PERIOD_ID,
+            AssignmentId = 5,
+            DragonId = 15,
+            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
+            EndDateUnix = 8 * Const.SECONDS_IN_A_DAY,
+            SubmissionStatus = "Draft"
+        };
+        var input = MakeValidInputNew();
+        input.SubmissionStatus = "Submitted";
+        var expectedEntry = new PayPeriod
+        {
+            PayPeriodId = PAY_PERIOD_ID,
+            AssignmentId = 10,
+            DragonId = 20,
+            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
+            EndDateUnix = 8 * Const.SECONDS_IN_A_DAY,
+            SubmissionStatus = "Submitted",
+            HoursWorked =
+            [
+                new HoursWorked
+                {
+                    StartDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY,
+                    EndDateTimeUnix = 1 * Const.SECONDS_IN_A_DAY + 3600
+                }
+            ]
+        };
+        var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
+        unitOfWorkMock.Setup(u => u.GetPayPeriodWithHoursWorkedAsync(PAY_PERIOD_ID)).ReturnsAsync(existingEntry);
+
+        //Act
+        var response = await PayPeriodEndpoints.UpdatePayPeriodNewAsync(unitOfWorkMock.Object, PAY_PERIOD_ID, input);
+
+        //Assert
+        response.Result.ShouldBeOfType<Ok<ValidatedPayload<PayPeriod>>>();
+        existingEntry.ShouldBeEquivalentTo(expectedEntry);
+        unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Once);
+    }
+
+    [Fact]
+    public async Task UpdatePayPeriodNew_InputReplacesOneRecordAndDropsAnother_ExpectOnlyInputRecordsRemain()
+    {
+        const int PAY_PERIOD_ID = 55;
+        const long MONDAY_START = 1 * Const.SECONDS_IN_A_DAY;
+        const long TUESDAY_START = 2 * Const.SECONDS_IN_A_DAY;
+        const long WEDNESDAY_START = 3 * Const.SECONDS_IN_A_DAY;
+        var existingEntry = new PayPeriod
+        {
+            PayPeriodId = PAY_PERIOD_ID,
+            AssignmentId = 10,
+            DragonId = 20,
+            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
+            EndDateUnix = 8 * Const.SECONDS_IN_A_DAY,
+            SubmissionStatus = "Draft",
+            HoursWorked =
+            [
+                new HoursWorked
+                {
+                    HoursWorkedId = 301,
+                    StartDateTimeUnix = MONDAY_START,
+                    EndDateTimeUnix = MONDAY_START + 3600
+                },
+                new HoursWorked
+                {
+                    HoursWorkedId = 302,
+                    StartDateTimeUnix = TUESDAY_START,
+                    EndDateTimeUnix = TUESDAY_START + 3600
+                }
+            ]
+        };
+        var input = new PayPeriodCreateEditNew
+        {
+            AssignmentId = 10,
+            DragonId = 20,
+            StartDate = "1970-01-02",
+            EndDate = "1970-01-09",
+            SubmissionStatus = "Draft",
+            HoursWorked =
+            [
+                new HoursWorkedCreateEditNew
+                {
+                    StartDateTime = "1970-01-02T00:00:00",
+                    EndDateTime = "1970-01-02T02:00:00"
+                },
+                new HoursWorkedCreateEditNew
+                {
+                    StartDateTime = "1970-01-04T00:00:00",
+                    EndDateTime = "1970-01-04T01:00:00"
+                }
+            ]
+        };
+        var expectedHoursWorked = new List<HoursWorked>
+        {
+            new()
+            {
+                HoursWorkedId = 301,
+                StartDateTimeUnix = MONDAY_START,
+                EndDateTimeUnix = MONDAY_START + 7200
+            },
+            new()
+            {
+                StartDateTimeUnix = WEDNESDAY_START,
+                EndDateTimeUnix = WEDNESDAY_START + 3600
+            }
+        };
+        var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
+        unitOfWorkMock.Setup(u => u.GetPayPeriodWithHoursWorkedAsync(PAY_PERIOD_ID)).ReturnsAsync(existingEntry);
+
+        //Act
+        var response = await PayPeriodEndpoints.UpdatePayPeriodNewAsync(unitOfWorkMock.Object, PAY_PERIOD_ID, input);
+
+        //Assert
+        response.Result.ShouldBeOfType<Ok<ValidatedPayload<PayPeriod>>>();
+        existingEntry.HoursWorked.ShouldBeEquivalentTo(expectedHoursWorked);
+        unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Once);
+    }
+
+    [Fact]
+    public async Task UpdatePayPeriodNew_NotFound_ExpectNotFoundAndDoesNotSave()
+    {
+        var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
+        unitOfWorkMock.Setup(u => u.GetPayPeriodWithHoursWorkedAsync(It.IsAny<int>())).ReturnsAsync((PayPeriod?)null);
+
+        //Act
+        var response = await PayPeriodEndpoints.UpdatePayPeriodNewAsync(unitOfWorkMock.Object, 999, MakeValidInputNew());
+
+        //Assert
+        response.Result.ShouldBeOfType<NotFound<ValidatedResponse>>();
+        unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Never);
+    }
+
+    [Theory]
+    [InlineData("1970-01-02T05:00:00", "StartDate",  "StartDateUnix",  "must be midnight UTC")]
+    [InlineData("1970-01-02T05:00:00", "EndDate",    "EndDateUnix",    "must be midnight UTC")]
+    [InlineData("1970-01-02",          "EndDate",    "EndDateUnix",    "must be greater than StartDateUnix")]
+    public async Task UpdatePayPeriodNew_InvalidInput_ExpectBadRequestWithValidationFailure(
+        string invalidValue,
+        string inputField,
+        string expectedFailureField,
+        string expectedFailureMessage)
+    {
+        const int PAY_PERIOD_ID = 55;
+        var existingEntry = new PayPeriod
+        {
+            PayPeriodId = PAY_PERIOD_ID,
+            AssignmentId = 10,
+            DragonId = 20,
+            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
+            EndDateUnix = 8 * Const.SECONDS_IN_A_DAY,
+            SubmissionStatus = "Draft"
+        };
+        var input = MakeValidInputNew();
+        typeof(PayPeriodCreateEditNew).GetProperty(inputField)!.SetValue(input, invalidValue);
+        var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
+        unitOfWorkMock.Setup(u => u.GetPayPeriodWithHoursWorkedAsync(PAY_PERIOD_ID)).ReturnsAsync(existingEntry);
+
+        //Act
+        var response = await PayPeriodEndpoints.UpdatePayPeriodNewAsync(unitOfWorkMock.Object, PAY_PERIOD_ID, input);
+
+        //Assert
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailures>>>();
+        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailures>>)response.Result).Value!.ValidationFailures;
+        var actualMessage = typeof(PayPeriodValidationFailures)
+            .GetProperty(expectedFailureField)!
+            .GetValue(failures) as string;
+        actualMessage.ShouldBe(expectedFailureMessage);
+    }
+
+    [Fact]
+    public async Task UpdatePayPeriodNew_HoursWorkedStartBeforePayPeriod_ExpectBadRequest()
+    {
+        const int PAY_PERIOD_ID = 55;
+        var existingEntry = new PayPeriod
+        {
+            PayPeriodId = PAY_PERIOD_ID,
+            AssignmentId = 10,
+            DragonId = 20,
+            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
+            EndDateUnix = 8 * Const.SECONDS_IN_A_DAY,
+            SubmissionStatus = "Draft"
+        };
+        var input = MakeValidInputNew();
+        input.HoursWorked =
+        [
+            new HoursWorkedCreateEditNew
+            {
+                StartDateTime = "1970-01-01T23:59:59",
+                EndDateTime = "1970-01-02T01:00:00"
+            }
+        ];
+        var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
+        unitOfWorkMock.Setup(u => u.GetPayPeriodWithHoursWorkedAsync(PAY_PERIOD_ID)).ReturnsAsync(existingEntry);
+
+        //Act
+        var response = await PayPeriodEndpoints.UpdatePayPeriodNewAsync(unitOfWorkMock.Object, PAY_PERIOD_ID, input);
+
+        //Assert
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailures>>>();
+        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailures>>)response.Result).Value!.ValidationFailures;
+        failures.HoursWorkedStartDateTimeUnix.ShouldNotBeNull();
+    }
+
+    [Fact]
+    public async Task UpdatePayPeriodNew_HoursWorkedEndAfterPayPeriodPlusOneDay_ExpectBadRequest()
+    {
+        const int PAY_PERIOD_ID = 55;
+        var existingEntry = new PayPeriod
+        {
+            PayPeriodId = PAY_PERIOD_ID,
+            AssignmentId = 10,
+            DragonId = 20,
+            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
+            EndDateUnix = 8 * Const.SECONDS_IN_A_DAY,
+            SubmissionStatus = "Draft"
+        };
+        var input = MakeValidInputNew();
+        input.HoursWorked =
+        [
+            new HoursWorkedCreateEditNew
+            {
+                StartDateTime = "1970-01-09T23:00:00",
+                EndDateTime = "1970-01-10T00:00:00"
+            }
+        ];
+        var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
+        unitOfWorkMock.Setup(u => u.GetPayPeriodWithHoursWorkedAsync(PAY_PERIOD_ID)).ReturnsAsync(existingEntry);
+
+        //Act
+        var response = await PayPeriodEndpoints.UpdatePayPeriodNewAsync(unitOfWorkMock.Object, PAY_PERIOD_ID, input);
+
+        //Assert
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailures>>>();
+        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailures>>)response.Result).Value!.ValidationFailures;
+        failures.HoursWorkedEndDateTimeUnix.ShouldNotBeNull();
+    }
+
+    [Fact]
+    public async Task UpdatePayPeriodNew_AllFieldsInvalid_ExpectBadRequestWithAllValidationFailures()
+    {
+        const int PAY_PERIOD_ID = 55;
+        var existingEntry = new PayPeriod
+        {
+            PayPeriodId = PAY_PERIOD_ID,
+            AssignmentId = 10,
+            DragonId = 20,
+            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
+            EndDateUnix = 8 * Const.SECONDS_IN_A_DAY,
+            SubmissionStatus = "Draft"
+        };
+        var input = new PayPeriodCreateEditNew
+        {
+            AssignmentId = 10,
+            DragonId = 20,
+            StartDate = "1970-01-12T13:46:41",
+            EndDate = "1970-01-24T03:33:21",
+            SubmissionStatus = "Draft",
+            HoursWorked =
+            [
+                new HoursWorkedCreateEditNew
+                {
+                    StartDateTime = "1970-01-01T00:00:00",
+                    EndDateTime = "1970-04-15T10:00:00"
+                }
+            ]
+        };
+        var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
+        unitOfWorkMock.Setup(u => u.GetPayPeriodWithHoursWorkedAsync(PAY_PERIOD_ID)).ReturnsAsync(existingEntry);
+
+        //Act
+        var response = await PayPeriodEndpoints.UpdatePayPeriodNewAsync(unitOfWorkMock.Object, PAY_PERIOD_ID, input);
+
+        //Assert
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailures>>>();
+        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailures>>)response.Result).Value!.ValidationFailures;
+        failures.ShouldBeEquivalentTo(new PayPeriodValidationFailures
+        {
+            StartDateUnix = "must be midnight UTC",
+            EndDateUnix = "must be midnight UTC",
+            HoursWorkedStartDateTimeUnix = "all must be greater than or equal to pay period StartDateUnix",
+            HoursWorkedEndDateTimeUnix = "all must be less than pay period EndDateUnix plus one day"
+        });
+    }
+
     [Fact]
     public async Task DeletePayPeriod_Exists_ExpectOkAndSavesOnce()
     {
