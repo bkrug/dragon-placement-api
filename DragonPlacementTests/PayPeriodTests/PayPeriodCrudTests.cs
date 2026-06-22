@@ -486,6 +486,7 @@ public class PayPeriodCrudTests
         {
             HoursWorked = [
                 new HoursWorkedValidationFailures {
+                    Index = 0,
                     StartDateTime = "Clock-in time is outside of the pay period"
                 }
             ]
@@ -498,7 +499,9 @@ public class PayPeriodCrudTests
         var input = new PayPeriodCreateEditNewBuilder()
             .WithStartDate("1970-01-05")
             .WithEndDate("1970-01-11")
-            .AddHoursWorked("1970-01-11T23:00:00", "1970-01-12T01:00:00")
+            .AddHoursWorked("1970-01-05T20:00:00", "1970-01-06T02:00:00")
+            .AddHoursWorked("1970-01-06T20:00:00", "1970-01-07T02:00:00")
+            .AddHoursWorked("1970-01-11T23:00:00", "1970-01-12T01:00:00") //Invalid
             .Build();
         var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(m => m.PayPeriodRepository).Returns(new Mock<IGenericRepository<PayPeriod>>().Object);
@@ -513,6 +516,7 @@ public class PayPeriodCrudTests
         {
             HoursWorked = [
                 new HoursWorkedValidationFailures {
+                    Index = 2,
                     EndDateTime = "Clock-out time is outside of the pay period"
                 }
             ]
@@ -543,6 +547,7 @@ public class PayPeriodCrudTests
             EndDate = "must be a Sunday",
             HoursWorked = [
                 new HoursWorkedValidationFailures {
+                    Index = 0,
                     StartDateTime = "Clock-in time is outside of the pay period",
                     EndDateTime = "Clock-out time is outside of the pay period"
                 }
@@ -704,7 +709,9 @@ public class PayPeriodCrudTests
         var input = new PayPeriodCreateEditNewBuilder()
             .WithStartDate("1970-01-05")
             .WithEndDate("1970-01-11")
-            .AddHoursWorked("1970-01-04T23:09:59", "1970-01-02T01:00:00")
+            .AddHoursWorked("1970-01-06T11:00:00", "1970-01-06T13:00:00")
+            .AddHoursWorked("1970-01-04T23:09:59", "1970-01-05T01:00:00") //Invalid Record
+            .AddHoursWorked("1970-01-07T11:00:00", "1970-01-07T13:00:00")
             .Build();
         var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(u => u.GetPayPeriodWithHoursWorkedAsync(PAY_PERIOD_ID)).ReturnsAsync(existingEntry);
@@ -719,6 +726,7 @@ public class PayPeriodCrudTests
         {
             HoursWorked = [
                 new HoursWorkedValidationFailures {
+                    Index = 1,
                     StartDateTime = "Clock-in time is outside of the pay period"
                 }
             ]
@@ -737,7 +745,10 @@ public class PayPeriodCrudTests
         var input = new PayPeriodCreateEditNewBuilder()
             .WithStartDate("1970-01-05")
             .WithEndDate("1970-01-11")
-            .AddHoursWorked("1970-01-11T23:00:00", "1970-01-12T02:00:00")
+            .AddHoursWorked("1970-01-05T09:00:00", "1970-01-05T17:00:00")
+            .AddHoursWorked("1970-01-06T09:00:00", "1970-01-05T13:00:00")
+            .AddHoursWorked("1970-01-06T14:00:00", "1970-01-05T18:00:00")
+            .AddHoursWorked("1970-01-11T23:00:00", "1970-01-12T02:00:00") //Invalid
             .Build();
         var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(u => u.GetPayPeriodWithHoursWorkedAsync(PAY_PERIOD_ID)).ReturnsAsync(existingEntry);
@@ -752,6 +763,7 @@ public class PayPeriodCrudTests
         {
             HoursWorked = [
                 new HoursWorkedValidationFailures {
+                    Index = 3,
                     EndDateTime = "Clock-out time is outside of the pay period"
                 }
             ]
@@ -785,6 +797,7 @@ public class PayPeriodCrudTests
             EndDate = "must exclude time-of-day or be midnight UTC",
             HoursWorked = [
                 new HoursWorkedValidationFailures {
+                    Index = 0,
                     StartDateTime = "Clock-in time is outside of the pay period",
                     EndDateTime = "Clock-out time is outside of the pay period"
                 }
