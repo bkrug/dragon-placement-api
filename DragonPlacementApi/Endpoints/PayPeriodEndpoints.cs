@@ -221,6 +221,13 @@ public class PayPeriodEndpoints
         if (validationFailures != null)
             return TypedResults.BadRequest(validationFailures);
 
+        var incomingStarts = input.HoursWorked.Select(hw => UnixDateConvert.FromIsoDateTime(hw.StartDateTime)).ToList();
+        var deletedHours = entry.HoursWorked
+            .Where(existingHw => !incomingStarts.Contains(existingHw.StartDateTimeUnix))
+            .ToList();
+        foreach (var recToDelete in deletedHours)
+            entry.HoursWorked.Remove(recToDelete);
+
         entry.AssignmentId = input.AssignmentId;
         entry.DragonId = input.DragonId;
         entry.StartDateUnix = UnixDateConvert.FromIsoDate(input.StartDate);
@@ -246,13 +253,6 @@ public class PayPeriodEndpoints
                 existingClockPunch.EndDateTimeUnix = endUnix;
             }
         }
-
-        var incomingStarts = input.HoursWorked.Select(hw => UnixDateConvert.FromIsoDateTime(hw.StartDateTime)).ToList();
-        var deletedHours = entry.HoursWorked
-            .Where(existingHw => !incomingStarts.Contains(existingHw.StartDateTimeUnix))
-            .ToList();
-        foreach (var recToDelete in deletedHours)
-            entry.HoursWorked.Remove(recToDelete);
 
         await unitOfWork.SaveAsync().ConfigureAwait(false);
         return TypedResults.Ok(ValidatedPayload<PayPeriod>.FromPayload(entry));
