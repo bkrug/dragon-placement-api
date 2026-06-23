@@ -1,7 +1,7 @@
 using DragonAssignmentDomain.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace DragonPlacementDataLayer;
+namespace DragonAssignmentDataLayer;
 
 /// <summary>
 /// There is more than one data domain in this git-repository.
