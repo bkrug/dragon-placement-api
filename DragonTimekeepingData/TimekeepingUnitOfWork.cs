@@ -2,18 +2,9 @@ using CommonDataLayer.Repositories;
 using DragonTimekeepingDomain.Models;
 using Microsoft.EntityFrameworkCore;
 
+using DragonTimekeepingApplication;
+
 namespace DragonTimekeepingData;
-
-public interface ITimekeepingUnitOfWork
-{
-    IGenericRepository<HoursWorked> HoursWorkedRepository { get; }
-    IGenericRepository<PayPeriod> PayPeriodRepository { get; }
-
-    void Dispose();
-    Task SaveAsync();
-
-    Task<PayPeriod?> GetPayPeriodWithHoursWorkedAsync(int payPeriodId);
-}
 
 public class TimekeepingUnitOfWork(TimekeepingContext context) : IDisposable, ITimekeepingUnitOfWork
 {
