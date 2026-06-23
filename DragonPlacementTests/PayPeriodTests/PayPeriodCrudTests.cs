@@ -487,7 +487,7 @@ public class PayPeriodCrudTests
             HoursWorked = [
                 new HoursWorkedValidationFailures {
                     Index = 0,
-                    StartDateTime = "Clock-in time is outside of the pay period"
+                    RowValidationMessage = "Clock-in time is outside of the pay period"
                 }
             ]
         });
@@ -517,7 +517,7 @@ public class PayPeriodCrudTests
             HoursWorked = [
                 new HoursWorkedValidationFailures {
                     Index = 2,
-                    EndDateTime = "Clock-out time is outside of the pay period"
+                    RowValidationMessage = "Clock-out time is outside of the pay period"
                 }
             ]
         });
@@ -549,11 +549,11 @@ public class PayPeriodCrudTests
             HoursWorked = [
                 new HoursWorkedValidationFailures {
                     Index = 1,
-                    StartDateTime = "Overlaps with another hours-worked record"
+                    RowValidationMessage = "Overlaps with another hours-worked record"
                 },
                 new HoursWorkedValidationFailures {
                     Index = 2,
-                    StartDateTime = "Overlaps with another hours-worked record"
+                    RowValidationMessage = "Overlaps with another hours-worked record"
                 }
             ]
         });
@@ -583,8 +583,7 @@ public class PayPeriodCrudTests
             HoursWorked = [
                 new HoursWorkedValidationFailures {
                     Index = 0,
-                    StartDateTime = "Clock-in time is outside of the pay period",
-                    EndDateTime = "Clock-out time is outside of the pay period"
+                    RowValidationMessage = "Clock-in time is outside of the pay period"
                 }
             ]
         });
@@ -762,7 +761,7 @@ public class PayPeriodCrudTests
             HoursWorked = [
                 new HoursWorkedValidationFailures {
                     Index = 1,
-                    StartDateTime = "Clock-in time is outside of the pay period"
+                    RowValidationMessage = "Clock-in time is outside of the pay period"
                 }
             ]
         });
@@ -799,7 +798,7 @@ public class PayPeriodCrudTests
             HoursWorked = [
                 new HoursWorkedValidationFailures {
                     Index = 3,
-                    EndDateTime = "Clock-out time is outside of the pay period"
+                    RowValidationMessage = "Clock-out time is outside of the pay period"
                 }
             ]
         });
@@ -833,8 +832,7 @@ public class PayPeriodCrudTests
             HoursWorked = [
                 new HoursWorkedValidationFailures {
                     Index = 0,
-                    StartDateTime = "Clock-in time is outside of the pay period",
-                    EndDateTime = "Clock-out time is outside of the pay period"
+                    RowValidationMessage = "Clock-in time is outside of the pay period"
                 }
             ]
         });
