@@ -3,7 +3,7 @@
   <Project Path="DragonAssignmentDomain/DragonAssignmentDomain.csproj" />
   <Project Path="DragonTimekeepingDomain/DragonTimekeepingDomain.csproj" />
   <Project Path="DragonPlacementApi/DragonPlacementApi.csproj" />
-  <Project Path="DragonAssignmentDataLayer/DragonAssignmentDataLayer.csproj" />
+  <Project Path="DragonAssignmentData/DragonAssignmentData.csproj" />
   <Project Path="DragonPlacementTests/DragonPlacementTests.csproj" />
   <Project Path="DragonTimekeepingData/DragonTimekeepingData.csproj" />
 </Solution>

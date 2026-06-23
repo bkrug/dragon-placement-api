@@ -24,7 +24,7 @@
     <ProjectReference Include="../DragonAssignmentDomain/DragonAssignmentDomain.csproj" />
     <ProjectReference Include="../DragonTimekeepingDomain/DragonTimekeepingDomain.csproj" />
     <ProjectReference Include="../DragonPlacementApi/DragonPlacementApi.csproj" />
-    <ProjectReference Include="../DragonAssignmentDataLayer/DragonAssignmentDataLayer.csproj" />
+    <ProjectReference Include="../DragonAssignmentData/DragonAssignmentData.csproj" />
     <ProjectReference Include="../DragonTimekeepingData/DragonTimekeepingData.csproj" />
   </ItemGroup>
 
