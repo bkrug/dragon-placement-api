@@ -4,29 +4,26 @@ namespace DragonTimekeepingDomain.Validation;
 
 public static class PayPeriodDomainValidator
 {
-    public static PayPeriodValidationFailures? Validate(PayPeriod payPeriod)
+    public static PayPeriodValidationFailures? Validate(PayPeriod? payPeriod)
     {
-        var parsedStart = DateTimeOffset.FromUnixTimeSeconds(payPeriod.StartDateUnix).UtcDateTime;
-        var parsedEnd = DateTimeOffset.FromUnixTimeSeconds(payPeriod.EndDateUnix).UtcDateTime;
+        if (payPeriod == null)
+            return null;
 
         var failures = new Dictionary<string, string>();
 
-        var startDateMessage = ValidateStartDate(parsedStart);
+        var startDateMessage = ValidateStartDate(payPeriod.StartDate);
         if (startDateMessage != null)
             failures["StartDate"] = startDateMessage;
 
-        var endDateMessage = ValidateEndDate(parsedEnd, parsedStart);
+        var endDateMessage = ValidateEndDate(payPeriod.EndDate, payPeriod.StartDate);
         if (endDateMessage != null)
             failures["EndDate"] = endDateMessage;
 
         var hoursWorked = payPeriod.HoursWorked
-            .Select(hw => (
-                Start: DateTimeOffset.FromUnixTimeSeconds(hw.StartDateTimeUnix).UtcDateTime,
-                End: DateTimeOffset.FromUnixTimeSeconds(hw.EndDateTimeUnix).UtcDateTime
-            ))
+            .Select(hw => (hw.StartDateTime, hw.EndDateTime))
             .ToList();
 
-        var hoursWorkedFailures = ValidateHoursWorked(hoursWorked, parsedStart, parsedEnd);
+        var hoursWorkedFailures = ValidateHoursWorked(hoursWorked, payPeriod.StartDate, payPeriod.EndDate);
 
         if (failures.Count == 0 && hoursWorkedFailures.Count == 0)
             return null;

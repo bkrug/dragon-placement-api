@@ -64,7 +64,7 @@ public class JobEndpoints
         AssignDragonToJobAsync(IDragonPlacementUnitOfWork unitOfWork, [FromRoute(Name="dragonId")] int dragonId, [FromRoute(Name="jobId")] int jobId)
 
     {
-        var newJob = await unitOfWork.JobRepository.GetByID(jobId).ConfigureAwait(false);
+        var newJob = await unitOfWork.GetJobByIdAsync(jobId).ConfigureAwait(false);
         if (newJob == null)
         {
             return TypedResults.NotFound(new ValidatedResponse
@@ -74,17 +74,17 @@ public class JobEndpoints
                ValidationFailures = [ "Job does not exist" ]
             });
         }
-        var existingJobs = unitOfWork.GetOverlappingAssignments(dragonId, newJob.StartDateUnix, newJob.EndDateUnix);
+        var existingJobs = unitOfWork.GetOverlappingAssignments(dragonId, newJob.StartDate, newJob.EndDate);
         var firstConflict = existingJobs.FirstOrDefault();
         if (firstConflict == null) {
             var assignmentRecord = new Assignment
             {
                 DragonId = dragonId,
                 JobId = jobId,
-                StartDateUnix = newJob.StartDateUnix,
-                EndDateUnix = newJob.EndDateUnix
+                StartDate = newJob.StartDate,
+                EndDate = newJob.EndDate
             };
-            unitOfWork.AssignmentRepository.Insert(assignmentRecord);
+            unitOfWork.InsertAssignment(assignmentRecord);
             await unitOfWork.SaveAsync().ConfigureAwait(false);
             return TypedResults.Ok(new ValidatedResponse
             {
@@ -92,8 +92,8 @@ public class JobEndpoints
             });
         }
         else {
-            var periodStart = firstConflict.GetStartDate().ToShortDateString();
-            var periodEnd = firstConflict.GetEndDate().ToShortDateString();
+            var periodStart = firstConflict.StartDate.ToShortDateString();
+            var periodEnd = firstConflict.EndDate.ToShortDateString();
             return TypedResults.BadRequest(new ValidatedResponse
             {
                 IsInternalError = false,
@@ -117,11 +117,11 @@ public class JobEndpoints
             JobTitle = inputJob.JobTitle,
             EmployerName = inputJob.EmployerName,
             NumberOfPositions = inputJob.NumberOfPositions,
-            StartDateUnix = inputJob.StartDateUnix,
-            EndDateUnix = inputJob.EndDateUnix,
+            StartDate = DateTimeOffset.FromUnixTimeSeconds(inputJob.StartDateUnix).UtcDateTime,
+            EndDate = DateTimeOffset.FromUnixTimeSeconds(inputJob.EndDateUnix).UtcDateTime,
             SkillTags = unitOfWork.GetSkillTagsById(inputJob.SkillTagIds)
         };
-        unitOfWork.JobRepository.Insert(job);
+        unitOfWork.InsertJob(job);
         await unitOfWork.SaveAsync().ConfigureAwait(false);
         return TypedResults.Ok(ValidatedPayload<Job>.FromPayload(job));
     }
@@ -146,8 +146,8 @@ public class JobEndpoints
         existing.JobTitle = inputJob.JobTitle;
         existing.EmployerName = inputJob.EmployerName;
         existing.NumberOfPositions = inputJob.NumberOfPositions;
-        existing.StartDateUnix = inputJob.StartDateUnix;
-        existing.EndDateUnix = inputJob.EndDateUnix;
+        existing.StartDate = DateTimeOffset.FromUnixTimeSeconds(inputJob.StartDateUnix).UtcDateTime;
+        existing.EndDate = DateTimeOffset.FromUnixTimeSeconds(inputJob.EndDateUnix).UtcDateTime;
         existing.SkillTags = unitOfWork.GetSkillTagsById(inputJob.SkillTagIds);
 
         await unitOfWork.SaveAsync().ConfigureAwait(false);
@@ -162,7 +162,7 @@ public class JobEndpoints
         if (await unitOfWork.JobHasAnAssignment(jobId).ConfigureAwait(false))
             return TypedResults.Conflict(new ValidatedResponse { ValidationFailures = ["Job has an existing assignment"] });
 
-        var deleteResult = unitOfWork.JobRepository.Delete(jobId);
+        var deleteResult = unitOfWork.DeleteJob(jobId);
         if (deleteResult == DeleteResult.NotFound)
             return TypedResults.NotFound(ValidatedResponse.NotFound);
 
@@ -178,9 +178,9 @@ public class JobEndpoints
             failures.JobTitle = "is required";
         if (job.NumberOfPositions <= 0)
             failures.NumberOfPositions = "must be a positive number";
-        if (job.StartDateUnix % Const.SECONDS_IN_A_DAY != 0)
+        if (DateTimeOffset.FromUnixTimeSeconds(job.StartDateUnix).UtcDateTime.TimeOfDay.TotalSeconds != 0)
             failures.StartDateUnix = "must be midnight UTC";
-        if (job.EndDateUnix % Const.SECONDS_IN_A_DAY != 0)
+        if (DateTimeOffset.FromUnixTimeSeconds(job.EndDateUnix).UtcDateTime.TimeOfDay.TotalSeconds != 0)
             failures.EndDateUnix = "must be midnight UTC";
 
         if (failures.JobTitle != null || failures.NumberOfPositions != null
@@ -200,13 +200,13 @@ public class JobEndpoints
         [FromRoute(Name="jobId")] int jobId,
         [FromRoute(Name="dragonId")] int dragonId)
     {
-        var foundAssignments = unitOfWork.AssignmentRepository.Get(asgn => asgn.JobId == jobId && asgn.DragonId == dragonId).ToList();
+        var foundAssignments = unitOfWork.GetAssignmentsByJobAndDragon(jobId, dragonId).ToList();
         switch(foundAssignments.Count)
         {
             case 0:
                 return TypedResults.NotFound(ValidatedResponse.NotFound);
             case 1:
-                unitOfWork.AssignmentRepository.Delete(foundAssignments[0]);
+                unitOfWork.DeleteAssignment(foundAssignments[0]);
                 await unitOfWork.SaveAsync().ConfigureAwait(false);
                 return TypedResults.Ok(ValidatedResponse.Success);
             default:

@@ -1,61 +1,60 @@
-using DragonPlacementApi.Poco;
 using DragonTimekeepingDomain.Models;
 
 namespace DragonPlacementTests.PayPeriodTests;
 
 public class PayPeriodBuilder
 {
+    private static readonly DateTime EPOCH = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
     private int _payPeriodId;
     private int _assignmentId = 10;
-    private long _startDateUnix = 1 * Const.SECONDS_IN_A_DAY;
-    private long _endDateUnix = 8 * Const.SECONDS_IN_A_DAY;
+    private DateTime _startDate = EPOCH.AddDays(1);
+    private DateTime _endDate = EPOCH.AddDays(8);
     private string _submissionStatus = "Draft";
     private List<HoursWorked> _hoursWorked = [];
 
     public PayPeriodBuilder WithPayPeriodId(int id) { _payPeriodId = id; return this; }
     public PayPeriodBuilder WithAssignmentId(int id) { _assignmentId = id; return this; }
-    public PayPeriodBuilder WithStartDateUnix(long unitCount, long secondsPerUnit) {
-        _startDateUnix = unitCount * secondsPerUnit;
+    public PayPeriodBuilder WithStartDate(DateTime val) { _startDate = val; return this; }
+    public PayPeriodBuilder WithStartDate(int daysFromEpoch) {
+        _startDate = EPOCH.AddDays(daysFromEpoch);
         return this;
     }
-    public PayPeriodBuilder WithStartDateUnix(long val) { _startDateUnix = val; return this; }
-    public PayPeriodBuilder WithEndDateUnix(long unitCount, long secondsPerUnit) {
-        _endDateUnix = unitCount * secondsPerUnit;
+    public PayPeriodBuilder WithEndDate(DateTime val) { _endDate = val; return this; }
+    public PayPeriodBuilder WithEndDate(int daysFromEpoch) {
+        _endDate = EPOCH.AddDays(daysFromEpoch);
         return this;
     }
-    public PayPeriodBuilder WithEndDateUnix(long val) { _endDateUnix = val; return this; }
     public PayPeriodBuilder WithSubmissionStatus(string val) { _submissionStatus = val; return this; }
-    public PayPeriodBuilder AddHoursWorked(long clockInSeconds, long clockOutSeconds)
+    public PayPeriodBuilder AddHoursWorked(DateTime clockIn, DateTime clockOut)
     {
-        return AddHoursWorked(0, clockInSeconds, clockOutSeconds);
+        return AddHoursWorked(0, clockIn, clockOut);
     }
-    public PayPeriodBuilder AddHoursWorked(int hoursWorkedId, long clockInSeconds, long clockOutSeconds)
+    public PayPeriodBuilder AddHoursWorked(int hoursWorkedId, DateTime clockIn, DateTime clockOut)
     {
         _hoursWorked.Add(new HoursWorked
         {
             HoursWorkedId = hoursWorkedId,
-            StartDateTimeUnix = clockInSeconds,
-            EndDateTimeUnix = clockOutSeconds 
+            StartDateTime = clockIn,
+            EndDateTime = clockOut
         });
         return this;
-    }    
-    /// <param name="clockInSeconds">A number of seconds relative to the pay period start</param>
-    /// <param name="clockOutSeconds">A number of seconds relative to the pay period start</param>
-    /// <returns></returns>
-    public PayPeriodBuilder AddHoursWorkedRelative(long clockInSeconds, long clockOutSeconds)
-    {
-        return AddHoursWorkedRelative(0, clockInSeconds, clockOutSeconds);
     }
-    /// <param name="clockInSeconds">A number of seconds relative to the pay period start</param>
-    /// <param name="clockOutSeconds">A number of seconds relative to the pay period start</param>
-    /// <returns></returns>
-    public PayPeriodBuilder AddHoursWorkedRelative(int hoursWorkedId, long clockInSeconds, long clockOutSeconds)
+    /// <param name="clockInOffset">A TimeSpan relative to the pay period start</param>
+    /// <param name="clockOutOffset">A TimeSpan relative to the pay period start</param>
+    public PayPeriodBuilder AddHoursWorkedRelative(TimeSpan clockInOffset, TimeSpan clockOutOffset)
+    {
+        return AddHoursWorkedRelative(0, clockInOffset, clockOutOffset);
+    }
+    /// <param name="clockInOffset">A TimeSpan relative to the pay period start</param>
+    /// <param name="clockOutOffset">A TimeSpan relative to the pay period start</param>
+    public PayPeriodBuilder AddHoursWorkedRelative(int hoursWorkedId, TimeSpan clockInOffset, TimeSpan clockOutOffset)
     {
         _hoursWorked.Add(new HoursWorked
         {
             HoursWorkedId = hoursWorkedId,
-            StartDateTimeUnix = _startDateUnix + clockInSeconds,
-            EndDateTimeUnix = _startDateUnix + clockOutSeconds 
+            StartDateTime = _startDate + clockInOffset,
+            EndDateTime = _startDate + clockOutOffset
         });
         return this;
     }
@@ -64,8 +63,8 @@ public class PayPeriodBuilder
     {
         PayPeriodId = _payPeriodId,
         AssignmentId = _assignmentId,
-        StartDateUnix = _startDateUnix,
-        EndDateUnix = _endDateUnix,
+        StartDate = _startDate,
+        EndDate = _endDate,
         SubmissionStatus = _submissionStatus,
         HoursWorked = _hoursWorked
     };

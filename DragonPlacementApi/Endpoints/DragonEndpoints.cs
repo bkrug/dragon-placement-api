@@ -37,7 +37,7 @@ public class DragonEndpoints
             });
 
         var dataAsEnumerable = jobId == null
-            ? unitOfWork.DragonRepository.Get()
+            ? unitOfWork.GetDragons()
             : unitOfWork.GetDragonsWithoutOverlappingAssignments(jobId.Value, skillTagIds, fightingSkill);
         var pagedData = new PagedData<Dragon>
         {
@@ -83,7 +83,7 @@ public class DragonEndpoints
             FightingSkills = inputDragon.FightingSkills,
             SkillTags = unitOfWork.GetSkillTagsById(inputDragon.SkillTagIds)
         };
-        unitOfWork.DragonRepository.Insert(newDragon);
+        unitOfWork.InsertDragon(newDragon);
 
         await unitOfWork.SaveAsync().ConfigureAwait(false);
         return TypedResults.Ok(ValidatedPayload<Dragon>.FromPayload(newDragon));
@@ -153,7 +153,7 @@ public class DragonEndpoints
         {
             return TypedResults.Conflict(new ValidatedResponse { ValidationFailures = ["Dragon has an existing assignment"] });
         }
-        var deleteResult = unitOfWork.DragonRepository.Delete(dragonId);
+        var deleteResult = unitOfWork.DeleteDragon(dragonId);
         if (deleteResult == DeleteResult.NotFound)
         {
             return TypedResults.NotFound(ValidatedResponse.NotFound);

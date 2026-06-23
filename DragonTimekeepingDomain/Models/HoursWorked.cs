@@ -1,11 +1,11 @@
 namespace DragonTimekeepingDomain.Models;
 
-public partial class HoursWorked
+public class HoursWorked
 {
     public int HoursWorkedId { get; set; }
-    public long StartDateTimeUnix { get; set; }
-    public long EndDateTimeUnix { get; set; }
+    public DateTime StartDateTime { get; set; }
+    public DateTime EndDateTime { get; set; }
     public int PayPeriodId { get; set; }
 
-    public virtual PayPeriod PayPeriod { get; set; } = null!;
+    public PayPeriod PayPeriod { get; set; } = null!;
 }

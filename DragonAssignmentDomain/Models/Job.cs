@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DragonAssignmentDomain.Models;
 
-public partial class Job
+public class Job
 {
     public int JobId { get; set; }
 
@@ -13,11 +13,11 @@ public partial class Job
 
     public int NumberOfPositions { get; set; }
 
-    public long StartDateUnix { get; set; }
+    public DateTime StartDate { get; set; }
 
-    public long EndDateUnix { get; set; }
+    public DateTime EndDate { get; set; }
 
-    public virtual ICollection<Assignment> Assignments { get; set; } = [];
+    public ICollection<Assignment> Assignments { get; set; } = [];
 
-    public virtual ICollection<SkillTag> SkillTags { get; set; } = [];
+    public ICollection<SkillTag> SkillTags { get; set; } = [];
 }

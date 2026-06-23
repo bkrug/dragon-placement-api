@@ -1,4 +1,3 @@
-using System.Linq.Expressions;
 using CommonDataLayer.Repositories;
 using DragonPlacementApi.Endpoints;
 using DragonPlacementApi.Poco;
@@ -39,7 +38,7 @@ public class DragonTests
         };
         var insertedDragon = new Immutable<Dragon>();
         var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
-        unitOfWorkMock.Setup(u => u.DragonRepository.Insert(It.IsAny<Dragon>()))
+        unitOfWorkMock.Setup(u => u.InsertDragon(It.IsAny<Dragon>()))
             .Callback<Dragon>(insertedDragon.Set);
         unitOfWorkMock.Setup(u => u.GetSkillTagsById(skillIds)).Returns(skills.Clone());
 
@@ -72,7 +71,6 @@ public class DragonTests
         };
         typeof(DragonCreateEdit).GetProperty(expectedFailureField)!.SetValue(inputDragon, invalidValue);
         var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
-        unitOfWorkMock.Setup(m => m.DragonRepository).Returns(new Mock<IGenericRepository<Dragon>>().Object);
 
         //Act
         var response = await DragonEndpoints.CreateDragonAsync(unitOfWorkMock.Object, inputDragon);
@@ -98,7 +96,6 @@ public class DragonTests
             FightingSkills = "x"
         };
         var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
-        unitOfWorkMock.Setup(m => m.DragonRepository).Returns(new Mock<IGenericRepository<Dragon>>().Object);
 
         //Act
         var response = await DragonEndpoints.CreateDragonAsync(unitOfWorkMock.Object, inputDragon);
@@ -270,7 +267,7 @@ public class DragonTests
     {
         const int DRAGON_ID = 42;
         var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
-        unitOfWorkMock.Setup(u => u.DragonRepository.Delete(DRAGON_ID)).Returns(DeleteResult.Deleted);
+        unitOfWorkMock.Setup(u => u.DeleteDragon(DRAGON_ID)).Returns(DeleteResult.Deleted);
 
         //Act
         var response = await DragonEndpoints.DeleteDragonAsync(unitOfWorkMock.Object, DRAGON_ID);
@@ -285,7 +282,7 @@ public class DragonTests
     {
         const int DRAGON_ID = 999;
         var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
-        unitOfWorkMock.Setup(u => u.DragonRepository.Delete(DRAGON_ID)).Returns(DeleteResult.NotFound);
+        unitOfWorkMock.Setup(u => u.DeleteDragon(DRAGON_ID)).Returns(DeleteResult.NotFound);
 
         //Act
         var response = await DragonEndpoints.DeleteDragonAsync(unitOfWorkMock.Object, DRAGON_ID);
@@ -301,7 +298,7 @@ public class DragonTests
         const int DRAGON_ID = 7;
         var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
         unitOfWorkMock.Setup(u => u.DragonHasAnAssignment(DRAGON_ID)).ReturnsAsync(true);
-        unitOfWorkMock.Setup(u => u.DragonRepository.Delete(DRAGON_ID)).Returns(DeleteResult.Deleted);
+        unitOfWorkMock.Setup(u => u.DeleteDragon(DRAGON_ID)).Returns(DeleteResult.Deleted);
 
         //Act
         var response = await DragonEndpoints.DeleteDragonAsync(unitOfWorkMock.Object, DRAGON_ID);

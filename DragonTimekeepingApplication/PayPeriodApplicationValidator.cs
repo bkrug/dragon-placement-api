@@ -47,15 +47,15 @@ public static class PayPeriodApplicationValidator
         var payPeriod = new PayPeriod
         {
             AssignmentId = input.AssignmentId,
-            StartDateUnix = new DateTimeOffset(parsedStart, TimeSpan.Zero).ToUnixTimeSeconds(),
-            EndDateUnix = new DateTimeOffset(parsedEnd, TimeSpan.Zero).ToUnixTimeSeconds(),
+            StartDate = parsedStart,
+            EndDate = parsedEnd,
             SubmissionStatus = input.SubmissionStatus,
             HoursWorked = parsedHoursWorked.Select(hw => new HoursWorked
             {
-                StartDateTimeUnix = new DateTimeOffset(hw.Start, TimeSpan.Zero).ToUnixTimeSeconds(),
-                EndDateTimeUnix = new DateTimeOffset(hw.End, TimeSpan.Zero).ToUnixTimeSeconds()
+                StartDateTime = hw.Start,
+                EndDateTime = hw.End
             }).ToList()
         };
         return (payPeriod, null);
-    }    
+    }
 }

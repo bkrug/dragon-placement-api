@@ -14,7 +14,7 @@ public class JobWithCapacity
 
     public int NumberOfPositions { get; set; }
 
-    public long StartDateUnix { get; set; }
+    public DateTime StartDate { get; set; }
 
-    public long EndDateUnix { get; set; }
+    public DateTime EndDate { get; set; }
 }

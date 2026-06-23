@@ -1,4 +1,4 @@
-using DragonTimekeepingDomain.Models;
+using DragonTimekeepingData.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace DragonTimekeepingData;

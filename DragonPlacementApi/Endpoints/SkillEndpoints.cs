@@ -9,7 +9,7 @@ public class SkillEndpoints
 {
     public static PagedData<SkillTag> GetSkillTagsAsync(IDragonPlacementUnitOfWork unitOfWork, [FromQuery(Name="offset")] int offset = 0, [FromQuery(Name="limit")] int limit = 20)
     {
-        var skillTags = unitOfWork.SkillTagRespository.Get(st => true);
+        var skillTags = unitOfWork.GetSkillTags();
         return new PagedData<SkillTag>
         {
             Offset = offset,

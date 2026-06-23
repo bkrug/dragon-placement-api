@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace DragonAssignmentDomain.Models;
+namespace DragonAssignmentData.Models;
 
-public class Dragon
+public partial class Dragon
 {
     public int DragonId { get; set; }
 
@@ -17,7 +17,7 @@ public class Dragon
 
     public string? FightingSkills { get; set; }
 
-    public ICollection<Assignment> Assignments { get; set; } = [];
+    public virtual ICollection<Assignment> Assignments { get; set; } = [];
 
-    public ICollection<SkillTag> SkillTags { get; set; } = [];
+    public virtual ICollection<SkillTag> SkillTags { get; set; } = [];
 }

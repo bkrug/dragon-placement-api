@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace DragonAssignmentDomain.Models;
 
-public partial class SkillTag
+public class SkillTag
 {
     public int SkillTagId { get; set; }
 
     public string SkillName { get; set; } = null!;
 
-    public virtual ICollection<Dragon> Dragons { get; set; } = [];
+    public ICollection<Dragon> Dragons { get; set; } = [];
 
-    public virtual ICollection<Job> Jobs { get; set; } = [];
+    public ICollection<Job> Jobs { get; set; } = [];
 }

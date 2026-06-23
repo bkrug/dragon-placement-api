@@ -1,5 +1,4 @@
 using CommonDataLayer.Repositories;
-using DragonPlacementApi.Extensions;
 using DragonPlacementApi.Poco;
 using DragonAssignmentApplication;
 using DragonTimekeepingApplication;
@@ -20,16 +19,12 @@ public class PayPeriodEndpoints
             [FromQuery(Name = "offset")] int offset = 0,
             [FromQuery(Name = "limit")] int limit = 20)
     {
-        var results = unitOfWork.PayPeriodRepository
-            .Get(
-                filter: pp => pp.AssignmentId == assignmentId,
-                orderBy: q => q.OrderByDescending(pp => pp.StartDateUnix)
-            );
+        var results = unitOfWork.GetPayPeriodsByAssignment(assignmentId).ToList();
         return new()
         {
             Offset = offset,
             Limit = limit,
-            TotalRecords = results.Count(),
+            TotalRecords = results.Count,
             Data = results.Skip(offset).Take(limit).ToList()
         };
     }
@@ -41,21 +36,19 @@ public class PayPeriodEndpoints
     {
         var today = DateTime.UtcNow.Date;
         var daysToSubtract = ((int)today.DayOfWeek + 6) % 7;
-        var mondayUnix = new DateTimeOffset(today.AddDays(-daysToSubtract), TimeSpan.Zero).ToUnixTimeSeconds();
+        var monday = today.AddDays(-daysToSubtract);
 
-        var existingStarts = unitOfWork.PayPeriodRepository
-            .Get(pp => pp.AssignmentId == assignmentId)
-            .Select(pp => pp.StartDateUnix)
+        var existingStarts = unitOfWork.GetPayPeriodsByAssignment(assignmentId)
+            .Select(pp => pp.StartDate)
             .ToHashSet();
 
-        const long SECONDS_IN_A_WEEK = 7 * Const.SECONDS_IN_A_DAY;
         var candidates = Enumerable.Range(0, 4)
-            .Select(weeksAgo => mondayUnix - weeksAgo * SECONDS_IN_A_WEEK)
-            .Where(startDateUnix => !existingStarts.Contains(startDateUnix))
-            .Select(startDateUnix => new ValidPaySpan
+            .Select(weeksAgo => monday.AddDays(-7 * weeksAgo))
+            .Where(startDate => !existingStarts.Contains(startDate))
+            .Select(startDate => new ValidPaySpan
             {
-                StartDate = DateTimeOffset.FromUnixTimeSeconds(startDateUnix).UtcDateTime.ToIsoDateString(),
-                EndDate = DateTimeOffset.FromUnixTimeSeconds(startDateUnix).AddDays(6).UtcDateTime.ToIsoDateString()
+                StartDate = startDate.ToString("yyyy-MM-dd"),
+                EndDate = startDate.AddDays(6).ToString("yyyy-MM-dd")
             })
             .ToList();
 
@@ -77,15 +70,15 @@ public class PayPeriodEndpoints
         var transformedEntry = new PayPeriodView
         {
             AssignmentId = entry.AssignmentId,
-            StartDate = UnixDateConvert.ToIsoDate(entry.StartDateUnix),
-            EndDate = UnixDateConvert.ToIsoDate(entry.EndDateUnix),
+            StartDate = entry.StartDate.ToString("yyyy-MM-dd"),
+            EndDate = entry.EndDate.ToString("yyyy-MM-dd"),
             SubmissionStatus = entry.SubmissionStatus,
             DragonName = $"{assignment?.Dragon.GivenName} {assignment?.Dragon.FamilyName}",
             AssignmentDescription = $"{assignment?.Job.JobTitle} at {assignment?.Job.EmployerName}",
             HoursWorked = entry.HoursWorked.Select(hw => new HoursWorkedView
             {
-                StartDateTime = UnixDateConvert.ToIsoDateTime(hw.StartDateTimeUnix),
-                EndDateTime = UnixDateConvert.ToIsoDateTime(hw.EndDateTimeUnix)
+                StartDateTime = hw.StartDateTime.ToString("yyyy-MM-ddTHH:mm:ss"),
+                EndDateTime = hw.EndDateTime.ToString("yyyy-MM-ddTHH:mm:ss")
             }).ToList()
         };
         return TypedResults.Ok(ValidatedPayload<PayPeriodView>.FromPayload(transformedEntry));
@@ -105,7 +98,7 @@ public class PayPeriodEndpoints
                 ValidationFailures = validationFailures
             });
 
-        unitOfWork.PayPeriodRepository.Insert(payPeriod!);
+        unitOfWork.InsertPayPeriod(payPeriod!);
 
         await unitOfWork.SaveAsync().ConfigureAwait(false);
         return TypedResults.Ok(ValidatedPayload<PayPeriod>.FromPayload(payPeriod!));
@@ -133,23 +126,23 @@ public class PayPeriodEndpoints
         var inputClockIns = parsedPayPeriod!.HoursWorked.ToList();
 
         var clockInsToDelete = entry.HoursWorked
-            .Where(existingHw => !inputClockIns.Any(ih => ih.StartDateTimeUnix == existingHw.StartDateTimeUnix))
+            .Where(existingHw => !inputClockIns.Any(ih => ih.StartDateTime == existingHw.StartDateTime))
             .ToList();
         foreach (var recToDelete in clockInsToDelete)
             entry.HoursWorked.Remove(recToDelete);
 
         entry.AssignmentId = parsedPayPeriod.AssignmentId;
-        entry.StartDateUnix = parsedPayPeriod.StartDateUnix;
-        entry.EndDateUnix = parsedPayPeriod.EndDateUnix;
+        entry.StartDate = parsedPayPeriod.StartDate;
+        entry.EndDate = parsedPayPeriod.EndDate;
         entry.SubmissionStatus = parsedPayPeriod.SubmissionStatus;
 
         foreach (var inputClockIn in inputClockIns)
         {
-            var existingClockPunch = entry.HoursWorked.FirstOrDefault(h => h.StartDateTimeUnix == inputClockIn.StartDateTimeUnix);
+            var existingClockPunch = entry.HoursWorked.FirstOrDefault(h => h.StartDateTime == inputClockIn.StartDateTime);
             if (existingClockPunch == null)
                 entry.HoursWorked.Add(inputClockIn);
             else
-                existingClockPunch.EndDateTimeUnix = inputClockIn.EndDateTimeUnix;
+                existingClockPunch.EndDateTime = inputClockIn.EndDateTime;
         }
 
         await unitOfWork.SaveAsync().ConfigureAwait(false);
@@ -162,7 +155,7 @@ public class PayPeriodEndpoints
             ITimekeepingUnitOfWork unitOfWork,
             [FromRoute(Name = "payPeriodId")] int payPeriodId)
     {
-        var deleteResult = unitOfWork.PayPeriodRepository.Delete(payPeriodId);
+        var deleteResult = unitOfWork.DeletePayPeriod(payPeriodId);
         if (deleteResult == DeleteResult.NotFound)
             return TypedResults.NotFound(ValidatedResponse.NotFound);
 

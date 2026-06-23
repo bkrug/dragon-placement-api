@@ -5,11 +5,11 @@ namespace DragonTimekeepingApplication;
 
 public interface ITimekeepingUnitOfWork
 {
-    IGenericRepository<HoursWorked> HoursWorkedRepository { get; }
-    IGenericRepository<PayPeriod> PayPeriodRepository { get; }
-
     void Dispose();
     Task SaveAsync();
 
+    IEnumerable<PayPeriod> GetPayPeriodsByAssignment(int assignmentId);
     Task<PayPeriod?> GetPayPeriodWithHoursWorkedAsync(int payPeriodId);
+    void InsertPayPeriod(PayPeriod payPeriod);
+    DeleteResult DeletePayPeriod(int payPeriodId);
 }

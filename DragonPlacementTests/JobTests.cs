@@ -33,13 +33,13 @@ public class JobTests
             JobTitle = "Dragon Wrangler",
             EmployerName = "Dragonscale Inc.",
             NumberOfPositions = 3,
-            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
-            EndDateUnix = 2 * Const.SECONDS_IN_A_DAY,
+            StartDate = new DateTime(1970, 1, 2, 0, 0, 0, DateTimeKind.Utc),
+            EndDate = new DateTime(1970, 1, 3, 0, 0, 0, DateTimeKind.Utc),
             SkillTags = skills
         };
         var insertedJob = new Immutable<Job>();
         var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
-        unitOfWorkMock.Setup(u => u.JobRepository.Insert(It.IsAny<Job>()))
+        unitOfWorkMock.Setup(u => u.InsertJob(It.IsAny<Job>()))
             .Callback<Job>(insertedJob.Set);
         unitOfWorkMock.Setup(u => u.GetSkillTagsById(skillIds)).Returns(skills.Clone());
 
@@ -73,7 +73,6 @@ public class JobTests
         };
         typeof(JobCreateEdit).GetProperty(expectedFailureField)!.SetValue(inputJob, invalidValue);
         var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
-        unitOfWorkMock.Setup(m => m.JobRepository).Returns(new Mock<IGenericRepository<Job>>().Object);
 
         //Act
         var response = await JobEndpoints.CreateJobAsync(unitOfWorkMock.Object, inputJob);
@@ -99,7 +98,6 @@ public class JobTests
             EndDateUnix = 2000000
         };
         var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
-        unitOfWorkMock.Setup(m => m.JobRepository).Returns(new Mock<IGenericRepository<Job>>().Object);
 
         //Act
         var response = await JobEndpoints.CreateJobAsync(unitOfWorkMock.Object, inputJob);
@@ -137,8 +135,8 @@ public class JobTests
             JobTitle = "Old Title",
             EmployerName = "Old Employer",
             NumberOfPositions = 1,
-            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
-            EndDateUnix = 2 * Const.SECONDS_IN_A_DAY,
+            StartDate = new DateTime(1970, 1, 2, 0, 0, 0, DateTimeKind.Utc),
+            EndDate = new DateTime(1970, 1, 3, 0, 0, 0, DateTimeKind.Utc),
             SkillTags = oldSkills
         };
         var inputJob = new JobCreateEdit
@@ -156,8 +154,8 @@ public class JobTests
             JobTitle = "New Title",
             EmployerName = "New Employer",
             NumberOfPositions = 5,
-            StartDateUnix = 2592000,
-            EndDateUnix = 3456000,
+            StartDate = DateTimeOffset.FromUnixTimeSeconds(2592000).UtcDateTime,
+            EndDate = DateTimeOffset.FromUnixTimeSeconds(3456000).UtcDateTime,
             SkillTags = newSkills
         };
         var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
@@ -203,8 +201,8 @@ public class JobTests
             JobTitle = "Dragon Wrangler",
             EmployerName = "Dragonscale Inc.",
             NumberOfPositions = 3,
-            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
-            EndDateUnix = 2 * Const.SECONDS_IN_A_DAY
+            StartDate = new DateTime(1970, 1, 2, 0, 0, 0, DateTimeKind.Utc),
+            EndDate = new DateTime(1970, 1, 3, 0, 0, 0, DateTimeKind.Utc)
         };
         var inputJob = new JobCreateEdit
         {
@@ -240,8 +238,8 @@ public class JobTests
             JobTitle = "Dragon Wrangler",
             EmployerName = "Dragonscale Inc.",
             NumberOfPositions = 3,
-            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
-            EndDateUnix = 2 * Const.SECONDS_IN_A_DAY
+            StartDate = new DateTime(1970, 1, 2, 0, 0, 0, DateTimeKind.Utc),
+            EndDate = new DateTime(1970, 1, 3, 0, 0, 0, DateTimeKind.Utc)
         };
         var inputJob = new JobCreateEdit
         {
@@ -274,7 +272,7 @@ public class JobTests
     {
         const int JOB_ID = 42;
         var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
-        unitOfWorkMock.Setup(u => u.JobRepository.Delete(JOB_ID)).Returns(DeleteResult.Deleted);
+        unitOfWorkMock.Setup(u => u.DeleteJob(JOB_ID)).Returns(DeleteResult.Deleted);
 
         //Act
         var response = await JobEndpoints.DeleteJobAsync(unitOfWorkMock.Object, JOB_ID);
@@ -289,7 +287,7 @@ public class JobTests
     {
         const int JOB_ID = 999;
         var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
-        unitOfWorkMock.Setup(u => u.JobRepository.Delete(JOB_ID)).Returns(DeleteResult.NotFound);
+        unitOfWorkMock.Setup(u => u.DeleteJob(JOB_ID)).Returns(DeleteResult.NotFound);
 
         //Act
         var response = await JobEndpoints.DeleteJobAsync(unitOfWorkMock.Object, JOB_ID);
@@ -305,7 +303,7 @@ public class JobTests
         const int JOB_ID = 7;
         var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
         unitOfWorkMock.Setup(u => u.JobHasAnAssignment(JOB_ID)).ReturnsAsync(true);
-        unitOfWorkMock.Setup(u => u.JobRepository.Delete(JOB_ID)).Returns(DeleteResult.Deleted);
+        unitOfWorkMock.Setup(u => u.DeleteJob(JOB_ID)).Returns(DeleteResult.Deleted);
 
         //Act
         var response = await JobEndpoints.DeleteJobAsync(unitOfWorkMock.Object, JOB_ID);

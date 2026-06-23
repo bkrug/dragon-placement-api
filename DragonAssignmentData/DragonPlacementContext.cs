@@ -1,4 +1,4 @@
-using DragonAssignmentDomain.Models;
+using DragonAssignmentData.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace DragonAssignmentData;

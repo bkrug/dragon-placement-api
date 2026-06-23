@@ -5,8 +5,6 @@ using DragonAssignmentData;
 using Microsoft.EntityFrameworkCore;
 using DragonTimekeepingApplication;
 using DragonTimekeepingData;
-using DragonAssignmentDomain.Models;
-using DragonTimekeepingDomain.Models;
 
 const string allowedOriginsPolicy = "DragonPlacementAllowedOrigins";
 
