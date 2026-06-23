@@ -30,3 +30,4 @@ Use the `--force` tag, if you want to replace the old models.
 Note to self: Reference these every once in a while
 - https://medium.com/@danceforrasputin/-411a365022f4
 - https://dev.to/mashrulhaque/how-to-design-a-maintainable-net-solution-structure-for-growing-teams-284n
+- https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/
