@@ -2,11 +2,9 @@ namespace DragonTimekeepingDomain.Validation;
 
 public static class PayPeriodValidator
 {
-    private const long SECONDS_IN_A_DAY = 86400;
-
     public static PayPeriodValidationFailures? Validate(
         DateTime parsedStart, DateTime parsedEnd,
-        IList<(long StartUnix, long EndUnix)> hoursWorked)
+        IList<(DateTime Start, DateTime End)> hoursWorked)
     {
         var failures = new PayPeriodValidationFailures();
 
@@ -22,8 +20,7 @@ public static class PayPeriodValidator
         else if (parsedEnd <= parsedStart)
             failures.EndDate = "must be greater than StartDate";
 
-        long payPeriodStartUnix = new DateTimeOffset(parsedStart, TimeSpan.Zero).ToUnixTimeSeconds();
-        long payPeriodEndUnix = new DateTimeOffset(parsedEnd, TimeSpan.Zero).ToUnixTimeSeconds();
+        var payPeriodEndPlusOneDay = parsedEnd.AddDays(1);
 
         failures.HoursWorked = hoursWorked
             .Select((hw, index) =>
@@ -32,11 +29,11 @@ public static class PayPeriodValidator
                 {
                     Index = index,
                 };
-                if (hw.StartUnix < payPeriodStartUnix)
+                if (hw.Start < parsedStart)
                     hwf.RowValidationMessage = "Clock-in time is outside of the pay period";
-                else if (hw.EndUnix >= payPeriodEndUnix + SECONDS_IN_A_DAY)
+                else if (hw.End >= payPeriodEndPlusOneDay)
                     hwf.RowValidationMessage = "Clock-out time is outside of the pay period";
-                else if (hoursWorked.Where((other, i) => i != index && hw.StartUnix < other.EndUnix && other.StartUnix < hw.EndUnix).Any())
+                else if (hoursWorked.Where((other, i) => i != index && hw.Start < other.End && other.Start < hw.End).Any())
                     hwf.RowValidationMessage = "Overlaps with another hours-worked record";
                 return hwf;
             })

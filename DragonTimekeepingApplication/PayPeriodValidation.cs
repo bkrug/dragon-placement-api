@@ -19,10 +19,11 @@ public static class PayPeriodValidation
         if (!string.IsNullOrEmpty(failures.StartDate) || !string.IsNullOrEmpty(failures.EndDate))
             return failures;
 
+        //TODO: Add validation that these strings parsed correctly
         var parsedHoursWorked = hoursWorked
             .Select(hw => (
-                StartUnix: new DateTimeOffset(DateTime.Parse(hw.StartDateTime), TimeSpan.Zero).ToUnixTimeSeconds(),
-                EndUnix: new DateTimeOffset(DateTime.Parse(hw.EndDateTime), TimeSpan.Zero).ToUnixTimeSeconds()
+                Start: DateTime.Parse(hw.StartDateTime),
+                End: DateTime.Parse(hw.EndDateTime)
             ))
             .ToList();
 
