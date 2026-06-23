@@ -2,7 +2,7 @@ using CommonDataLayer.Repositories;
 using TimekeepingDataLayer.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace TimekeepingDataLayer.Repositories;
+namespace TimekeepingDataLayer;
 
 public interface ITimekeepingUnitOfWork
 {

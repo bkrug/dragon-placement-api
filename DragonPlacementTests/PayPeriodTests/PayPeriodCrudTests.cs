@@ -2,13 +2,12 @@ using CommonDataLayer.Repositories;
 using DragonPlacementApi.Endpoints;
 using DragonPlacementApi.Poco;
 using DragonPlacementDataLayer.Models;
-using DragonPlacementDataLayer.Repositories;
+using DragonPlacementDataLayer;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.Extensions.Options;
 using Moq;
 using Shouldly;
 using TimekeepingDataLayer.Models;
-using TimekeepingDataLayer.Repositories;
+using TimekeepingDataLayer;
 
 namespace DragonPlacementTests.PayPeriodTests;
 

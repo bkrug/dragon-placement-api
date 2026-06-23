@@ -1,10 +1,10 @@
 using System.Text.Json.Serialization;
 using DragonPlacementApi.Endpoints;
 using DragonPlacementDataLayer.Models;
-using DragonPlacementDataLayer.Repositories;
+using DragonPlacementDataLayer;
 using Microsoft.EntityFrameworkCore;
 using TimekeepingDataLayer.Models;
-using TimekeepingDataLayer.Repositories;
+using TimekeepingDataLayer;
 
 const string allowedOriginsPolicy = "DragonPlacementAllowedOrigins";
 

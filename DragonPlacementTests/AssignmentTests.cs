@@ -1,4 +1,4 @@
-﻿using DragonPlacementDataLayer.Repositories;
+﻿using DragonPlacementDataLayer;
 using DragonPlacementDataLayer.Models;
 using DragonPlacementApi.Endpoints;
 using Moq;

@@ -5,7 +5,7 @@ using DragonPlacementDataLayer.Poco;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace DragonPlacementDataLayer.Repositories;
+namespace DragonPlacementDataLayer;
 
 /// <summary>
 /// You see more than one UnitOfWork context in this git-repository.

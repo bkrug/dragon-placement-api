@@ -2,7 +2,7 @@ using CommonDataLayer.Repositories;
 using DragonPlacementApi.Endpoints;
 using DragonPlacementApi.Poco;
 using DragonPlacementDataLayer.Models;
-using DragonPlacementDataLayer.Repositories;
+using DragonPlacementDataLayer;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Moq;
 using Shouldly;
