@@ -13,7 +13,7 @@ public class PayPeriodEndpoints
 {
     public static PagedData<PayPeriod> GetPayPeriods(
             ITimekeepingUnitOfWork unitOfWork,
-            [FromRoute(Name = "dragonId")] int dragonId,
+            [FromRoute(Name = "unusedId")] int unusedId,
             [FromRoute(Name = "assignmentId")] int assignmentId,
             [FromQuery(Name = "offset")] int offset = 0,
             [FromQuery(Name = "limit")] int limit = 20)
@@ -34,7 +34,7 @@ public class PayPeriodEndpoints
 
     public static Ok<ValidatedPayload<List<ValidPaySpan>>> GetValidPayPeriods(
             ITimekeepingUnitOfWork unitOfWork,
-            [FromRoute(Name = "dragonId")] int dragonId,
+            [FromRoute(Name = "unusedId")] int unusedId,
             [FromRoute(Name = "assignmentId")] int assignmentId)
     {
         var today = DateTime.UtcNow.Date;

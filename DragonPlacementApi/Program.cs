@@ -52,8 +52,8 @@ app.MapDelete("/job/{jobId}/assigned-dragon/{dragonId}", JobEndpoints.UnassignDr
 
 app.MapGet("/skill-tag", SkillEndpoints.GetSkillTagsAsync);
 
-app.MapGet("/dragon/{dragonId}/assignment/{assignmentId}/payperiod", PayPeriodEndpoints.GetPayPeriods);
-app.MapGet("/v2/dragon/{dragonId}/assignment/{assignmentId}/payperiodcandidate", PayPeriodEndpoints.GetValidPayPeriods);
+app.MapGet("/dragon/{unusedId}/assignment/{assignmentId}/payperiod", PayPeriodEndpoints.GetPayPeriods);
+app.MapGet("/v2/dragon/{unusedId}/assignment/{assignmentId}/payperiodcandidate", PayPeriodEndpoints.GetValidPayPeriods);
 app.MapGet("/v2/payperiod/{payPeriodId}", PayPeriodEndpoints.GetPayPeriodAsync);
 app.MapPost("/v2/payperiod", PayPeriodEndpoints.CreatePayPeriodAsync);
 app.MapPut("/v2/payperiod/{payPeriodId}", PayPeriodEndpoints.UpdatePayPeriodAsync);
