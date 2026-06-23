@@ -1,19 +1,19 @@
 namespace DragonPlacementApi.Poco;
 
-public class HoursWorkedCreateEditNew
+public class HoursWorkedCreateEdit
 {
     public string StartDateTime { get; set; } = string.Empty;
     public string EndDateTime { get; set; } = string.Empty;
 }
 
-public class PayPeriodCreateEditNew
+public class PayPeriodCreateEdit
 {
     public int AssignmentId { get; set; }
     public int DragonId { get; set; }
     public string StartDate { get; set; } = string.Empty;
     public string EndDate { get; set; } = string.Empty;
     public string SubmissionStatus { get; set; } = null!;
-    public IList<HoursWorkedCreateEditNew> HoursWorked { get; set; } = [];
+    public IList<HoursWorkedCreateEdit> HoursWorked { get; set; } = [];
 }
 
 public class HoursWorkedView
@@ -40,7 +40,7 @@ public class HoursWorkedValidationFailures : GridRowValidationFailures
     public string EndDateTime { get; set; } = string.Empty;
 }
 
-public class PayPeriodValidationFailuresNew
+public class PayPeriodValidationFailures
 {
     public string StartDate { get; set; } = string.Empty;
     public string EndDate { get; set; } = string.Empty;

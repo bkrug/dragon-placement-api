@@ -61,7 +61,7 @@ public class PayPeriodEndpoints
     }
 
     public static async Task<Results<Ok<ValidatedPayload<PayPeriodView>>, NotFound<ValidatedResponse>>>
-        GetPayPeriodNewAsync(
+        GetPayPeriodAsync(
             ITimekeepingUnitOfWork unitOfWork,
             IDragonPlacementUnitOfWork assignmentUnitOfWork,
             [FromRoute(Name = "payPeriodId")] int payPeriodId)
@@ -90,10 +90,10 @@ public class PayPeriodEndpoints
         return TypedResults.Ok(ValidatedPayload<PayPeriodView>.FromPayload(transformedEntry));
     }
 
-    public static async Task<Results<Ok<ValidatedPayload<PayPeriod>>, BadRequest<ValidatedForm<PayPeriodValidationFailuresNew>>>>
-        CreatePayPeriodNewAsync(
+    public static async Task<Results<Ok<ValidatedPayload<PayPeriod>>, BadRequest<ValidatedForm<PayPeriodValidationFailures>>>>
+        CreatePayPeriodAsync(
             ITimekeepingUnitOfWork unitOfWork,
-            [FromBody] PayPeriodCreateEditNew input)
+            [FromBody] PayPeriodCreateEdit input)
     {
         var validationFailures = ValidatePayPeriodNew(input);
         if (validationFailures != null)
@@ -118,11 +118,11 @@ public class PayPeriodEndpoints
         return TypedResults.Ok(ValidatedPayload<PayPeriod>.FromPayload(payPeriod));
     }
 
-    public static async Task<Results<Ok<ValidatedPayload<PayPeriod>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<PayPeriodValidationFailuresNew>>>>
-        UpdatePayPeriodNewAsync(
+    public static async Task<Results<Ok<ValidatedPayload<PayPeriod>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<PayPeriodValidationFailures>>>>
+        UpdatePayPeriodAsync(
             ITimekeepingUnitOfWork unitOfWork,
             [FromRoute(Name = "payPeriodId")] int payPeriodId,
-            [FromBody] PayPeriodCreateEditNew input)
+            [FromBody] PayPeriodCreateEdit input)
     {
         var entry = await unitOfWork.GetPayPeriodWithHoursWorkedAsync(payPeriodId).ConfigureAwait(false);
         if (entry == null)
@@ -178,9 +178,9 @@ public class PayPeriodEndpoints
         return TypedResults.Ok(ValidatedResponse.Success);
     }
 
-    private static ValidatedForm<PayPeriodValidationFailuresNew>? ValidatePayPeriodNew(PayPeriodCreateEditNew input)
+    private static ValidatedForm<PayPeriodValidationFailures>? ValidatePayPeriodNew(PayPeriodCreateEdit input)
     {
-        var failures = new PayPeriodValidationFailuresNew();
+        var failures = new PayPeriodValidationFailures();
 
         if (!DateTime.TryParse(input.StartDate, out var parsedStart))
             failures.StartDate = "must be an ISO Date";
@@ -229,7 +229,7 @@ public class PayPeriodEndpoints
         return !string.IsNullOrEmpty(failures.StartDate)
             || !string.IsNullOrEmpty(failures.EndDate)
             || failures.HoursWorked.Count > 0
-            ? new ValidatedForm<PayPeriodValidationFailuresNew>
+            ? new ValidatedForm<PayPeriodValidationFailures>
                 {
                     IsSuccess = false,
                     IsInternalError = false,
