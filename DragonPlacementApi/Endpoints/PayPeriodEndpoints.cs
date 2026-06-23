@@ -20,7 +20,7 @@ public class PayPeriodEndpoints
     {
         var results = unitOfWork.PayPeriodRepository
             .Get(
-                filter: pp => pp.DragonId == dragonId && pp.AssignmentId == assignmentId,
+                filter: pp => pp.AssignmentId == assignmentId,
                 orderBy: q => q.OrderByDescending(pp => pp.StartDateUnix)
             );
         return new()
@@ -42,7 +42,7 @@ public class PayPeriodEndpoints
         var mondayUnix = new DateTimeOffset(today.AddDays(-daysToSubtract), TimeSpan.Zero).ToUnixTimeSeconds();
 
         var existingStarts = unitOfWork.PayPeriodRepository
-            .Get(pp => pp.DragonId == dragonId && pp.AssignmentId == assignmentId)
+            .Get(pp => pp.AssignmentId == assignmentId)
             .Select(pp => pp.StartDateUnix)
             .ToHashSet();
 
@@ -75,7 +75,6 @@ public class PayPeriodEndpoints
         var transformedEntry = new PayPeriodView
         {
             AssignmentId = entry.AssignmentId,
-            DragonId = entry.DragonId,
             StartDate = UnixDateConvert.ToIsoDate(entry.StartDateUnix),
             EndDate = UnixDateConvert.ToIsoDate(entry.EndDateUnix),
             SubmissionStatus = entry.SubmissionStatus,
@@ -102,7 +101,6 @@ public class PayPeriodEndpoints
         var payPeriod = new PayPeriod
         {
             AssignmentId = input.AssignmentId,
-            DragonId = input.DragonId,
             StartDateUnix = UnixDateConvert.FromIsoDate(input.StartDate),
             EndDateUnix = UnixDateConvert.FromIsoDate(input.EndDate),
             SubmissionStatus = input.SubmissionStatus,
@@ -146,7 +144,6 @@ public class PayPeriodEndpoints
             entry.HoursWorked.Remove(recToDelete);
 
         entry.AssignmentId = input.AssignmentId;
-        entry.DragonId = input.DragonId;
         entry.StartDateUnix = UnixDateConvert.FromIsoDate(input.StartDate);
         entry.EndDateUnix = UnixDateConvert.FromIsoDate(input.EndDate);
         entry.SubmissionStatus = input.SubmissionStatus;

@@ -9,7 +9,6 @@ public class HoursWorkedCreateEdit
 public class PayPeriodCreateEdit
 {
     public int AssignmentId { get; set; }
-    public int DragonId { get; set; }
     public string StartDate { get; set; } = string.Empty;
     public string EndDate { get; set; } = string.Empty;
     public string SubmissionStatus { get; set; } = null!;
@@ -27,7 +26,6 @@ public class PayPeriodView
     public string AssignmentDescription { get; set; } = string.Empty;
     public string DragonName { get; set; } = string.Empty;
     public int AssignmentId { get; set; }
-    public int DragonId { get; set; }
     public string StartDate { get; set; } = string.Empty;
     public string EndDate { get; set; } = string.Empty;
     public string SubmissionStatus { get; set; } = null!;

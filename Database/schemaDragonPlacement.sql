@@ -45,17 +45,6 @@ CREATE TABLE JobSkillTag (
     CONSTRAINT FK_JobSkillTag_Job      FOREIGN KEY (JobId)      REFERENCES Job(JobId),
     CONSTRAINT FK_JobSkillTag_SkillTag FOREIGN KEY (SkillTagId) REFERENCES SkillTag(SkillTagId)
 );
-CREATE TABLE PayPeriod (
-    PayPeriodId       INTEGER NOT NULL,
-    AssignmentId      INTEGER NOT NULL,
-    DragonId          INTEGER NOT NULL,
-    StartDateUnix     INTEGER NOT NULL,
-    EndDateUnix       INTEGER NOT NULL,
-    SubmissionStatus  TEXT NOT NULL,
-    CONSTRAINT PK_PayPeriodId PRIMARY KEY (PayPeriodId),
-    CONSTRAINT FK_AssignmentId FOREIGN KEY (AssignmentId) REFERENCES Assignment(AssignmentId),
-    CONSTRAINT FK_DragonId FOREIGN KEY (DragonId) REFERENCES Dragon(DragonId)
-);
 CREATE TABLE IF NOT EXISTS "HoursWorked" (
     HoursWorkedId     INTEGER NOT NULL,
     StartDateTimeUnix INTEGER NOT NULL,
@@ -63,4 +52,13 @@ CREATE TABLE IF NOT EXISTS "HoursWorked" (
     PayPeriodId       INTEGER NOT NULL,
     CONSTRAINT PK_HoursWorkedId PRIMARY KEY (HoursWorkedId),
     CONSTRAINT FK_PayPeriodId FOREIGN KEY (PayPeriodId) REFERENCES PayPeriod(PayPeriodId)
+);
+CREATE TABLE PayPeriod (
+	PayPeriodId INTEGER NOT NULL,
+	AssignmentId INTEGER NOT NULL,
+	StartDateUnix INTEGER NOT NULL,
+	EndDateUnix INTEGER NOT NULL,
+	SubmissionStatus TEXT NOT NULL,
+	CONSTRAINT PK_PayPeriodId PRIMARY KEY (PayPeriodId),
+	CONSTRAINT FK_AssignmentId FOREIGN KEY (AssignmentId) REFERENCES "Assignment"(AssignmentId)
 );

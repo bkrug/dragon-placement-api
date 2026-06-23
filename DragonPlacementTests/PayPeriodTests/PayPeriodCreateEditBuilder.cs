@@ -29,7 +29,6 @@ public class PayPeriodCreateEditBuilder
     public PayPeriodCreateEdit Build() => new()
     {
         AssignmentId = _assignmentId,
-        DragonId = _dragonId,
         StartDate = _startDate,
         EndDate = _endDate,
         SubmissionStatus = _submissionStatus,

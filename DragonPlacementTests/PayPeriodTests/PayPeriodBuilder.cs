@@ -7,7 +7,6 @@ public class PayPeriodBuilder
 {
     private int _payPeriodId;
     private int _assignmentId = 10;
-    private int _dragonId = 20;
     private long _startDateUnix = 1 * Const.SECONDS_IN_A_DAY;
     private long _endDateUnix = 8 * Const.SECONDS_IN_A_DAY;
     private string _submissionStatus = "Draft";
@@ -15,7 +14,6 @@ public class PayPeriodBuilder
 
     public PayPeriodBuilder WithPayPeriodId(int id) { _payPeriodId = id; return this; }
     public PayPeriodBuilder WithAssignmentId(int id) { _assignmentId = id; return this; }
-    public PayPeriodBuilder WithDragonId(int id) { _dragonId = id; return this; }
     public PayPeriodBuilder WithStartDateUnix(long unitCount, long secondsPerUnit) {
         _startDateUnix = unitCount * secondsPerUnit;
         return this;
@@ -66,7 +64,6 @@ public class PayPeriodBuilder
     {
         PayPeriodId = _payPeriodId,
         AssignmentId = _assignmentId,
-        DragonId = _dragonId,
         StartDateUnix = _startDateUnix,
         EndDateUnix = _endDateUnix,
         SubmissionStatus = _submissionStatus,

@@ -27,7 +27,6 @@ public class PayPeriodCrudTests
             .WithStartDateUnix(4, Const.SECONDS_IN_A_DAY)
             .WithEndDateUnix(10, Const.SECONDS_IN_A_DAY)
             .WithAssignmentId(1827)
-            .WithDragonId(382)
             .AddHoursWorkedRelative(clockInSeconds: 9 * 3600, clockOutSeconds: 17 * 3600)
             .Build();
         var insertedPayPeriod = new Immutable<PayPeriod>();
@@ -209,7 +208,6 @@ public class PayPeriodCrudTests
         var existingEntry = new PayPeriodBuilder()
             .WithPayPeriodId(PAY_PERIOD_ID)
             .WithAssignmentId(5)
-            .WithDragonId(15)
             .WithStartDateUnix(11 * Const.SECONDS_IN_A_DAY)
             .WithEndDateUnix(17 * Const.SECONDS_IN_A_DAY)
             .WithSubmissionStatus("Draft")
@@ -225,7 +223,6 @@ public class PayPeriodCrudTests
         var expectedEntry = new PayPeriodBuilder()
             .WithPayPeriodId(PAY_PERIOD_ID)
             .WithAssignmentId(5)
-            .WithDragonId(15)
             .WithStartDateUnix(11 * Const.SECONDS_IN_A_DAY)
             .WithEndDateUnix(17 * Const.SECONDS_IN_A_DAY)
             .WithSubmissionStatus("Submitted")
@@ -517,7 +514,6 @@ public class PayPeriodCrudTests
         payload.ShouldBeEquivalentTo(new PayPeriodView
         {
             AssignmentId = ASSIGNMENT_ID,
-            DragonId = DRAGON_ID,
             StartDate = "1970-01-02",
             EndDate = "1970-01-08",
             SubmissionStatus = "Draft",
