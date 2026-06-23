@@ -2,7 +2,7 @@ using CommonDataLayer.Repositories;
 using DragonTimekeepingDomain.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace TimekeepingDataLayer;
+namespace DragonTimekeepingData;
 
 public interface ITimekeepingUnitOfWork
 {

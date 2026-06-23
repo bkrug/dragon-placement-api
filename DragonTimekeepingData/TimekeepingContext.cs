@@ -1,7 +1,7 @@
 using DragonTimekeepingDomain.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace TimekeepingDataLayer;
+namespace DragonTimekeepingData;
 
 /// <summary>
 /// There is more than one data domain in this git-repository.

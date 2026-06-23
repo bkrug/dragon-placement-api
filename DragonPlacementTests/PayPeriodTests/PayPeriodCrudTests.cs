@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Moq;
 using Shouldly;
 using DragonTimekeepingDomain.Models;
-using TimekeepingDataLayer;
+using DragonTimekeepingData;
 
 namespace DragonPlacementTests.PayPeriodTests;
 

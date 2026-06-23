@@ -5,5 +5,5 @@
   <Project Path="DragonPlacementApi/DragonPlacementApi.csproj" />
   <Project Path="DragonAssignmentDataLayer/DragonAssignmentDataLayer.csproj" />
   <Project Path="DragonPlacementTests/DragonPlacementTests.csproj" />
-  <Project Path="TimekeepingDataLayer/TimekeepingDataLayer.csproj" />
+  <Project Path="DragonTimekeepingData/DragonTimekeepingData.csproj" />
 </Solution>

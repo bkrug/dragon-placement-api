@@ -5,7 +5,7 @@ using DragonPlacementApi.Poco;
 using Moq;
 using Shouldly;
 using DragonTimekeepingDomain.Models;
-using TimekeepingDataLayer;
+using DragonTimekeepingData;
 
 namespace DragonPlacementTests.PayPeriodTests;
 
