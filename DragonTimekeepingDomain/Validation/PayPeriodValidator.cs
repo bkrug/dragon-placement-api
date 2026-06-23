@@ -1,6 +1,6 @@
 namespace DragonTimekeepingDomain.Validation;
 
-public static class PayPeriodValidator
+public static class PayPeriodDomainValidator
 {
     public static PayPeriodValidationFailures? Validate(
         DateTime parsedStart, DateTime parsedEnd,

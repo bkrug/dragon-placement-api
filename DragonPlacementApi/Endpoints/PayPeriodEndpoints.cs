@@ -96,7 +96,7 @@ public class PayPeriodEndpoints
             ITimekeepingUnitOfWork unitOfWork,
             [FromBody] PayPeriodCreateEdit input)
     {
-        var validationFailures = PayPeriodValidation.ValidatePayPeriod(
+        var validationFailures = PayPeriodApplicationValidator.ValidatePayPeriod(
             input.StartDate, input.EndDate,
             input.HoursWorked.Select(hw => (hw.StartDateTime, hw.EndDateTime)).ToList());
         if (validationFailures != null)
@@ -135,7 +135,7 @@ public class PayPeriodEndpoints
         if (entry == null)
             return TypedResults.NotFound(ValidatedResponse.NotFound);
 
-        var validationFailures = PayPeriodValidation.ValidatePayPeriod(
+        var validationFailures = PayPeriodApplicationValidator.ValidatePayPeriod(
             input.StartDate, input.EndDate,
             input.HoursWorked.Select(hw => (hw.StartDateTime, hw.EndDateTime)).ToList());
         if (validationFailures != null)

@@ -2,7 +2,7 @@ using DragonTimekeepingDomain.Validation;
 
 namespace DragonTimekeepingApplication;
 
-public static class PayPeriodValidation
+public static class PayPeriodApplicationValidator
 {
     public static PayPeriodValidationFailures? ValidatePayPeriod(
         string startDate, string endDate,
@@ -27,6 +27,6 @@ public static class PayPeriodValidation
             ))
             .ToList();
 
-        return PayPeriodValidator.Validate(parsedStart, parsedEnd, parsedHoursWorked);
+        return PayPeriodDomainValidator.Validate(parsedStart, parsedEnd, parsedHoursWorked);
     }
 }
