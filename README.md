@@ -23,3 +23,10 @@ Run this command from the DragonPlacementDataLayer folder to update the models
 `dotnet ef dbcontext scaffold "Data Source=../Database/DragonPlacement.db" Microsoft.EntityFrameworkCore.Sqlite -o Models`
 
 Use the `--force` tag, if you want to replace the old models.
+
+
+## Using more of a Domain Driven Design
+
+Note to self: Reference these every once in a while
+- https://medium.com/@danceforrasputin/-411a365022f4
+- https://dev.to/mashrulhaque/how-to-design-a-maintainable-net-solution-structure-for-growing-teams-284n
