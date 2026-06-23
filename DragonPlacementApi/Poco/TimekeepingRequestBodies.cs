@@ -53,6 +53,7 @@ public class PayPeriodView
 public class HoursWorkedValidationFailures
 {
     public int Index { get;set; } = -1;
+    public string RowValidationMessage { get; set; } = string.Empty;
     public string StartDateTime { get; set; } = string.Empty;
     public string EndDateTime { get; set; } = string.Empty;
 }

@@ -331,15 +331,15 @@ public class PayPeriodEndpoints
                 {
                     Index = index,
                 };
-                if (hw.EndUnix >= payPeriodEndUnix + Const.SECONDS_IN_A_DAY)
-                    hwf.EndDateTime = "Clock-out time is outside of the pay period";
                 if (hw.StartUnix < payPeriodStartUnix)
-                    hwf.StartDateTime = "Clock-in time is outside of the pay period";
+                    hwf.RowValidationMessage = "Clock-in time is outside of the pay period";
+                else if (hw.EndUnix >= payPeriodEndUnix + Const.SECONDS_IN_A_DAY)
+                    hwf.RowValidationMessage = "Clock-out time is outside of the pay period";
                 else if (parsedHoursWorked.Where((other, i) => i != index && hw.StartUnix < other.EndUnix && other.StartUnix < hw.EndUnix).Any())
-                    hwf.StartDateTime = "Overlaps with another hours-worked record";
+                    hwf.RowValidationMessage = "Overlaps with another hours-worked record";
                 return hwf;
             })
-            .Where(hwf => !string.IsNullOrEmpty(hwf.StartDateTime) || !string.IsNullOrEmpty(hwf.EndDateTime))
+            .Where(hwf => !string.IsNullOrEmpty(hwf.StartDateTime) || !string.IsNullOrEmpty(hwf.EndDateTime) || !string.IsNullOrEmpty(hwf.RowValidationMessage))
             .ToList();
 
         return !string.IsNullOrEmpty(failures.StartDate)
