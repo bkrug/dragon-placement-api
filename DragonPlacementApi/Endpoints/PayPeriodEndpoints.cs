@@ -96,7 +96,7 @@ public class PayPeriodEndpoints
             ITimekeepingUnitOfWork unitOfWork,
             [FromBody] PayPeriodCreateEdit input)
     {
-        var validationFailures = PayPeriodApplicationValidator.ValidatePayPeriod(input);
+        var (payPeriod, validationFailures) = PayPeriodApplicationValidator.GetPayPeriodModel(input);
         if (validationFailures != null)
             return TypedResults.BadRequest(new ValidatedForm<PayPeriodValidationFailures>
             {
@@ -105,22 +105,10 @@ public class PayPeriodEndpoints
                 ValidationFailures = validationFailures
             });
 
-        var payPeriod = new PayPeriod
-        {
-            AssignmentId = input.AssignmentId,
-            StartDateUnix = UnixDateConvert.FromIsoDate(input.StartDate),
-            EndDateUnix = UnixDateConvert.FromIsoDate(input.EndDate),
-            SubmissionStatus = input.SubmissionStatus,
-            HoursWorked = input.HoursWorked.Select(hw => new HoursWorked
-            {
-                StartDateTimeUnix = UnixDateConvert.FromIsoDateTime(hw.StartDateTime),
-                EndDateTimeUnix = UnixDateConvert.FromIsoDateTime(hw.EndDateTime)
-            }).ToList()
-        };
-        unitOfWork.PayPeriodRepository.Insert(payPeriod);
+        unitOfWork.PayPeriodRepository.Insert(payPeriod!);
 
         await unitOfWork.SaveAsync().ConfigureAwait(false);
-        return TypedResults.Ok(ValidatedPayload<PayPeriod>.FromPayload(payPeriod));
+        return TypedResults.Ok(ValidatedPayload<PayPeriod>.FromPayload(payPeriod!));
     }
 
     public static async Task<Results<Ok<ValidatedPayload<PayPeriod>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<PayPeriodValidationFailures>>>>
@@ -133,7 +121,7 @@ public class PayPeriodEndpoints
         if (entry == null)
             return TypedResults.NotFound(ValidatedResponse.NotFound);
 
-        var validationFailures = PayPeriodApplicationValidator.ValidatePayPeriod(input);
+        var (parsedPayPeriod, validationFailures) = PayPeriodApplicationValidator.GetPayPeriodModel(input);
         if (validationFailures != null)
             return TypedResults.BadRequest(new ValidatedForm<PayPeriodValidationFailures>
             {
@@ -142,12 +130,7 @@ public class PayPeriodEndpoints
                 ValidationFailures = validationFailures
             });
 
-        var inputClockIns = input.HoursWorked
-            .Select(hw => new HoursWorked {
-                StartDateTimeUnix = UnixDateConvert.FromIsoDateTime(hw.StartDateTime),
-                EndDateTimeUnix = UnixDateConvert.FromIsoDateTime(hw.EndDateTime)
-            })
-            .ToList();
+        var inputClockIns = parsedPayPeriod!.HoursWorked.ToList();
 
         var clockInsToDelete = entry.HoursWorked
             .Where(existingHw => !inputClockIns.Any(ih => ih.StartDateTimeUnix == existingHw.StartDateTimeUnix))
@@ -155,10 +138,10 @@ public class PayPeriodEndpoints
         foreach (var recToDelete in clockInsToDelete)
             entry.HoursWorked.Remove(recToDelete);
 
-        entry.AssignmentId = input.AssignmentId;
-        entry.StartDateUnix = UnixDateConvert.FromIsoDate(input.StartDate);
-        entry.EndDateUnix = UnixDateConvert.FromIsoDate(input.EndDate);
-        entry.SubmissionStatus = input.SubmissionStatus;
+        entry.AssignmentId = parsedPayPeriod.AssignmentId;
+        entry.StartDateUnix = parsedPayPeriod.StartDateUnix;
+        entry.EndDateUnix = parsedPayPeriod.EndDateUnix;
+        entry.SubmissionStatus = parsedPayPeriod.SubmissionStatus;
 
         foreach (var inputClockIn in inputClockIns)
         {

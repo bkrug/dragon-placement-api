@@ -1,11 +1,14 @@
+using DragonTimekeepingDomain.Models;
+
 namespace DragonTimekeepingDomain.Validation;
 
 public static class PayPeriodDomainValidator
 {
-    public static PayPeriodValidationFailures? Validate(
-        DateTime parsedStart, DateTime parsedEnd,
-        IList<(DateTime Start, DateTime End)> hoursWorked)
+    public static PayPeriodValidationFailures? Validate(PayPeriod payPeriod)
     {
+        var parsedStart = DateTimeOffset.FromUnixTimeSeconds(payPeriod.StartDateUnix).UtcDateTime;
+        var parsedEnd = DateTimeOffset.FromUnixTimeSeconds(payPeriod.EndDateUnix).UtcDateTime;
+
         var failures = new Dictionary<string, string>();
 
         var startDateMessage = ValidateStartDate(parsedStart);
@@ -15,6 +18,13 @@ public static class PayPeriodDomainValidator
         var endDateMessage = ValidateEndDate(parsedEnd, parsedStart);
         if (endDateMessage != null)
             failures["EndDate"] = endDateMessage;
+
+        var hoursWorked = payPeriod.HoursWorked
+            .Select(hw => (
+                Start: DateTimeOffset.FromUnixTimeSeconds(hw.StartDateTimeUnix).UtcDateTime,
+                End: DateTimeOffset.FromUnixTimeSeconds(hw.EndDateTimeUnix).UtcDateTime
+            ))
+            .ToList();
 
         var hoursWorkedFailures = ValidateHoursWorked(hoursWorked, parsedStart, parsedEnd);
 
