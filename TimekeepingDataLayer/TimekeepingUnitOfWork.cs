@@ -1,4 +1,5 @@
 using CommonDataLayer.Repositories;
+using DragonTimekeepingDomain.Models;
 using TimekeepingDataLayer.Models;
 using Microsoft.EntityFrameworkCore;
 

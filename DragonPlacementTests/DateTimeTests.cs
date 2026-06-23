@@ -1,4 +1,4 @@
-using DragonPlacementDataLayer.Models;
+using DragonAssignmentDomain.Models;
 using Shouldly;
 
 namespace DragonPlacementTests;

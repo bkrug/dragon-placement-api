@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using DragonAssignmentDomain.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace DragonPlacementDataLayer.Models;
 

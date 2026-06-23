@@ -1,6 +1,9 @@
-namespace DragonPlacementDataLayer.Models;
+using System;
+using System.Collections.Generic;
 
-public partial class Assignment
+namespace DragonAssignmentDomain.Models;
+
+public partial class Job
 {
     //public DateTime StartDate => DateTimeOffset.FromUnixTimeSeconds(StartDateUnix).UtcDateTime;
     public DateTime GetStartDate() => DateTimeOffset.FromUnixTimeSeconds(StartDateUnix).UtcDateTime;

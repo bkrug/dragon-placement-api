@@ -1,3 +1,4 @@
+using DragonTimekeepingDomain.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace TimekeepingDataLayer.Models;

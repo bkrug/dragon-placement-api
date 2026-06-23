@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
+namespace DragonAssignmentDomain.Models;
 
-namespace DragonPlacementDataLayer.Models;
-
-public partial class Job
+public partial class Assignment
 {
     //public DateTime StartDate => DateTimeOffset.FromUnixTimeSeconds(StartDateUnix).UtcDateTime;
     public DateTime GetStartDate() => DateTimeOffset.FromUnixTimeSeconds(StartDateUnix).UtcDateTime;
@@ -17,5 +14,5 @@ public partial class Job
     public void SetEndDate(DateTime value)
     {
         EndDateUnix = new DateTimeOffset(value).ToUnixTimeSeconds();
-    }        
+    }
 }

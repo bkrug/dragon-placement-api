@@ -1,5 +1,5 @@
 using DragonPlacementApi.Poco;
-using TimekeepingDataLayer.Models;
+using DragonTimekeepingDomain.Models;
 
 namespace DragonPlacementTests.PayPeriodTests;
 

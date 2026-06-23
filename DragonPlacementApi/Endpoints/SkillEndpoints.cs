@@ -1,6 +1,6 @@
 using DragonPlacementApi.Poco;
 using DragonPlacementDataLayer;
-using DragonPlacementDataLayer.Models;
+using DragonAssignmentDomain.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DragonPlacementApi.Endpoints;

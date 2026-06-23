@@ -20,12 +20,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ModelExtensions/" />
-    <Folder Include="Poco/" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="../CommonDataLayer/CommonDataLayer.csproj" />
+    <ProjectReference Include="../DragonAssignmentDomain/DragonAssignmentDomain.csproj" />
   </ItemGroup>
 
 </Project>

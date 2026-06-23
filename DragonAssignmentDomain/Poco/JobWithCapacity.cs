@@ -1,6 +1,6 @@
 using System;
 
-namespace DragonPlacementDataLayer.Poco;
+namespace DragonAssignmentDomain.Poco;
 
 public class JobWithCapacity
 {

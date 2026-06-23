@@ -1,8 +1,8 @@
 using CommonDataLayer.Repositories;
 using DragonPlacementApi.Poco;
 using DragonPlacementDataLayer;
-using DragonPlacementDataLayer.Enum;
-using DragonPlacementDataLayer.Models;
+using DragonAssignmentDomain.Enum;
+using DragonAssignmentDomain.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 

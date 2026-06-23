@@ -5,7 +5,7 @@ using DragonPlacementDataLayer;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using TimekeepingDataLayer;
-using TimekeepingDataLayer.Models;
+using DragonTimekeepingDomain.Models;
 
 namespace DragonPlacementApi.Endpoints;
 

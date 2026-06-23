@@ -1,4 +1,4 @@
-namespace TimekeepingDataLayer.Models;
+namespace DragonTimekeepingDomain.Models;
 
 public partial class PayPeriod
 {

@@ -1,6 +1,6 @@
 using System;
 
-namespace DragonPlacementDataLayer.Enum;
+namespace DragonAssignmentDomain.Enum;
 
 public enum JobInclusions
 {
