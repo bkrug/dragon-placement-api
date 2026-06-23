@@ -38,3 +38,9 @@ public class PagedData<T> where T : class
     public int TotalRecords {get;set;}
     public IList<T> Data {get;set;} = [];
 }
+
+public class GridRowValidationFailures
+{
+    public int Index { get;set; } = -1;
+    public string RowValidationMessage { get; set; } = string.Empty;
+}
