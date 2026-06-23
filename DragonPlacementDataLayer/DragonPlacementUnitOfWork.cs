@@ -2,7 +2,6 @@ using CommonDataLayer.Repositories;
 using DragonAssignmentDomain.Enum;
 using DragonAssignmentDomain.Models;
 using DragonAssignmentDomain.Poco;
-using DragonPlacementDataLayer.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 

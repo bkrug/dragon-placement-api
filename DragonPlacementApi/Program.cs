@@ -1,9 +1,7 @@
 using System.Text.Json.Serialization;
 using DragonPlacementApi.Endpoints;
-using DragonPlacementDataLayer.Models;
 using DragonPlacementDataLayer;
 using Microsoft.EntityFrameworkCore;
-using TimekeepingDataLayer.Models;
 using TimekeepingDataLayer;
 using DragonAssignmentDomain.Models;
 using DragonTimekeepingDomain.Models;
