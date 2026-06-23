@@ -9,6 +9,7 @@ using Shouldly;
 using DragonTimekeepingDomain.Models;
 using DragonTimekeepingDomain.Validation;
 using DragonTimekeepingData;
+using DragonTimekeepingApplication.Dto;
 
 namespace DragonPlacementTests.PayPeriodTests;
 

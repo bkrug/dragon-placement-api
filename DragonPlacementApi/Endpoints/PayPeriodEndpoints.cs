@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using DragonTimekeepingData;
 using DragonTimekeepingDomain.Models;
+using DragonTimekeepingApplication.Dto;
 
 namespace DragonPlacementApi.Endpoints;
 
@@ -96,9 +97,7 @@ public class PayPeriodEndpoints
             ITimekeepingUnitOfWork unitOfWork,
             [FromBody] PayPeriodCreateEdit input)
     {
-        var validationFailures = PayPeriodApplicationValidator.ValidatePayPeriod(
-            input.StartDate, input.EndDate,
-            input.HoursWorked.Select(hw => (hw.StartDateTime, hw.EndDateTime)).ToList());
+        var validationFailures = PayPeriodApplicationValidator.ValidatePayPeriod(input);
         if (validationFailures != null)
             return TypedResults.BadRequest(new ValidatedForm<PayPeriodValidationFailures>
             {
@@ -135,9 +134,7 @@ public class PayPeriodEndpoints
         if (entry == null)
             return TypedResults.NotFound(ValidatedResponse.NotFound);
 
-        var validationFailures = PayPeriodApplicationValidator.ValidatePayPeriod(
-            input.StartDate, input.EndDate,
-            input.HoursWorked.Select(hw => (hw.StartDateTime, hw.EndDateTime)).ToList());
+        var validationFailures = PayPeriodApplicationValidator.ValidatePayPeriod(input);
         if (validationFailures != null)
             return TypedResults.BadRequest(new ValidatedForm<PayPeriodValidationFailures>
             {
