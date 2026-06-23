@@ -2,6 +2,8 @@ using CommonDataLayer.Repositories;
 using DragonPlacementApi.Extensions;
 using DragonPlacementApi.Poco;
 using DragonAssignmentData;
+using DragonTimekeepingApplication;
+using DragonTimekeepingDomain.Validation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using DragonTimekeepingData;
@@ -94,9 +96,16 @@ public class PayPeriodEndpoints
             ITimekeepingUnitOfWork unitOfWork,
             [FromBody] PayPeriodCreateEdit input)
     {
-        var validationFailures = ValidatePayPeriod(input);
+        var validationFailures = PayPeriodValidation.ValidatePayPeriod(
+            input.StartDate, input.EndDate,
+            input.HoursWorked.Select(hw => (hw.StartDateTime, hw.EndDateTime)).ToList());
         if (validationFailures != null)
-            return TypedResults.BadRequest(validationFailures);
+            return TypedResults.BadRequest(new ValidatedForm<PayPeriodValidationFailures>
+            {
+                IsSuccess = false,
+                IsInternalError = false,
+                ValidationFailures = validationFailures
+            });
 
         var payPeriod = new PayPeriod
         {
@@ -126,9 +135,16 @@ public class PayPeriodEndpoints
         if (entry == null)
             return TypedResults.NotFound(ValidatedResponse.NotFound);
 
-        var validationFailures = ValidatePayPeriod(input);
+        var validationFailures = PayPeriodValidation.ValidatePayPeriod(
+            input.StartDate, input.EndDate,
+            input.HoursWorked.Select(hw => (hw.StartDateTime, hw.EndDateTime)).ToList());
         if (validationFailures != null)
-            return TypedResults.BadRequest(validationFailures);
+            return TypedResults.BadRequest(new ValidatedForm<PayPeriodValidationFailures>
+            {
+                IsSuccess = false,
+                IsInternalError = false,
+                ValidationFailures = validationFailures
+            });
 
         var inputClockIns = input.HoursWorked
             .Select(hw => new HoursWorked {
@@ -175,63 +191,4 @@ public class PayPeriodEndpoints
         return TypedResults.Ok(ValidatedResponse.Success);
     }
 
-    private static ValidatedForm<PayPeriodValidationFailures>? ValidatePayPeriod(PayPeriodCreateEdit input)
-    {
-        var failures = new PayPeriodValidationFailures();
-
-        if (!DateTime.TryParse(input.StartDate, out var parsedStart))
-            failures.StartDate = "must be an ISO Date";
-        else if (parsedStart.DayOfWeek != DayOfWeek.Monday)
-            failures.StartDate = "must be a Monday";
-        else if (parsedStart.TimeOfDay.TotalSeconds != 0)
-            failures.StartDate = "must exclude time-of-day or be midnight UTC";
-
-        if (!DateTime.TryParse(input.EndDate, out var parsedEnd))
-            failures.EndDate = "must be an ISO Date";
-        else if (parsedEnd.DayOfWeek != DayOfWeek.Sunday)
-            failures.EndDate = "must be a Sunday";
-        else if (parsedEnd.TimeOfDay.TotalSeconds != 0)
-            failures.EndDate = "must exclude time-of-day or be midnight UTC";
-        else if (parsedEnd <= parsedStart)
-            failures.EndDate = "must be greater than StartDate";
-
-        long payPeriodStartUnix = new DateTimeOffset(parsedStart, TimeSpan.Zero).ToUnixTimeSeconds();
-        long payPeriodEndUnix = new DateTimeOffset(parsedEnd, TimeSpan.Zero).ToUnixTimeSeconds();
-
-        var parsedHoursWorked = input.HoursWorked
-            .Select(hw => (
-                StartUnix: UnixDateConvert.FromIsoDateTime(hw.StartDateTime),
-                EndUnix: UnixDateConvert.FromIsoDateTime(hw.EndDateTime)
-            ))
-            .ToList();
-
-        failures.HoursWorked = parsedHoursWorked
-            .Select((hw, index) =>
-            {
-                var hwf = new HoursWorkedValidationFailures()
-                {
-                    Index = index,
-                };
-                if (hw.StartUnix < payPeriodStartUnix)
-                    hwf.RowValidationMessage = "Clock-in time is outside of the pay period";
-                else if (hw.EndUnix >= payPeriodEndUnix + Const.SECONDS_IN_A_DAY)
-                    hwf.RowValidationMessage = "Clock-out time is outside of the pay period";
-                else if (parsedHoursWorked.Where((other, i) => i != index && hw.StartUnix < other.EndUnix && other.StartUnix < hw.EndUnix).Any())
-                    hwf.RowValidationMessage = "Overlaps with another hours-worked record";
-                return hwf;
-            })
-            .Where(hwf => !string.IsNullOrEmpty(hwf.StartDateTime) || !string.IsNullOrEmpty(hwf.EndDateTime) || !string.IsNullOrEmpty(hwf.RowValidationMessage))
-            .ToList();
-
-        return !string.IsNullOrEmpty(failures.StartDate)
-            || !string.IsNullOrEmpty(failures.EndDate)
-            || failures.HoursWorked.Count > 0
-            ? new ValidatedForm<PayPeriodValidationFailures>
-                {
-                    IsSuccess = false,
-                    IsInternalError = false,
-                    ValidationFailures = failures
-                }
-            : null;
-    }
 }
