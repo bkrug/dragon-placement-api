@@ -24,8 +24,8 @@ public class PayPeriodCrudTests
             .AddHoursWorked("1970-01-05T09:00:00", "1970-01-05T17:00:00")
             .Build();
         var expectedPayPeriod = new PayPeriodBuilder()
-            .WithStartDateUnix(4, Const.SECONDS_IN_A_DAY)
-            .WithEndDateUnix(10, Const.SECONDS_IN_A_DAY)
+            .WithStartDate(new DateTime(1970, 1, 5))
+            .WithEndDate(new DateTime(1970, 1, 11))
             .WithAssignmentId(1827)
             .AddHoursWorkedRelative(clockInSeconds: 9 * 3600, clockOutSeconds: 17 * 3600)
             .Build();
@@ -249,8 +249,8 @@ public class PayPeriodCrudTests
         DateTime WEDNESDAY_START = new (1970, 1, 7);
         var existingEntry = new PayPeriodBuilder()
             .WithPayPeriodId(PAY_PERIOD_ID)
-            .WithStartDateUnix(4, Const.SECONDS_IN_A_DAY)
-            .WithEndDateUnix(10, Const.SECONDS_IN_A_DAY)
+            .WithStartDate(new DateTime(1970, 1, 5))
+            .WithEndDate(new DateTime(1970, 1, 11))
             .AddHoursWorked(301, MONDAY_START, MONDAY_START.AddHours(1))
             .AddHoursWorked(302, TUESDAY_START, TUESDAY_START.AddHours(1))
             .Build();
@@ -318,8 +318,8 @@ public class PayPeriodCrudTests
         const int PAY_PERIOD_ID = 55;
         var existingEntry = new PayPeriodBuilder()
             .WithPayPeriodId(PAY_PERIOD_ID)
-            .WithStartDateUnix(4, Const.SECONDS_IN_A_DAY)
-            .WithEndDateUnix(10, Const.SECONDS_IN_A_DAY)
+            .WithStartDate(new DateTime(1970, 1, 5))
+            .WithEndDate(new DateTime(1970, 1, 11))
             .Build();
         var input = new PayPeriodCreateEditBuilder()
             .WithStartDate("1970-01-05")
@@ -347,8 +347,8 @@ public class PayPeriodCrudTests
         const int PAY_PERIOD_ID = 55;
         var existingEntry = new PayPeriodBuilder()
             .WithPayPeriodId(PAY_PERIOD_ID)
-            .WithStartDateUnix(4, Const.SECONDS_IN_A_DAY)
-            .WithEndDateUnix(0, Const.SECONDS_IN_A_DAY)
+            .WithStartDate(new DateTime(1970, 1, 5))
+            .WithEndDate(new DateTime(1970, 1, 1))
             .Build();
         var input = new PayPeriodCreateEditBuilder()
             .WithStartDate("1970-01-05")
@@ -383,8 +383,8 @@ public class PayPeriodCrudTests
         const int PAY_PERIOD_ID = 55;
         var existingEntry = new PayPeriodBuilder()
             .WithPayPeriodId(PAY_PERIOD_ID)
-            .WithStartDateUnix(4, Const.SECONDS_IN_A_DAY)
-            .WithEndDateUnix(10, Const.SECONDS_IN_A_DAY)
+            .WithStartDate(new DateTime(1970, 1, 5))
+            .WithEndDate(new DateTime(1970, 1, 11))
             .Build();
         var input = new PayPeriodCreateEditBuilder()
             .WithStartDate("1970-01-05")
