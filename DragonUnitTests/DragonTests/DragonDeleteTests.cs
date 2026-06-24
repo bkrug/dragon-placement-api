@@ -1,13 +1,12 @@
 using DragonCommonApplication.Repositories;
 using DragonPlacementApi.Endpoints;
 using DragonPlacementApi.Poco;
-using DragonAssignmentDomain.Models;
 using DragonAssignmentApplication;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Moq;
 using Shouldly;
 
-namespace DragonUnitTests;
+namespace DragonUnitTests.DragonTests;
 
 public class DragonDeleteTests
 {

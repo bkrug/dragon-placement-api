@@ -8,9 +8,9 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Moq;
 using Shouldly;
 
-namespace DragonUnitTests;
+namespace DragonUnitTests.DragonTests;
 
-public class DragonTests
+public class DragonUpsertTests
 {
     [Fact]
     public async Task CreateDragon_ValidInput_ExpectInsertionOfRecordAndSavesOnce()
