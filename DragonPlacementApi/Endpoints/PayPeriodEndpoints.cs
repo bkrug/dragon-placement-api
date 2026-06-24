@@ -96,17 +96,15 @@ public class PayPeriodEndpoints
             ITimekeepingUnitOfWork unitOfWork,
             [FromBody] PayPeriodCreateEdit input)
     {
-        var result = await PayPeriodService.CreatePayPeriodAsync(unitOfWork, input);
-
-        if (result.IsFailure)
-            return TypedResults.BadRequest(new ValidatedForm<PayPeriodValidationFailures>
+        var creationResult = await PayPeriodService.CreatePayPeriodAsync(unitOfWork, input);
+        return creationResult.IsFailure
+            ? TypedResults.BadRequest(new ValidatedForm<PayPeriodValidationFailures>
             {
                 IsSuccess = false,
                 IsInternalError = false,
-                ValidationFailures = result.Error
-            });
-
-        return TypedResults.Ok(ValidatedPayload<PayPeriod>.FromPayload(result.Value));
+                ValidationFailures = creationResult.Error
+            })
+            : TypedResults.Ok(ValidatedPayload<PayPeriod>.FromPayload(creationResult.Value));
     }
 
     public static async Task<Results<Ok<ValidatedPayload<PayPeriod>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<PayPeriodValidationFailures>>>>
