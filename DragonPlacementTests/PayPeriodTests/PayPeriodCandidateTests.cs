@@ -18,23 +18,23 @@ public class PayPeriodCandidateTests
 {
     private const int DRAGON_ID = 20;
     private const int ASSIGNMENT_ID = 10;
-    private const long SECONDS_IN_A_WEEK = 7 * Const.SECONDS_IN_A_DAY;
 
-    private static long GetMondayOfCurrentWeekUnix()
+    private static DateTime GetMondayOfCurrentWeek()
     {
         var today = DateTime.UtcNow.Date;
         var daysToSubtract = ((int)today.DayOfWeek + 6) % 7;
         var monday = today.AddDays(-daysToSubtract);
-        return new DateTimeOffset(monday, TimeSpan.Zero).ToUnixTimeSeconds();
-    }
+        return monday;
+    }    
 
-    private static ValidPaySpan MakeExpectedValidPaySpan(long mondayUnix, int weeksAgo)
+    private static ValidPaySpan GetPaySpan(int weeksAgo)
     {
-        var start = DateTimeOffset.FromUnixTimeSeconds(mondayUnix - weeksAgo * SECONDS_IN_A_WEEK).UtcDateTime;
+        var monday = GetMondayOfCurrentWeek();
+        var sunday = monday.AddDays(6);
         return new ValidPaySpan
         {
-            StartDate = start.ToIsoDateString(),
-            EndDate = start.AddDays(6).ToIsoDateString()
+            StartDate = monday.AddDays(-weeksAgo * 7).ToIsoDateString(),
+            EndDate = sunday.AddDays(-weeksAgo * 7).ToIsoDateString()
         };
     }
 
@@ -50,7 +50,6 @@ public class PayPeriodCandidateTests
     [Fact]
     public void GetValidPayPeriods_NoExistingPayPeriods_ExpectFourWeeklyCandidates()
     {
-        var mondayUnix = GetMondayOfCurrentWeekUnix();
         var unitOfWorkMock = MockWithExistingPayPeriods([]);
 
         //Act
@@ -60,28 +59,29 @@ public class PayPeriodCandidateTests
         var payload = response.Value!.Payload;
         payload.ShouldBeEquivalentTo(new List<ValidPaySpan>
         {
-            MakeExpectedValidPaySpan(mondayUnix, weeksAgo: 0),
-            MakeExpectedValidPaySpan(mondayUnix, weeksAgo: 1),
-            MakeExpectedValidPaySpan(mondayUnix, weeksAgo: 2),
-            MakeExpectedValidPaySpan(mondayUnix, weeksAgo: 3)
+            GetPaySpan(weeksAgo: 0),
+            GetPaySpan(weeksAgo: 1),
+            GetPaySpan(weeksAgo: 2),
+            GetPaySpan(weeksAgo: 3)
         });
     }
 
     [Fact]
     public void GetValidPayPeriods_ExistingLastWeekAndTwoWeeksAgo_ExpectCurrentWeekAndThreeWeeksAgo()
     {
-        var mondayUnix = GetMondayOfCurrentWeekUnix();
+        var monday = GetMondayOfCurrentWeek();
+        var sunday = monday.AddDays(6);
         var existing = new List<PayPeriod>
         {
             new PayPeriodBuilder()
                 .WithPayPeriodId(101)
-                .WithStartDateUnix(mondayUnix - 1 * SECONDS_IN_A_WEEK)
-                .WithEndDateUnix(mondayUnix - 1 * SECONDS_IN_A_WEEK + 6 * Const.SECONDS_IN_A_DAY)
+                .WithStartDate(monday.AddDays(-7))
+                .WithEndDate(sunday.AddDays(-7))
                 .Build(),
             new PayPeriodBuilder()
                 .WithPayPeriodId(102)
-                .WithStartDateUnix(mondayUnix - 3 * SECONDS_IN_A_WEEK)
-                .WithEndDateUnix(mondayUnix - 3 * SECONDS_IN_A_WEEK + 6 * Const.SECONDS_IN_A_DAY)
+                .WithStartDate(monday.AddDays(-21))
+                .WithEndDate(sunday.AddDays(-21))
                 .Build()
         };
         var unitOfWorkMock = MockWithExistingPayPeriods(existing);
@@ -93,26 +93,27 @@ public class PayPeriodCandidateTests
         var payload = response.Value!.Payload;
         payload.ShouldBeEquivalentTo(new List<ValidPaySpan>
         {
-            MakeExpectedValidPaySpan(mondayUnix, weeksAgo: 0),
-            MakeExpectedValidPaySpan(mondayUnix, weeksAgo: 2)
+            GetPaySpan(weeksAgo: 0),
+            GetPaySpan(weeksAgo: 2)
         });
     }
 
     [Fact]
     public void GetValidPayPeriods_ExistingCurrentWeekAndLastWeek_ExpectTwoAndThreeWeeksAgo()
     {
-        var mondayUnix = GetMondayOfCurrentWeekUnix();
+        var monday = GetMondayOfCurrentWeek();
+        var sunday = monday.AddDays(6);
         var existing = new List<PayPeriod>
         {
             new PayPeriodBuilder()
                 .WithPayPeriodId(201)
-                .WithStartDateUnix(mondayUnix)
-                .WithEndDateUnix(mondayUnix + 6 * Const.SECONDS_IN_A_DAY)
+                .WithStartDate(monday)
+                .WithEndDate(sunday)
                 .Build(),
             new PayPeriodBuilder()
                 .WithPayPeriodId(202)
-                .WithStartDateUnix(mondayUnix - 1 * SECONDS_IN_A_WEEK)
-                .WithEndDateUnix(mondayUnix - 1 * SECONDS_IN_A_WEEK + 6 * Const.SECONDS_IN_A_DAY)
+                .WithStartDate(monday.AddDays(-7))
+                .WithEndDate(sunday.AddDays(-7))
                 .Build()
         };
         var unitOfWorkMock = MockWithExistingPayPeriods(existing);
@@ -124,8 +125,8 @@ public class PayPeriodCandidateTests
         var payload = response.Value!.Payload;
         payload.ShouldBeEquivalentTo(new List<ValidPaySpan>
         {
-            MakeExpectedValidPaySpan(mondayUnix, weeksAgo: 2),
-            MakeExpectedValidPaySpan(mondayUnix, weeksAgo: 3)
+            GetPaySpan(weeksAgo: 2),
+            GetPaySpan(weeksAgo: 3)
         });
     }
 }

@@ -19,11 +19,19 @@ public class PayPeriodBuilder
         return this;
     }
     public PayPeriodBuilder WithStartDateUnix(long val) { _startDateUnix = val; return this; }
+    public PayPeriodBuilder WithStartDate(DateTime startDate) {
+        _startDateUnix = new DateTimeOffset(startDate, TimeSpan.Zero).ToUnixTimeSeconds();
+        return this;
+    }
     public PayPeriodBuilder WithEndDateUnix(long unitCount, long secondsPerUnit) {
         _endDateUnix = unitCount * secondsPerUnit;
         return this;
     }
     public PayPeriodBuilder WithEndDateUnix(long val) { _endDateUnix = val; return this; }
+    public PayPeriodBuilder WithEndDate(DateTime endDate) {
+        _endDateUnix = new DateTimeOffset(endDate, TimeSpan.Zero).ToUnixTimeSeconds();
+        return this;
+    }
     public PayPeriodBuilder WithSubmissionStatus(string val) { _submissionStatus = val; return this; }
     public PayPeriodBuilder AddHoursWorked(DateTime clockInSeconds, DateTime clockOutSeconds)
     {

@@ -21,8 +21,8 @@ public class PayPeriodReadTests
         const int JOB_ID = 30;
         var payPeriod = new PayPeriodBuilder()
             .WithPayPeriodId(PAY_PERIOD_ID)
-            .WithStartDateUnix(1 * Const.SECONDS_IN_A_DAY)
-            .WithEndDateUnix(7 * Const.SECONDS_IN_A_DAY)
+            .WithStartDate(new DateTime(1970, 1, 2))
+            .WithEndDate(new DateTime(1970, 1, 8))
             .AddHoursWorked(401, new DateTime(1970, 1, 2, 9, 0, 0), new DateTime(1970, 1, 2, 17, 0, 0))
             .AddHoursWorked(402, new DateTime(1970, 1, 3, 9, 0, 0), new DateTime(1970, 1, 3, 17, 0, 0))
             .Build();
