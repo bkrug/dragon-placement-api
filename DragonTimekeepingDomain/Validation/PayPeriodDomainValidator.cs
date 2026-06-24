@@ -6,7 +6,7 @@ public static class PayPeriodDomainValidator
 {
     public static PayPeriodValidationFailures? Validate(PayPeriod payPeriod)
     {
-        var parsedStart = DateTimeOffset.FromUnixTimeSeconds(payPeriod.StartDateUnix).UtcDateTime;
+        var parsedStart = DateTimeOffset.FromUnixTimeSeconds(payPeriod.StartDate).UtcDateTime;
         var parsedEnd = DateTimeOffset.FromUnixTimeSeconds(payPeriod.EndDateUnix).UtcDateTime;
 
         var failures = new Dictionary<string, string>();

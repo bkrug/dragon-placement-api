@@ -47,7 +47,7 @@ public static class PayPeriodApplicationValidator
         var payPeriod = new PayPeriod
         {
             AssignmentId = input.AssignmentId,
-            StartDateUnix = new DateTimeOffset(parsedStart, TimeSpan.Zero).ToUnixTimeSeconds(),
+            StartDate = new DateTimeOffset(parsedStart, TimeSpan.Zero).ToUnixTimeSeconds(),
             EndDateUnix = new DateTimeOffset(parsedEnd, TimeSpan.Zero).ToUnixTimeSeconds(),
             SubmissionStatus = input.SubmissionStatus,
             HoursWorked = parsedHoursWorked.Select(hw => new HoursWorked

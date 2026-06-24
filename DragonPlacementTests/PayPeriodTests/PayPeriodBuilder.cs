@@ -64,7 +64,7 @@ public class PayPeriodBuilder
     {
         PayPeriodId = _payPeriodId,
         AssignmentId = _assignmentId,
-        StartDateUnix = _startDateUnix,
+        StartDate = _startDateUnix,
         EndDateUnix = _endDateUnix,
         SubmissionStatus = _submissionStatus,
         HoursWorked = _hoursWorked

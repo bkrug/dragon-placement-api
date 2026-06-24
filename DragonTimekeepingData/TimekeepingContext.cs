@@ -44,6 +44,8 @@ public partial class TimekeepingContext : DbContext
             entity.ToTable("PayPeriod");
 
             entity.HasKey(e => e.PayPeriodId);
+
+            entity.Property(e => e.StartDate).HasColumnName("StartDateUnix");
         });
 
         OnModelCreatingPartial(modelBuilder);
