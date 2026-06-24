@@ -77,6 +77,37 @@ public class PayPeriodCrudTests
         actualMessage.ShouldBe(expectedFailureMessage);
     }
 
+    [Theory]
+    [InlineData("",                    "StartDateTime",  "required")]
+    [InlineData("Juabary 5th 70ly",    "StartDateTime",  "must be an ISO Date")]
+    [InlineData("",                    "EndDateTime",    "required")]
+    [InlineData("Juabayr 11th dl",     "EndDateTime",    "must be an ISO Date")]
+    public async Task CreatePayPeriod_InvalidHoursWorkedInput_ExpectBadRequestWithValidationFailure(
+        string invalidValue,
+        string fieldName,
+        string expectedFailureMessage)
+    {
+        var input = new PayPeriodCreateEditBuilder()
+            .WithStartDate("1970-01-05")
+            .WithEndDate("1970-01-11")
+            .AddHoursWorked("1970-01-06T09:00", "1970-01-06T16:00")
+            .Build();
+        typeof(HoursWorkedCreateEdit).GetProperty(fieldName)!.SetValue(input.HoursWorked[0], invalidValue);
+        var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
+        unitOfWorkMock.Setup(m => m.PayPeriodRepository).Returns(new Mock<IGenericRepository<PayPeriod>>().Object);
+
+        //Act
+        var response = await PayPeriodEndpoints.CreatePayPeriodAsync(unitOfWorkMock.Object, input);
+
+        //Assert
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailures>>>();
+        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailures>>)response.Result).Value!.ValidationFailures;
+        var actualMessage = typeof(HoursWorkedValidationFailures)
+            .GetProperty(fieldName)!
+            .GetValue(failures.HoursWorked[0]) as string;
+        actualMessage.ShouldBe(expectedFailureMessage);
+    }    
+
     [Fact]
     public async Task CreatePayPeriod_HoursWorkedStartBeforePayPeriod_ExpectBadRequest()
     {

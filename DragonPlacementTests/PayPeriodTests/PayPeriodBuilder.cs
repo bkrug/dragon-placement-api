@@ -1,4 +1,3 @@
-using DragonPlacementApi.Poco;
 using DragonTimekeepingDomain.Models;
 
 namespace DragonPlacementTests.PayPeriodTests;
