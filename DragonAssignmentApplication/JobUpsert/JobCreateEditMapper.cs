@@ -20,7 +20,7 @@ public static class JobCreateEditMapper
         return Result.Success<Job, JobValidationFailures>(job);
     }
 
-    public static void ApplyTo(JobCreateEdit input, Job existing, IList<SkillTag> skillTags)
+    public static Result<Job, JobValidationFailures> ApplyTo(JobCreateEdit input, Job existing, IList<SkillTag> skillTags)
     {
         existing.JobTitle = input.JobTitle;
         existing.EmployerName = input.EmployerName;
@@ -28,5 +28,6 @@ public static class JobCreateEditMapper
         existing.StartDate = DateTimeOffset.FromUnixTimeSeconds(input.StartDateUnix).UtcDateTime;
         existing.EndDate = DateTimeOffset.FromUnixTimeSeconds(input.EndDateUnix).UtcDateTime;
         existing.SkillTags = skillTags;
+        return Result.Success<Job, JobValidationFailures>(existing);
     }
 }

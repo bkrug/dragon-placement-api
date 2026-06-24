@@ -146,7 +146,15 @@ public class JobEndpoints
             return TypedResults.InternalServerError(ValidatedResponse.ExpectedOneFoundMultiple);
 
         var existing = loadedJobs.Single();
-        JobCreateEditMapper.ApplyTo(inputJob, existing, unitOfWork.GetSkillTagsById(inputJob.SkillTagIds));
+        var mapResult = JobCreateEditMapper.ApplyTo(inputJob, existing, unitOfWork.GetSkillTagsById(inputJob.SkillTagIds));
+        if (mapResult.IsFailure)
+            return TypedResults.BadRequest(new ValidatedForm<JobValidationFailures>
+            {
+                IsSuccess = false,
+                IsInternalError = false,
+                ValidationFailures = mapResult.Error
+            });
+
         var result = JobValidation.Validate(existing);
         if (result.IsFailure)
             return TypedResults.BadRequest(new ValidatedForm<JobValidationFailures>
