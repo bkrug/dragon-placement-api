@@ -15,9 +15,12 @@ public class AssignmentTests
     {
         const int DRAGON_ID = 5002;
         const int JOB_ID = 6002;
-        Job jobModel = new() { JobTitle = "Commercial Spokesperson" };
-        jobModel.SetStartDate(DateTime.UtcNow.AddMonths(3));
-        jobModel.SetEndDate(DateTime.UtcNow.AddMonths(9));
+        Job jobModel = new()
+        {
+            JobTitle = "Commercial Spokesperson",
+            StartDate = DateTime.UtcNow.AddMonths(3),
+            EndDate = DateTime.UtcNow.AddMonths(9)
+        };
         Immutable<Assignment> actualInsertedAssignmentRecord = new();
 
         var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
@@ -48,12 +51,17 @@ public class AssignmentTests
         const int DRAGON_ID = 5003;
         const int JOB_ID = 6003;
 
-        Job jobModel = new() { JobTitle = "Commercial Spokesperson" };
-        jobModel.SetStartDate(DateTime.UtcNow.AddMonths(3));
-        jobModel.SetEndDate(DateTime.UtcNow.AddMonths(9));
-        Assignment overlappingAssignment = new ();
-        overlappingAssignment.SetStartDate(jobModel.GetStartDate().AddMonths(-1));
-        overlappingAssignment.SetEndDate(jobModel.GetEndDate().AddMonths(1));
+        Job jobModel = new()
+        {
+            JobTitle = "Commercial Spokesperson",
+            StartDate = DateTime.UtcNow.AddMonths(3),
+            EndDate = DateTime.UtcNow.AddMonths(9)
+        };
+        Assignment overlappingAssignment = new()
+        {
+            StartDate = jobModel.StartDate.AddMonths(-1),
+            EndDate = jobModel.EndDate.AddMonths(1)
+        };
 
         Immutable<Assignment> actualAssignmentRecord = new();
 

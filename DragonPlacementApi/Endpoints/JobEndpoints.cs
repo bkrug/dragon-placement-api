@@ -92,8 +92,8 @@ public class JobEndpoints
             });
         }
         else {
-            var periodStart = firstConflict.GetStartDate().ToShortDateString();
-            var periodEnd = firstConflict.GetEndDate().ToShortDateString();
+            var periodStart = firstConflict.StartDate.ToShortDateString();
+            var periodEnd = firstConflict.EndDate.ToShortDateString();
             return TypedResults.BadRequest(new ValidatedResponse
             {
                 IsInternalError = false,
