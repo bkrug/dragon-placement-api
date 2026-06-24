@@ -34,28 +34,35 @@ public class PayPeriodEndpoints
         };
     }
 
+    /// <summary>
+    /// Get all of the pay periods that the user is allowed to create new pay period records for.
+    /// Do not allow the user to re-create an existing pay period for the current assignment.
+    /// And a user can only go backwards so far in time if hours have not already been reported.
+    /// </summary>
     public static Ok<ValidatedPayload<List<ValidPaySpan>>> GetValidPayPeriods(
             ITimekeepingUnitOfWork unitOfWork,
             [FromRoute(Name = "unusedId")] int unusedId,
             [FromRoute(Name = "assignmentId")] int assignmentId)
     {
+        //The maximum number of weeks that the user is allowed to book at any given time.
+        const int REPORTABLE_WEEKS = 4;
+
         var today = DateTime.UtcNow.Date;
         var daysToSubtract = ((int)today.DayOfWeek + 6) % 7;
-        var mondayUnix = new DateTimeOffset(today.AddDays(-daysToSubtract), TimeSpan.Zero).ToUnixTimeSeconds();
+        var monday = today.AddDays(-daysToSubtract);
 
         var existingStarts = unitOfWork.PayPeriodRepository
             .Get(pp => pp.AssignmentId == assignmentId)
-            .Select(pp => new DateTimeOffset(pp.StartDate, TimeSpan.Zero).ToUnixTimeSeconds())
+            .Select(pp => pp.StartDate)
             .ToHashSet();
 
-        const long SECONDS_IN_A_WEEK = 7 * Const.SECONDS_IN_A_DAY;
-        var candidates = Enumerable.Range(0, 4)
-            .Select(weeksAgo => mondayUnix - weeksAgo * SECONDS_IN_A_WEEK)
-            .Where(startDateUnix => !existingStarts.Contains(startDateUnix))
-            .Select(startDateUnix => new ValidPaySpan
+        var candidates = Enumerable.Range(0, REPORTABLE_WEEKS)
+            .Select(weeksAgo => monday.AddDays(-7 * weeksAgo))
+            .Where(startDate => !existingStarts.Contains(startDate))
+            .Select(startDate => new ValidPaySpan
             {
-                StartDate = DateTimeOffset.FromUnixTimeSeconds(startDateUnix).UtcDateTime.ToIsoDateString(),
-                EndDate = DateTimeOffset.FromUnixTimeSeconds(startDateUnix).AddDays(6).UtcDateTime.ToIsoDateString()
+                StartDate = startDate.ToIsoDateString(),
+                EndDate = startDate.AddDays(6).ToIsoDateString()
             })
             .ToList();
 
