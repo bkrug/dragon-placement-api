@@ -208,8 +208,8 @@ public class PayPeriodCrudTests
         var existingEntry = new PayPeriodBuilder()
             .WithPayPeriodId(PAY_PERIOD_ID)
             .WithAssignmentId(5)
-            .WithStartDateUnix(11 * Const.SECONDS_IN_A_DAY)
-            .WithEndDateUnix(17 * Const.SECONDS_IN_A_DAY)
+            .WithStartDate(new DateTime(1970, 1, 12))
+            .WithEndDate(new DateTime(1970, 1, 18))
             .WithSubmissionStatus("Draft")
             .Build();
         var input = new PayPeriodCreateEditBuilder()
@@ -223,8 +223,8 @@ public class PayPeriodCrudTests
         var expectedEntry = new PayPeriodBuilder()
             .WithPayPeriodId(PAY_PERIOD_ID)
             .WithAssignmentId(5)
-            .WithStartDateUnix(11 * Const.SECONDS_IN_A_DAY)
-            .WithEndDateUnix(17 * Const.SECONDS_IN_A_DAY)
+            .WithStartDate(new DateTime(1970, 1, 12))
+            .WithEndDate(new DateTime(1970, 1, 18))
             .WithSubmissionStatus("Submitted")
             .AddHoursWorked(new DateTime(1970, 1, 12, 9, 0, 0), new DateTime(1970, 1, 12, 17, 0, 0))
             .Build();

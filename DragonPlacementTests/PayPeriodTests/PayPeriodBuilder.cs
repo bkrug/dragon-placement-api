@@ -14,20 +14,10 @@ public class PayPeriodBuilder
 
     public PayPeriodBuilder WithPayPeriodId(int id) { _payPeriodId = id; return this; }
     public PayPeriodBuilder WithAssignmentId(int id) { _assignmentId = id; return this; }
-    public PayPeriodBuilder WithStartDateUnix(long unitCount, long secondsPerUnit) {
-        _startDateUnix = unitCount * secondsPerUnit;
-        return this;
-    }
-    public PayPeriodBuilder WithStartDateUnix(long val) { _startDateUnix = val; return this; }
     public PayPeriodBuilder WithStartDate(DateTime startDate) {
         _startDateUnix = new DateTimeOffset(startDate, TimeSpan.Zero).ToUnixTimeSeconds();
         return this;
     }
-    public PayPeriodBuilder WithEndDateUnix(long unitCount, long secondsPerUnit) {
-        _endDateUnix = unitCount * secondsPerUnit;
-        return this;
-    }
-    public PayPeriodBuilder WithEndDateUnix(long val) { _endDateUnix = val; return this; }
     public PayPeriodBuilder WithEndDate(DateTime endDate) {
         _endDateUnix = new DateTimeOffset(endDate, TimeSpan.Zero).ToUnixTimeSeconds();
         return this;
