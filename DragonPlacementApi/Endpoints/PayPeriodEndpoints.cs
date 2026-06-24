@@ -96,15 +96,16 @@ public class PayPeriodEndpoints
             ITimekeepingUnitOfWork unitOfWork,
             [FromBody] PayPeriodCreateEdit input)
     {
-        var creationResult = await PayPeriodService.CreatePayPeriodAsync(unitOfWork, input);
-        return creationResult.IsFailure
-            ? TypedResults.BadRequest(new ValidatedForm<PayPeriodValidationFailures>
+        var creationResult = await PayPeriodWriter.CreatePayPeriodAsync(unitOfWork, input);
+        if (creationResult.IsSuccess)
+            return TypedResults.Ok(ValidatedPayload<PayPeriod>.FromPayload(creationResult.Value));
+        else
+            return TypedResults.BadRequest(new ValidatedForm<PayPeriodValidationFailures>
             {
                 IsSuccess = false,
                 IsInternalError = false,
                 ValidationFailures = creationResult.Error
-            })
-            : TypedResults.Ok(ValidatedPayload<PayPeriod>.FromPayload(creationResult.Value));
+            });
     }
 
     public static async Task<Results<Ok<ValidatedPayload<PayPeriod>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<PayPeriodValidationFailures>>>>
@@ -113,9 +114,11 @@ public class PayPeriodEndpoints
             [FromRoute(Name = "payPeriodId")] int payPeriodId,
             [FromBody] PayPeriodCreateEdit input)
     {
-        var result = await PayPeriodService.UpdatePayPeriodAsync(unitOfWork, payPeriodId, input);
-        return result.IsFailure
-            ? result.Error switch
+        var result = await PayPeriodWriter.UpdatePayPeriodAsync(unitOfWork, payPeriodId, input);
+        if (result.IsSuccess)
+            return TypedResults.Ok(ValidatedPayload<PayPeriod>.FromPayload(result.Value));
+        else
+            return result.Error switch
             {
                 PayPeriodNotFound => TypedResults.NotFound(ValidatedResponse.NotFound),
                 PayPeriodInvalid(var f) => TypedResults.BadRequest(new ValidatedForm<PayPeriodValidationFailures>
@@ -125,8 +128,7 @@ public class PayPeriodEndpoints
                     ValidationFailures = f
                 }),
                 _ => throw new InvalidOperationException()
-            }
-            : TypedResults.Ok(ValidatedPayload<PayPeriod>.FromPayload(result.Value));
+            };
     }
 
     //TODO: Only allow pay periods to be deleted if they have not yet been submitted.

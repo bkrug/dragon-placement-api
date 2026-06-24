@@ -9,7 +9,7 @@ public abstract record PayPeriodUpdateFailure;
 public record PayPeriodNotFound : PayPeriodUpdateFailure;
 public record PayPeriodInvalid(PayPeriodValidationFailures Failures) : PayPeriodUpdateFailure;
 
-public static class PayPeriodService
+public static class PayPeriodWriter
 {
     public static async Task<Result<PayPeriod, PayPeriodValidationFailures>> CreatePayPeriodAsync(
         ITimekeepingUnitOfWork unitOfWork,
