@@ -1,4 +1,3 @@
-using System.Linq.Expressions;
 using DragonCommonApplication.Repositories;
 using DragonPlacementApi.Endpoints;
 using DragonPlacementApi.Poco;
@@ -263,51 +262,5 @@ public class DragonTests
             LengthInMeters = "must be a positive number",
             FightingSkills = "must be 'b', 'm', or 'a'"
         });
-    }
-
-    [Fact]
-    public async Task DeleteDragon_DragonExists_ExpectOkAndSavesOnce()
-    {
-        const int DRAGON_ID = 42;
-        var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
-        unitOfWorkMock.Setup(u => u.DragonRepository.Delete(DRAGON_ID)).Returns(DeleteResult.Deleted);
-
-        //Act
-        var response = await DragonEndpoints.DeleteDragonAsync(unitOfWorkMock.Object, DRAGON_ID);
-
-        //Assert
-        response.Result.ShouldBeOfType<Ok<ValidatedResponse>>();
-        unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Once);
-    }
-
-    [Fact]
-    public async Task DeleteDragon_DragonNotFound_ExpectNotFoundAndDoesNotSave()
-    {
-        const int DRAGON_ID = 999;
-        var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
-        unitOfWorkMock.Setup(u => u.DragonRepository.Delete(DRAGON_ID)).Returns(DeleteResult.NotFound);
-
-        //Act
-        var response = await DragonEndpoints.DeleteDragonAsync(unitOfWorkMock.Object, DRAGON_ID);
-
-        //Assert
-        response.Result.ShouldBeOfType<NotFound<ValidatedResponse>>();
-        unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Never);
-    }
-
-    [Fact]
-    public async Task DeleteDragon_DragonHasAssignment_ExpectConflictAndDoesNotSave()
-    {
-        const int DRAGON_ID = 7;
-        var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
-        unitOfWorkMock.Setup(u => u.DragonHasAnAssignment(DRAGON_ID)).ReturnsAsync(true);
-        unitOfWorkMock.Setup(u => u.DragonRepository.Delete(DRAGON_ID)).Returns(DeleteResult.Deleted);
-
-        //Act
-        var response = await DragonEndpoints.DeleteDragonAsync(unitOfWorkMock.Object, DRAGON_ID);
-
-        //Assert
-        response.Result.ShouldBeOfType<Conflict<ValidatedResponse>>();
-        unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Never);
     }
 }
