@@ -124,16 +124,19 @@ public class JobEndpoints
             [FromBody] JobCreateEdit inputJob)
     {
         var result = await JobUpsertService.UpdateJob(inputJob, jobId, unitOfWork).ConfigureAwait(false);
-        if (result == null)
-            return TypedResults.NotFound(ValidatedResponse.NotFound);
-        if (result.Value.IsFailure)
-            return TypedResults.BadRequest(new ValidatedForm<JobValidationFailures>
+        if (result.IsFailure)
+            return result.Error switch
             {
-                IsSuccess = false,
-                IsInternalError = false,
-                ValidationFailures = result.Value.Error
-            });
-        return TypedResults.Ok(ValidatedPayload<Job>.FromPayload(result.Value.Value));
+                JobNotFound => TypedResults.NotFound(ValidatedResponse.NotFound),
+                JobInvalid e => TypedResults.BadRequest(new ValidatedForm<JobValidationFailures>
+                {
+                    IsSuccess = false,
+                    IsInternalError = false,
+                    ValidationFailures = e.Failures
+                }),
+                _ => throw new InvalidOperationException()
+            };
+        return TypedResults.Ok(ValidatedPayload<Job>.FromPayload(result.Value));
     }
 
     public static async Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>, Conflict<ValidatedResponse>>>
