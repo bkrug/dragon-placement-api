@@ -109,14 +109,23 @@ public class JobEndpoints
             IDragonPlacementUnitOfWork unitOfWork,
             [FromBody] JobCreateEdit inputJob)
     {
-        var job = JobCreateEditMapper.ToJob(inputJob, unitOfWork.GetSkillTagsById(inputJob.SkillTagIds));
-        var failures = job.Validate();
-        if (failures != null)
+        var mapResult = JobCreateEditMapper.ToJob(inputJob, unitOfWork.GetSkillTagsById(inputJob.SkillTagIds));
+        if (mapResult.IsFailure)
             return TypedResults.BadRequest(new ValidatedForm<JobValidationFailures>
             {
                 IsSuccess = false,
                 IsInternalError = false,
-                ValidationFailures = failures
+                ValidationFailures = mapResult.Error
+            });
+
+        var job = mapResult.Value;
+        var result = JobValidation.Validate(job);
+        if (result.IsFailure)
+            return TypedResults.BadRequest(new ValidatedForm<JobValidationFailures>
+            {
+                IsSuccess = false,
+                IsInternalError = false,
+                ValidationFailures = result.Error
             });
 
         unitOfWork.JobRepository.Insert(job);
@@ -138,13 +147,13 @@ public class JobEndpoints
 
         var existing = loadedJobs.Single();
         JobCreateEditMapper.ApplyTo(inputJob, existing, unitOfWork.GetSkillTagsById(inputJob.SkillTagIds));
-        var failures = existing.Validate();
-        if (failures != null)
+        var result = JobValidation.Validate(existing);
+        if (result.IsFailure)
             return TypedResults.BadRequest(new ValidatedForm<JobValidationFailures>
             {
                 IsSuccess = false,
                 IsInternalError = false,
-                ValidationFailures = failures
+                ValidationFailures = result.Error
             });
 
         await unitOfWork.SaveAsync().ConfigureAwait(false);

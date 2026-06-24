@@ -1,12 +1,14 @@
+using CSharpFunctionalExtensions;
 using DragonAssignmentDomain.Models;
+using DragonAssignmentDomain.Poco;
 
 namespace DragonAssignmentApplication.JobUpsert;
 
 public static class JobCreateEditMapper
 {
-    public static Job ToJob(JobCreateEdit input, IList<SkillTag> skillTags)
+    public static Result<Job, JobValidationFailures> ToJob(JobCreateEdit input, IList<SkillTag> skillTags)
     {
-        return new Job
+        var job = new Job
         {
             JobTitle = input.JobTitle,
             EmployerName = input.EmployerName,
@@ -15,6 +17,7 @@ public static class JobCreateEditMapper
             EndDate = DateTimeOffset.FromUnixTimeSeconds(input.EndDateUnix).UtcDateTime,
             SkillTags = skillTags
         };
+        return Result.Success<Job, JobValidationFailures>(job);
     }
 
     public static void ApplyTo(JobCreateEdit input, Job existing, IList<SkillTag> skillTags)

@@ -1,27 +1,27 @@
-using DragonAssignmentDomain.Poco;
 using CSharpFunctionalExtensions;
+using DragonAssignmentDomain.Poco;
 
 namespace DragonAssignmentDomain.Models;
 
-public partial class Job
+public class JobValidation
 {
-    public JobValidationFailures? Validate()
+    public static Result<Job, JobValidationFailures> Validate(Job job)
     {
         var failures = new JobValidationFailures();
 
-        if (string.IsNullOrWhiteSpace(JobTitle))
+        if (string.IsNullOrWhiteSpace(job.JobTitle))
             failures.JobTitle = "is required";
-        if (NumberOfPositions <= 0)
+        if (job.NumberOfPositions <= 0)
             failures.NumberOfPositions = "must be a positive number";
-        if (StartDate.TimeOfDay != TimeSpan.Zero)
+        if (job.StartDate.TimeOfDay != TimeSpan.Zero)
             failures.StartDateUnix = "must be midnight UTC";
-        if (EndDate.TimeOfDay != TimeSpan.Zero)
+        if (job.EndDate.TimeOfDay != TimeSpan.Zero)
             failures.EndDateUnix = "must be midnight UTC";
 
         if (failures.JobTitle != null || failures.NumberOfPositions != null
             || failures.StartDateUnix != null || failures.EndDateUnix != null)
-            return failures;
+            return Result.Failure<Job, JobValidationFailures>(failures);
 
-        return null;
+        return Result.Success<Job, JobValidationFailures>(job);
     }
 }
