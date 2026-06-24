@@ -27,7 +27,7 @@ public class PayPeriodCrudTests
             .WithStartDate(new DateTime(1970, 1, 5))
             .WithEndDate(new DateTime(1970, 1, 11))
             .WithAssignmentId(1827)
-            .AddHoursWorkedRelative(clockInSeconds: 9 * 3600, clockOutSeconds: 17 * 3600)
+            .AddHoursWorked(new DateTime(1970, 1, 5, 9, 0, 0), new DateTime(1970, 1, 5, 17, 0, 0))
             .Build();
         var insertedPayPeriod = new Immutable<PayPeriod>();
         var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();

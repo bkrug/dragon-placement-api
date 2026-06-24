@@ -36,26 +36,6 @@ public class PayPeriodBuilder
         });
         return this;
     }    
-    /// <param name="clockInSeconds">A number of seconds relative to the pay period start</param>
-    /// <param name="clockOutSeconds">A number of seconds relative to the pay period start</param>
-    /// <returns></returns>
-    public PayPeriodBuilder AddHoursWorkedRelative(long clockInSeconds, long clockOutSeconds)
-    {
-        return AddHoursWorkedRelative(0, clockInSeconds, clockOutSeconds);
-    }
-    /// <param name="clockInSeconds">A number of seconds relative to the pay period start</param>
-    /// <param name="clockOutSeconds">A number of seconds relative to the pay period start</param>
-    /// <returns></returns>
-    public PayPeriodBuilder AddHoursWorkedRelative(int hoursWorkedId, long clockInSeconds, long clockOutSeconds)
-    {
-        _hoursWorked.Add(new HoursWorked
-        {
-            HoursWorkedId = hoursWorkedId,
-            StartDateTime = _startDate.AddSeconds(clockInSeconds),
-            EndDateTime = _startDate.AddSeconds(clockOutSeconds)
-        });
-        return this;
-    }
 
     public PayPeriod Build() => new()
     {
