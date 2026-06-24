@@ -37,16 +37,16 @@ public static class PayPeriodParser
         // else if (parsedEnd.TimeOfDay.TotalSeconds != 0)
         //     failures.StartDate = "must exclude time-of-day or be midnight UTC";
 
-        if (!string.IsNullOrEmpty(failures.StartDate) || !string.IsNullOrEmpty(failures.EndDate))
-            return (null, failures);
-
-        //TODO: Add validation that these strings parsed correctly
-        var parsedHoursWorked = input.HoursWorked
-            .Select(hw => (
-                Start: DateTime.Parse(hw.StartDateTime),
-                End: DateTime.Parse(hw.EndDateTime)
-            ))
+        List<(HoursWorked?, HoursWorkedValidationFailures?)> parsedHoursWorked = input.HoursWorked
+            .Select((HoursWorkedCreateEdit hw, int index) => ParseHoursWorked(hw, index))
             .ToList();
+        failures.HoursWorked = parsedHoursWorked
+            .Where(tuple => tuple.Item2 != null)
+            .Select(tuple => tuple.Item2!)
+            .ToList();
+
+        if (!string.IsNullOrEmpty(failures.StartDate) || !string.IsNullOrEmpty(failures.EndDate) || failures.HoursWorked.Count > 0)
+            return (null, failures);
 
         var payPeriod = new PayPeriod
         {
@@ -54,12 +54,42 @@ public static class PayPeriodParser
             StartDate = parsedStart,
             EndDate = parsedEnd,
             SubmissionStatus = input.SubmissionStatus,
-            HoursWorked = parsedHoursWorked.Select(hw => new HoursWorked
-            {
-                StartDateTime = hw.Start,
-                EndDateTime = hw.End
-            }).ToList()
+            HoursWorked = parsedHoursWorked.Select(tuple => tuple.Item1!).ToList()
         };
         return (payPeriod, null);
-    }    
+    }
+
+    private static (HoursWorked? transformed, HoursWorkedValidationFailures? failure) 
+        ParseHoursWorked(HoursWorkedCreateEdit hw, int index)
+    {
+        var hwFailures = new HoursWorkedValidationFailures
+        {
+            Index = index
+        };
+        DateTime parsedHwStart = DateTime.MinValue;
+        DateTime parsedHwEnd = DateTime.MinValue;
+
+        if (string.IsNullOrEmpty(hw.StartDateTime))
+            hwFailures.StartDateTime = "required";
+        else if (!DateTime.TryParse(hw.StartDateTime, out parsedHwStart))
+            hwFailures.StartDateTime = "must be an ISO Date";
+        if (string.IsNullOrEmpty(hw.EndDateTime))
+            hwFailures.EndDateTime = "required";
+        else if (!DateTime.TryParse(hw.EndDateTime, out parsedHwEnd))
+            hwFailures.EndDateTime = "must be an ISO Date";
+
+        if (string.IsNullOrEmpty(hwFailures.StartDateTime) && string.IsNullOrEmpty(hwFailures.EndDateTime))
+        {
+            var hwModel = new HoursWorked
+            {
+                StartDateTime = parsedHwStart,
+                EndDateTime = parsedHwEnd
+            };
+            return new(hwModel, null);
+        }
+        else
+        {
+            return new(null, hwFailures);
+        }
+    }
 }
