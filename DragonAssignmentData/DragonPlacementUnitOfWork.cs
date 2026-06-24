@@ -74,10 +74,12 @@ public class DragonPlacementUnitOfWork(DragonPlacementContext context, ILogger<D
     public IEnumerable<JobWithCapacity> GetJobsWithCapacity(JobInclusions jobInclusions)
     {
         var todayUnix = new DateTimeOffset(DateTime.UtcNow.Date, TimeSpan.Zero).ToUnixTimeSeconds();
-        var queryable = jobInclusions switch
+        IQueryable<Job> queryable = jobInclusions switch
         {
-            JobInclusions.Past => _context.Jobs.Where(j => j.EndDate < DateTime.UtcNow.Date),
-            JobInclusions.CurrentAndFuture => _context.Jobs.Where(j => j.EndDate >= DateTime.UtcNow.Date),
+            JobInclusions.Past => _context.Jobs
+                .FromSql($"SELECT * FROM Job WHERE EndDateUnix < {todayUnix}"),
+            JobInclusions.CurrentAndFuture => _context.Jobs
+                .FromSql($"SELECT * FROM Job WHERE EndDateUnix >= {todayUnix}"),
             JobInclusions.All => _context.Jobs.AsQueryable(),
             _ => _context.Jobs.Where(j => false)
         };
