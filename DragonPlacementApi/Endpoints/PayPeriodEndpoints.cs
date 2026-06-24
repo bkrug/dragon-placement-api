@@ -113,44 +113,20 @@ public class PayPeriodEndpoints
             [FromRoute(Name = "payPeriodId")] int payPeriodId,
             [FromBody] PayPeriodCreateEdit input)
     {
-        var entry = await unitOfWork.GetPayPeriodWithHoursWorkedAsync(payPeriodId).ConfigureAwait(false);
-        if (entry == null)
-            return TypedResults.NotFound(ValidatedResponse.NotFound);
-
-        var validationResult = PayPeriodParser.GetPayPeriodModel(input);
-        if (validationResult.IsFailure)
-            return TypedResults.BadRequest(new ValidatedForm<PayPeriodValidationFailures>
+        var result = await PayPeriodService.UpdatePayPeriodAsync(unitOfWork, payPeriodId, input);
+        return result.IsFailure
+            ? result.Error switch
             {
-                IsSuccess = false,
-                IsInternalError = false,
-                ValidationFailures = validationResult.Error
-            });
-
-        var parsedPayPeriod = validationResult.Value;
-        var inputClockIns = parsedPayPeriod.HoursWorked.ToList();
-
-        var clockInsToDelete = entry.HoursWorked
-            .Where(existingHw => !inputClockIns.Any(ih => ih.StartDateTime == existingHw.StartDateTime))
-            .ToList();
-        foreach (var recToDelete in clockInsToDelete)
-            entry.HoursWorked.Remove(recToDelete);
-
-        entry.AssignmentId = parsedPayPeriod.AssignmentId;
-        entry.StartDate = parsedPayPeriod.StartDate;
-        entry.EndDate = parsedPayPeriod.EndDate;
-        entry.SubmissionStatus = parsedPayPeriod.SubmissionStatus;
-
-        foreach (var inputClockIn in inputClockIns)
-        {
-            var existingClockPunch = entry.HoursWorked.FirstOrDefault(h => h.StartDateTime == inputClockIn.StartDateTime);
-            if (existingClockPunch == null)
-                entry.HoursWorked.Add(inputClockIn);
-            else
-                existingClockPunch.EndDateTime = inputClockIn.EndDateTime;
-        }
-
-        await unitOfWork.SaveAsync().ConfigureAwait(false);
-        return TypedResults.Ok(ValidatedPayload<PayPeriod>.FromPayload(entry));
+                PayPeriodNotFound => TypedResults.NotFound(ValidatedResponse.NotFound),
+                PayPeriodInvalid(var f) => TypedResults.BadRequest(new ValidatedForm<PayPeriodValidationFailures>
+                {
+                    IsSuccess = false,
+                    IsInternalError = false,
+                    ValidationFailures = f
+                }),
+                _ => throw new InvalidOperationException()
+            }
+            : TypedResults.Ok(ValidatedPayload<PayPeriod>.FromPayload(result.Value));
     }
 
     //TODO: Only allow pay periods to be deleted if they have not yet been submitted.
