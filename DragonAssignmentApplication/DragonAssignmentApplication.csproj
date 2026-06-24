@@ -11,4 +11,8 @@
     <ProjectReference Include="../DragonAssignmentDomain/DragonAssignmentDomain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="CSharpFunctionalExtensions" Version="3.7.0" />
+  </ItemGroup>
+
 </Project>
