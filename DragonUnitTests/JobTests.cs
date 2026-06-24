@@ -1,4 +1,3 @@
-using DragonCommonApplication;
 using DragonCommonApplication.Repositories;
 using DragonAssignmentApplication.JobUpsert;
 using DragonAssignmentDomain.Poco;
@@ -27,8 +26,8 @@ public class JobTests
             JobTitle = "Dragon Wrangler",
             EmployerName = "Dragonscale Inc.",
             NumberOfPositions = 3,
-            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
-            EndDateUnix = 2 * Const.SECONDS_IN_A_DAY,
+            StartDate = "1970-01-02",
+            EndDate = "1970-01-03",
             SkillTagIds = skillIds
         };
         var expectedJob = new Job
@@ -56,11 +55,13 @@ public class JobTests
     }
 
     [Theory]
-    [InlineData(null,     "JobTitle",           "is required")]
-    [InlineData("",       "JobTitle",           "is required")]
-    [InlineData(-1,       "NumberOfPositions",  "must be a positive number")]
-    [InlineData(1000001L, "StartDateUnix",      "must be midnight UTC")]
-    [InlineData(1000001L, "EndDateUnix",        "must be midnight UTC")]
+    [InlineData(null,              "JobTitle",           "is required")]
+    [InlineData("",                "JobTitle",           "is required")]
+    [InlineData(-1,                "NumberOfPositions",  "must be a positive number")]
+    [InlineData("not-a-date",      "StartDate",          "must be an ISO Date")]
+    [InlineData("not-a-date",      "EndDate",            "must be an ISO Date")]
+    [InlineData("1970-01-02T13:00:00", "StartDate",      "must be midnight UTC")]
+    [InlineData("1970-01-02T13:00:00", "EndDate",        "must be midnight UTC")]
     public async Task CreateJob_InvalidInput_ExpectBadRequestWithValidationFailure(
         object? invalidValue,
         string expectedFailureField,
@@ -71,8 +72,8 @@ public class JobTests
             JobTitle = "Dragon Wrangler",
             EmployerName = "Dragonscale Inc.",
             NumberOfPositions = 3,
-            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
-            EndDateUnix = 2 * Const.SECONDS_IN_A_DAY
+            StartDate = "1970-01-02",
+            EndDate = "1970-01-03"
         };
         typeof(JobCreateEdit).GetProperty(expectedFailureField)!.SetValue(inputJob, invalidValue);
         var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
@@ -98,8 +99,8 @@ public class JobTests
         {
             JobTitle = null!,
             NumberOfPositions = -1,
-            StartDateUnix = 1000000,
-            EndDateUnix = 2000000
+            StartDate = "1970-01-02T13:00:00",
+            EndDate = "1970-01-03T14:00:00"
         };
         var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
         unitOfWorkMock.Setup(m => m.JobRepository).Returns(new Mock<IGenericRepository<Job>>().Object);
@@ -115,8 +116,8 @@ public class JobTests
         {
             JobTitle = "is required",
             NumberOfPositions = "must be a positive number",
-            StartDateUnix = "must be midnight UTC",
-            EndDateUnix = "must be midnight UTC"
+            StartDate = "must be midnight UTC",
+            EndDate = "must be midnight UTC"
         });
     }
 
@@ -149,8 +150,8 @@ public class JobTests
             JobTitle = "New Title",
             EmployerName = "New Employer",
             NumberOfPositions = 5,
-            StartDateUnix = 2592000,
-            EndDateUnix = 3456000,
+            StartDate = "1970-01-31",
+            EndDate = "1970-02-10",
             SkillTagIds = skillIds
         };
         var expectedJob = new Job
@@ -159,8 +160,8 @@ public class JobTests
             JobTitle = "New Title",
             EmployerName = "New Employer",
             NumberOfPositions = 5,
-            StartDate = DateTimeOffset.FromUnixTimeSeconds(2592000).UtcDateTime,
-            EndDate = DateTimeOffset.FromUnixTimeSeconds(3456000).UtcDateTime,
+            StartDate = new DateTime(1970, 1, 31),
+            EndDate = new DateTime(1970, 2, 10),
             SkillTags = newSkills
         };
         var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
@@ -191,10 +192,12 @@ public class JobTests
     }
 
     [Theory]
-    [InlineData(" ",      "JobTitle",           "is required")]
-    [InlineData(-5,       "NumberOfPositions",  "must be a positive number")]
-    [InlineData(1000001L, "StartDateUnix",      "must be midnight UTC")]
-    [InlineData(1000001L, "EndDateUnix",        "must be midnight UTC")]
+    [InlineData(" ",                   "JobTitle",           "is required")]
+    [InlineData(-5,                    "NumberOfPositions",  "must be a positive number")]
+    [InlineData("not-a-date",          "StartDate",          "must be an ISO Date")]
+    [InlineData("not-a-date",          "EndDate",            "must be an ISO Date")]
+    [InlineData("1970-01-02T13:00:00", "StartDate",          "must be midnight UTC")]
+    [InlineData("1970-01-02T13:00:00", "EndDate",            "must be midnight UTC")]
     public async Task UpdateJob_InvalidInput_ExpectBadRequestWithValidationFailure(
         object? invalidValue,
         string expectedFailureField,
@@ -214,8 +217,8 @@ public class JobTests
             JobTitle = "Dragon Wrangler",
             EmployerName = "Dragonscale Inc.",
             NumberOfPositions = 3,
-            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
-            EndDateUnix = 2 * Const.SECONDS_IN_A_DAY
+            StartDate = "1970-01-02",
+            EndDate = "1970-01-03"
         };
         typeof(JobCreateEdit).GetProperty(expectedFailureField)!.SetValue(inputJob, invalidValue);
         var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
@@ -250,8 +253,8 @@ public class JobTests
         {
             JobTitle = " ",
             NumberOfPositions = -5,
-            StartDateUnix = 1000000,
-            EndDateUnix = 2000000
+            StartDate = "1970-01-02T13:00:00",
+            EndDate = "1970-01-03T14:00:00"
         };
         var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
         unitOfWorkMock.Setup(u => u.GetJobWithSkillsAsync(JOB_ID)).ReturnsAsync([existingJob]);
@@ -267,8 +270,8 @@ public class JobTests
         {
             JobTitle = "is required",
             NumberOfPositions = "must be a positive number",
-            StartDateUnix = "must be midnight UTC",
-            EndDateUnix = "must be midnight UTC"
+            StartDate = "must be midnight UTC",
+            EndDate = "must be midnight UTC"
         });
     }
 
