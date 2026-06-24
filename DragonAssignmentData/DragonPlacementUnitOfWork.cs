@@ -130,13 +130,11 @@ public class DragonPlacementUnitOfWork(DragonPlacementContext context, ILogger<D
         return [ dragon ];
     }
 
-    public async Task<IList<Job>> GetJobWithSkillsAsync(int jobId)
+    public async Task<Job?> GetJobWithSkillsAsync(int jobId)
     {
         return await _context.Jobs
             .Include(d => d.SkillTags)
-            .Where(d => d.JobId == jobId)
-            .Take(2)
-            .ToListAsync()
+            .FirstOrDefaultAsync(d => d.JobId == jobId)
             .ConfigureAwait(false);
     }    
 

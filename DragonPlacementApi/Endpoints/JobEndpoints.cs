@@ -12,19 +12,16 @@ namespace DragonPlacementApi.Endpoints;
 
 public class JobEndpoints
 {
-    public static async Task<Results<Ok<ValidatedPayload<Job>>, NotFound<ValidatedResponse>, InternalServerError<ValidatedResponse>>> 
+    public static async Task<Results<Ok<ValidatedPayload<Job>>, NotFound<ValidatedResponse>>>
         GetJob(
             IDragonPlacementUnitOfWork unitOfWork,
             [FromRoute(Name="jobId")] int jobId = 0
         )
     {
-        var jobs = await unitOfWork.GetJobWithSkillsAsync(jobId).ConfigureAwait(false);
-        return jobs.Count switch
-        {
-            0 => TypedResults.NotFound(ValidatedResponse.NotFound),
-            1 => TypedResults.Ok(ValidatedPayload<Job>.FromPayload(jobs.First())),
-            _ => TypedResults.InternalServerError(ValidatedResponse.ExpectedOneFoundMultiple),
-        };
+        var job = await unitOfWork.GetJobWithSkillsAsync(jobId).ConfigureAwait(false);
+        if (job == null)
+            return TypedResults.NotFound(ValidatedResponse.NotFound);
+        return TypedResults.Ok(ValidatedPayload<Job>.FromPayload(job));
     }
 
     public static PagedData<JobWithCapacity>
@@ -124,19 +121,16 @@ public class JobEndpoints
         return TypedResults.Ok(ValidatedPayload<Job>.FromPayload(job));
     }
 
-    public static async Task<Results<Ok<ValidatedPayload<Job>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<JobValidationFailures>>, InternalServerError<ValidatedResponse>>>
+    public static async Task<Results<Ok<ValidatedPayload<Job>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<JobValidationFailures>>>>
         UpdateJobAsync(
             IDragonPlacementUnitOfWork unitOfWork,
             [FromRoute(Name="jobId")] int jobId,
             [FromBody] JobCreateEdit inputJob)
     {
-        var loadedJobs = await unitOfWork.GetJobWithSkillsAsync(jobId).ConfigureAwait(false);
-        if (loadedJobs.Count == 0)
+        var existing = await unitOfWork.GetJobWithSkillsAsync(jobId).ConfigureAwait(false);
+        if (existing == null)
             return TypedResults.NotFound(ValidatedResponse.NotFound);
-        else if (loadedJobs.Count > 1)
-            return TypedResults.InternalServerError(ValidatedResponse.ExpectedOneFoundMultiple);
 
-        var existing = loadedJobs.Single();
         var result = JobUpsertService.UpdateJob(inputJob, existing, unitOfWork);
         if (result.IsFailure)
             return TypedResults.BadRequest(new ValidatedForm<JobValidationFailures>
