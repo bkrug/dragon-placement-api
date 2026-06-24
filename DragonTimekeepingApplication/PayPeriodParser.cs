@@ -45,18 +45,24 @@ public static class PayPeriodParser
             .Select(tuple => tuple.Item2!)
             .ToList();
 
-        if (!string.IsNullOrEmpty(failures.StartDate) || !string.IsNullOrEmpty(failures.EndDate) || failures.HoursWorked.Count > 0)
-            return (null, failures);
-
-        var payPeriod = new PayPeriod
+        if (!string.IsNullOrEmpty(failures.StartDate)
+            || !string.IsNullOrEmpty(failures.EndDate)
+            || failures.HoursWorked.Count > 0)
         {
-            AssignmentId = input.AssignmentId,
-            StartDate = parsedStart,
-            EndDate = parsedEnd,
-            SubmissionStatus = input.SubmissionStatus,
-            HoursWorked = parsedHoursWorked.Select(tuple => tuple.Item1!).ToList()
-        };
-        return (payPeriod, null);
+            return (null, failures);
+        }
+        else
+        {
+            var payPeriod = new PayPeriod
+            {
+                AssignmentId = input.AssignmentId,
+                StartDate = parsedStart,
+                EndDate = parsedEnd,
+                SubmissionStatus = input.SubmissionStatus,
+                HoursWorked = parsedHoursWorked.Select(tuple => tuple.Item1!).ToList()
+            };
+            return (payPeriod, null);            
+        }
     }
 
     private static (HoursWorked? transformed, HoursWorkedValidationFailures? failure) 
@@ -73,6 +79,7 @@ public static class PayPeriodParser
             hwFailures.StartDateTime = "required";
         else if (!DateTime.TryParse(hw.StartDateTime, out parsedHwStart))
             hwFailures.StartDateTime = "must be an ISO Date";
+
         if (string.IsNullOrEmpty(hw.EndDateTime))
             hwFailures.EndDateTime = "required";
         else if (!DateTime.TryParse(hw.EndDateTime, out parsedHwEnd))
