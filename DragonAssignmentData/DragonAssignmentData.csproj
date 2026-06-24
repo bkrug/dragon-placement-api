@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../CommonDataLayer/CommonDataLayer.csproj" />
+    <ProjectReference Include="../DragonCommonDataLayer/DragonCommonDataLayer.csproj" />
     <ProjectReference Include="../DragonAssignmentApplication/DragonAssignmentApplication.csproj" />
     <ProjectReference Include="../DragonAssignmentDomain/DragonAssignmentDomain.csproj" />
   </ItemGroup>

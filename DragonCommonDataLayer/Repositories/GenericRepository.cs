@@ -2,7 +2,7 @@ using System.Linq.Expressions;
 using DragonCommonApplication.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-namespace CommonDataLayer.Repositories;
+namespace DragonCommonDataLayer.Repositories;
 
 public class GenericRepository<TEntity>(DbContext context) : IGenericRepository<TEntity> where TEntity : class
 {
