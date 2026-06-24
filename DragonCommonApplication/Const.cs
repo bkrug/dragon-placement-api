@@ -1,4 +1,4 @@
-namespace DragonPlacementApi.Poco;
+namespace DragonCommonApplication;
 
 public static class Const
 {

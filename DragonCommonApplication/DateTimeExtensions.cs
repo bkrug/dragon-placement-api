@@ -4,11 +4,11 @@ public static class DateTimeExtentions
 {
     public static string ToIsoDateString(this DateTime dateTime)
     {
-        return dateTime.ToString("yyyy-MM-dd");
+        return dateTime.ToString(Const.ISO_DATE);
     }
 
     public static string ToIsoDateTimeString(this DateTime dateTime)
     {
-        return dateTime.ToString("yyyy-MM-ddTHH:mm:ss");
+        return dateTime.ToString(Const.ISO_DATETIME);
     }
 }
