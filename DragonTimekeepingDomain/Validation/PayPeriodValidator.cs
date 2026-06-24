@@ -19,14 +19,7 @@ public static class PayPeriodValidator
         if (endDateMessage != null)
             failures["EndDate"] = endDateMessage;
 
-        var hoursWorked = payPeriod.HoursWorked
-            .Select(hw => (
-                Start: hw.StartDateTime,
-                End: hw.EndDateTime
-            ))
-            .ToList();
-
-        var hoursWorkedFailures = ValidateHoursWorked(hoursWorked, parsedStart, parsedEnd);
+        var hoursWorkedFailures = ValidateHoursWorked(payPeriod);
 
         if (failures.Count == 0 && hoursWorkedFailures.Count == 0)
             return null;
@@ -59,21 +52,19 @@ public static class PayPeriodValidator
         return null;
     }
 
-    private static IList<HoursWorkedValidationFailures> ValidateHoursWorked(
-        IList<(DateTime Start, DateTime End)> hoursWorked,
-        DateTime payPeriodStart, DateTime payPeriodEnd)
+    private static IList<HoursWorkedValidationFailures> ValidateHoursWorked(PayPeriod payPeriod)
     {
-        var payPeriodEndPlusOneDay = payPeriodEnd.AddDays(1);
+        var payPeriodEndPlusOneDay = payPeriod.EndDate.AddDays(1);
 
-        return hoursWorked
+        return payPeriod.HoursWorked
             .Select((hw, index) =>
             {
                 string validationMessage = string.Empty;
-                if (hw.Start < payPeriodStart)
+                if (hw.StartDateTime < payPeriod.StartDate)
                     validationMessage = "Clock-in time is outside of the pay period";
-                else if (hw.End >= payPeriodEndPlusOneDay)
+                else if (hw.EndDateTime >= payPeriodEndPlusOneDay)
                     validationMessage = "Clock-out time is outside of the pay period";
-                else if (hoursWorked.Where((other, i) => i != index && hw.Start < other.End && other.Start < hw.End).Any())
+                else if (payPeriod.HoursWorked.Where((other, i) => DoRecordsOverlap(hw, index, other, i)).Any())
                     validationMessage = "Overlaps with another hours-worked record";
                 return (index, validationMessage);
             })
@@ -84,5 +75,12 @@ public static class PayPeriodValidator
                 RowValidationMessage = tuple.validationMessage
             })
             .ToList();
+    }
+
+    private static bool DoRecordsOverlap(HoursWorked reocrd1, int index1, HoursWorked record2, int index2)
+    {
+        return index2 != index1
+            && reocrd1.StartDateTime < record2.EndDateTime
+            && record2.StartDateTime < reocrd1.EndDateTime;
     }
 }
