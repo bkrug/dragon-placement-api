@@ -21,8 +21,8 @@ public static class PayPeriodDomainValidator
 
         var hoursWorked = payPeriod.HoursWorked
             .Select(hw => (
-                Start: DateTimeOffset.FromUnixTimeSeconds(hw.StartDateTimeUnix).UtcDateTime,
-                End: DateTimeOffset.FromUnixTimeSeconds(hw.EndDateTimeUnix).UtcDateTime
+                Start: hw.StartDateTime,
+                End: hw.EndDateTime
             ))
             .ToList();
 

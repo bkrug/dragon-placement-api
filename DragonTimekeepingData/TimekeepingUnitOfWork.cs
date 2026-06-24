@@ -40,7 +40,7 @@ public class TimekeepingUnitOfWork(TimekeepingContext context) : IDisposable, IT
     public async Task<PayPeriod?> GetPayPeriodWithHoursWorkedAsync(int payPeriodId)
     {
         return await _context.PayPeriods
-            .Include(p => p.HoursWorked.OrderBy(hw => hw.StartDateTimeUnix))
+            .Include(p => p.HoursWorked.OrderBy(hw => hw.StartDateTime))
             .FirstOrDefaultAsync(p => p.PayPeriodId == payPeriodId);
     }
 }

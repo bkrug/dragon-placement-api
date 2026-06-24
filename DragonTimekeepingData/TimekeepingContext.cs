@@ -34,6 +34,9 @@ public partial class TimekeepingContext : DbContext
 
             entity.HasKey(e => e.HoursWorkedId);
 
+            entity.Property(e => e.StartDateTime).IsUnixSecondsType("StartDateTimeUnix");
+            entity.Property(e => e.EndDateTime).IsUnixSecondsType("EndDateTimeUnix");
+
             entity.HasOne(e => e.PayPeriod)
                 .WithMany(p => p.HoursWorked)
                 .HasForeignKey(e => e.PayPeriodId)

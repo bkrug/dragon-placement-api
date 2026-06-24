@@ -228,7 +228,7 @@ public class PayPeriodCrudTests
             .WithStartDateUnix(11 * Const.SECONDS_IN_A_DAY)
             .WithEndDateUnix(17 * Const.SECONDS_IN_A_DAY)
             .WithSubmissionStatus("Submitted")
-            .AddHoursWorked(11 * Const.SECONDS_IN_A_DAY + 9 * Const.SECONDS_IN_AN_HOUR, 11 * Const.SECONDS_IN_A_DAY + 17 * Const.SECONDS_IN_AN_HOUR)
+            .AddHoursWorked(new DateTime(1970, 1, 12, 9, 0, 0), new DateTime(1970, 1, 12, 17, 0, 0))
             .Build();
         var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
         unitOfWorkMock.Setup(u => u.GetPayPeriodWithHoursWorkedAsync(PAY_PERIOD_ID)).ReturnsAsync(existingEntry);
@@ -246,15 +246,15 @@ public class PayPeriodCrudTests
     public async Task UpdatePayPeriod_InputReplacesOneRecordAndDropsAnother_ExpectOnlyInputRecordsRemain()
     {
         const int PAY_PERIOD_ID = 55;
-        const long MONDAY_START = 4 * Const.SECONDS_IN_A_DAY;
-        const long TUESDAY_START = 5 * Const.SECONDS_IN_A_DAY;
-        const long WEDNESDAY_START = 6 * Const.SECONDS_IN_A_DAY;
+        DateTime MONDAY_START = new (1970, 1, 5);
+        DateTime TUESDAY_START = new (1970, 1, 6);
+        DateTime WEDNESDAY_START = new (1970, 1, 7);
         var existingEntry = new PayPeriodBuilder()
             .WithPayPeriodId(PAY_PERIOD_ID)
             .WithStartDateUnix(4, Const.SECONDS_IN_A_DAY)
             .WithEndDateUnix(10, Const.SECONDS_IN_A_DAY)
-            .AddHoursWorked(301, MONDAY_START, MONDAY_START + 3600)
-            .AddHoursWorked(302, TUESDAY_START, TUESDAY_START + 3600)        
+            .AddHoursWorked(301, MONDAY_START, MONDAY_START.AddHours(1))
+            .AddHoursWorked(302, TUESDAY_START, TUESDAY_START.AddHours(1))
             .Build();
         var input = new PayPeriodCreateEditBuilder()
             .WithStartDate("1970-01-05")
@@ -267,13 +267,13 @@ public class PayPeriodCrudTests
             new()
             {
                 HoursWorkedId = 301,
-                StartDateTimeUnix = MONDAY_START,
-                EndDateTimeUnix = MONDAY_START + 7200
+                StartDateTime = MONDAY_START,
+                EndDateTime = MONDAY_START.AddHours(2)
             },
             new()
             {
-                StartDateTimeUnix = WEDNESDAY_START,
-                EndDateTimeUnix = WEDNESDAY_START + 3600
+                StartDateTime = WEDNESDAY_START,
+                EndDateTime = WEDNESDAY_START.AddHours(1)
             }
         };
         var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
@@ -491,15 +491,18 @@ public class PayPeriodCrudTests
             .WithPayPeriodId(PAY_PERIOD_ID)
             .WithStartDateUnix(1 * Const.SECONDS_IN_A_DAY)
             .WithEndDateUnix(7 * Const.SECONDS_IN_A_DAY)
-            .AddHoursWorkedRelative(401, 32400, 61200)
-            .AddHoursWorkedRelative(402, 1 * Const.SECONDS_IN_A_DAY + 32400, 1 * Const.SECONDS_IN_A_DAY + 61200)
+            .AddHoursWorked(401, new DateTime(1970, 1, 2, 9, 0, 0), new DateTime(1970, 1, 2, 17, 0, 0))
+            .AddHoursWorked(402, new DateTime(1970, 1, 3, 9, 0, 0), new DateTime(1970, 1, 3, 17, 0, 0))
             .Build();
         var dragon = new Dragon { DragonId = DRAGON_ID, GivenName = "Smaug", FamilyName = "the Terrible" };
         var job = new Job { JobId = JOB_ID, JobTitle = "Guard", EmployerName = "Castle Corp" };
         var assignment = new Assignment
         {
-            AssignmentId = ASSIGNMENT_ID, DragonId = DRAGON_ID, JobId = JOB_ID,
-            Dragon = dragon, Job = job
+            AssignmentId = ASSIGNMENT_ID,
+            DragonId = DRAGON_ID,
+            JobId = JOB_ID,
+            Dragon = dragon,
+            Job = job
         };
         var timekeepingMock = new Mock<ITimekeepingUnitOfWork>();
         timekeepingMock.Setup(u => u.GetPayPeriodWithHoursWorkedAsync(PAY_PERIOD_ID)).ReturnsAsync(payPeriod);

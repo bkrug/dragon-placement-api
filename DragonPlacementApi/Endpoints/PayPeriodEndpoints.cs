@@ -84,8 +84,8 @@ public class PayPeriodEndpoints
             AssignmentDescription = $"{assignment?.Job.JobTitle} at {assignment?.Job.EmployerName}",
             HoursWorked = entry.HoursWorked.Select(hw => new HoursWorkedView
             {
-                StartDateTime = UnixDateConvert.ToIsoDateTime(hw.StartDateTimeUnix),
-                EndDateTime = UnixDateConvert.ToIsoDateTime(hw.EndDateTimeUnix)
+                StartDateTime = hw.StartDateTime.ToString("yyyy-MM-ddTHH:mm:ss"),
+                EndDateTime = hw.EndDateTime.ToString("yyyy-MM-ddTHH:mm:ss")
             }).ToList()
         };
         return TypedResults.Ok(ValidatedPayload<PayPeriodView>.FromPayload(transformedEntry));
@@ -133,7 +133,7 @@ public class PayPeriodEndpoints
         var inputClockIns = parsedPayPeriod!.HoursWorked.ToList();
 
         var clockInsToDelete = entry.HoursWorked
-            .Where(existingHw => !inputClockIns.Any(ih => ih.StartDateTimeUnix == existingHw.StartDateTimeUnix))
+            .Where(existingHw => !inputClockIns.Any(ih => ih.StartDateTime == existingHw.StartDateTime))
             .ToList();
         foreach (var recToDelete in clockInsToDelete)
             entry.HoursWorked.Remove(recToDelete);
@@ -145,11 +145,11 @@ public class PayPeriodEndpoints
 
         foreach (var inputClockIn in inputClockIns)
         {
-            var existingClockPunch = entry.HoursWorked.FirstOrDefault(h => h.StartDateTimeUnix == inputClockIn.StartDateTimeUnix);
+            var existingClockPunch = entry.HoursWorked.FirstOrDefault(h => h.StartDateTime == inputClockIn.StartDateTime);
             if (existingClockPunch == null)
                 entry.HoursWorked.Add(inputClockIn);
             else
-                existingClockPunch.EndDateTimeUnix = inputClockIn.EndDateTimeUnix;
+                existingClockPunch.EndDateTime = inputClockIn.EndDateTime;
         }
 
         await unitOfWork.SaveAsync().ConfigureAwait(false);

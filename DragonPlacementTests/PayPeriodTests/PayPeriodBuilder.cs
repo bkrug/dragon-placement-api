@@ -25,17 +25,17 @@ public class PayPeriodBuilder
     }
     public PayPeriodBuilder WithEndDateUnix(long val) { _endDateUnix = val; return this; }
     public PayPeriodBuilder WithSubmissionStatus(string val) { _submissionStatus = val; return this; }
-    public PayPeriodBuilder AddHoursWorked(long clockInSeconds, long clockOutSeconds)
+    public PayPeriodBuilder AddHoursWorked(DateTime clockInSeconds, DateTime clockOutSeconds)
     {
         return AddHoursWorked(0, clockInSeconds, clockOutSeconds);
     }
-    public PayPeriodBuilder AddHoursWorked(int hoursWorkedId, long clockInSeconds, long clockOutSeconds)
+    public PayPeriodBuilder AddHoursWorked(int hoursWorkedId, DateTime clockInSeconds, DateTime clockOutSeconds)
     {
         _hoursWorked.Add(new HoursWorked
         {
             HoursWorkedId = hoursWorkedId,
-            StartDateTimeUnix = clockInSeconds,
-            EndDateTimeUnix = clockOutSeconds 
+            StartDateTime = clockInSeconds,
+            EndDateTime = clockOutSeconds 
         });
         return this;
     }    
@@ -54,8 +54,8 @@ public class PayPeriodBuilder
         _hoursWorked.Add(new HoursWorked
         {
             HoursWorkedId = hoursWorkedId,
-            StartDateTimeUnix = _startDateUnix + clockInSeconds,
-            EndDateTimeUnix = _startDateUnix + clockOutSeconds 
+            StartDateTime = DateTimeOffset.FromUnixTimeSeconds(_startDateUnix + clockInSeconds).UtcDateTime,
+            EndDateTime = DateTimeOffset.FromUnixTimeSeconds(_startDateUnix + clockOutSeconds).UtcDateTime
         });
         return this;
     }
