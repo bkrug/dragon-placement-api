@@ -1,3 +1,4 @@
+using CommonDataLayer;
 using DragonAssignmentDomain.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -35,7 +36,9 @@ public partial class DragonPlacementContext : DbContext
             entity.HasIndex(e => new { e.JobId, e.DragonId }, "Assignment_UK_JobId_DragonId").IsUnique();
 
             entity.HasKey(e => e.AssignmentId);
-            //entity.Property(e => e.AssignmentId).ValueGeneratedNever();
+
+            entity.Property(e => e.StartDate).IsUnixSecondsType("StartDateUnix");
+            entity.Property(e => e.EndDate).IsUnixSecondsType("EndDateUnix");
 
             entity.HasOne(d => d.Dragon).WithMany(p => p.Assignments)
                 .HasForeignKey(d => d.DragonId)

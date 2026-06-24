@@ -47,7 +47,8 @@ public class DragonPlacementUnitOfWork(DragonPlacementContext context, ILogger<D
     {
         return _context.Assignments
             .Where(a => a.DragonId == dragonId)
-            .Where(a => periodStartUnix <= a.EndDateUnix && periodEndUnix >= a.StartDateUnix);
+            .Where(a => DateTimeOffset.FromUnixTimeSeconds(periodStartUnix).UtcDateTime <= a.EndDate 
+                    && DateTimeOffset.FromUnixTimeSeconds(periodEndUnix).UtcDateTime >= a.StartDate);
     }
 
     public IEnumerable<Dragon> GetDragonsWithoutOverlappingAssignments(int jobId, int[] skillTagIds, string? fightingSkill)
@@ -58,7 +59,9 @@ public class DragonPlacementUnitOfWork(DragonPlacementContext context, ILogger<D
         var periodStart = job.StartDateUnix;
         var periodEnd = job.EndDateUnix;
         var queryable = _context.Dragons
-            .Where(d => d.Assignments.Count(a => periodStart <= a.EndDateUnix && periodEnd >= a.StartDateUnix) == 0);
+            .Where(d => d.Assignments.Count(a => 
+                DateTimeOffset.FromUnixTimeSeconds(periodStart).UtcDateTime <= a.EndDate
+                && DateTimeOffset.FromUnixTimeSeconds(periodEnd).UtcDateTime >= a.StartDate) == 0);
         if (skillTagIds.Length == 0)
             queryable = queryable.Where(d => skillTagIds.All(stid => d.SkillTags.Any(st => st.SkillTagId == stid)));
         if (!string.IsNullOrWhiteSpace(fightingSkill))
@@ -110,10 +113,10 @@ public class DragonPlacementUnitOfWork(DragonPlacementContext context, ILogger<D
                 .Include(d => d.Assignments)
                     .ThenInclude(a => a.Job),
             JobInclusions.Past => _context.Dragons
-                .Include(d => d.Assignments.Where(a => a.EndDateUnix < todayUnix))
+                .Include(d => d.Assignments.Where(a => a.EndDate < DateTimeOffset.FromUnixTimeSeconds(todayUnix)))
                     .ThenInclude(a => a.Job),
             JobInclusions.CurrentAndFuture => _context.Dragons
-                .Include(d => d.Assignments.Where(a => a.EndDateUnix >= todayUnix))
+                .Include(d => d.Assignments.Where(a => a.EndDate >= DateTimeOffset.FromUnixTimeSeconds(todayUnix)))
                     .ThenInclude(a => a.Job),
             _ => _context.Dragons
         };

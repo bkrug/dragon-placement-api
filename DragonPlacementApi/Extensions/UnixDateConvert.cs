@@ -28,4 +28,14 @@ public static class UnixDateConvert
     {
         return new DateTimeOffset(DateTime.Parse(isoDateTime), TimeSpan.Zero).ToUnixTimeSeconds();
     }
+
+    public static DateTime ToDateTime(long unixSeconds)
+    {
+        return DateTimeOffset.FromUnixTimeSeconds(unixSeconds).UtcDateTime;
+    }
+
+    public static long ToUnixSecond(DateTime dateTime)
+    {
+        return new DateTimeOffset(dateTime).ToUnixTimeSeconds();
+    }
 }

@@ -81,8 +81,8 @@ public class JobEndpoints
             {
                 DragonId = dragonId,
                 JobId = jobId,
-                StartDateUnix = newJob.StartDateUnix,
-                EndDateUnix = newJob.EndDateUnix
+                StartDate = DateTimeOffset.FromUnixTimeSeconds(newJob.StartDateUnix).UtcDateTime,
+                EndDate = DateTimeOffset.FromUnixTimeSeconds(newJob.EndDateUnix).UtcDateTime
             };
             unitOfWork.AssignmentRepository.Insert(assignmentRecord);
             await unitOfWork.SaveAsync().ConfigureAwait(false);

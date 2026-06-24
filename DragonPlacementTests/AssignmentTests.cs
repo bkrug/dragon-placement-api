@@ -36,8 +36,8 @@ public class AssignmentTests
         {
             DragonId = DRAGON_ID,
             JobId = JOB_ID,
-            StartDateUnix = jobModel.StartDateUnix,
-            EndDateUnix = jobModel.EndDateUnix
+            StartDate = DateTimeOffset.FromUnixTimeSeconds(jobModel.StartDateUnix).UtcDateTime,
+            EndDate = DateTimeOffset.FromUnixTimeSeconds(jobModel.EndDateUnix).UtcDateTime
         });
         unitOfWorkMock.Verify(m => m.SaveAsync(), Times.Once);
     }
