@@ -9,12 +9,8 @@ public static class PayPeriodParser
 {
     public static Result<PayPeriod, PayPeriodValidationFailures> GetPayPeriodModel(PayPeriodCreateEdit input)
     {
-        var transformationResult = ParsePayPeriod(input);
-
-        if (transformationResult.IsSuccess)
-            return PayPeriodValidator.Validate(transformationResult.Value);
-        else
-            return transformationResult;
+        return ParsePayPeriod(input)
+            .Bind(PayPeriodValidator.Validate);
     }
 
     public static Result<PayPeriod, PayPeriodValidationFailures> ParsePayPeriod(PayPeriodCreateEdit input)
