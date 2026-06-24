@@ -101,26 +101,30 @@ public class DragonPlacementUnitOfWork(DragonPlacementContext context, ILogger<D
 
     public async Task<IList<Dragon>> GetDragonWithJobAsync(int dragonId, JobInclusions jobInclusions)
     {
-        var todayUnix = new DateTimeOffset(DateTime.UtcNow.Date, TimeSpan.Zero).ToUnixTimeSeconds();
-        IQueryable<Dragon> dragonEnumerable = jobInclusions switch
-        {
-            JobInclusions.All => _context.Dragons
-                .Include(d => d.Assignments)
-                    .ThenInclude(a => a.Job),
-            JobInclusions.Past => _context.Dragons
-                .Include(d => d.Assignments.Where(a => a.EndDate < DateTimeOffset.FromUnixTimeSeconds(todayUnix)))
-                    .ThenInclude(a => a.Job),
-            JobInclusions.CurrentAndFuture => _context.Dragons
-                .Include(d => d.Assignments.Where(a => a.EndDate >= DateTimeOffset.FromUnixTimeSeconds(todayUnix)))
-                    .ThenInclude(a => a.Job),
-            _ => _context.Dragons
-        };
-        return await dragonEnumerable
+        var dragon = await _context.Dragons
             .Include(d => d.SkillTags)
-            .Where(d => d.DragonId == dragonId)
-            .Take(2)
-            .ToListAsync()
-            .ConfigureAwait(false);
+            .FirstOrDefaultAsync(d => d.DragonId == dragonId);
+
+        if (dragon == null)
+            return [];
+        else if(jobInclusions == JobInclusions.None)
+            return [ dragon ];
+
+        var todayUnix = new DateTimeOffset(DateTime.UtcNow.Date, TimeSpan.Zero).ToUnixTimeSeconds();
+        IQueryable<Assignment> assignmentQuery = jobInclusions switch
+        {
+            JobInclusions.Past => _context.Assignments
+                .FromSql($"SELECT * FROM Assignment WHERE DragonId = {dragonId} AND EndDateUnix < {todayUnix}"),
+            JobInclusions.CurrentAndFuture => _context.Assignments
+                .FromSql($"SELECT * FROM Assignment WHERE DragonId = {dragonId} AND EndDateUnix >= {todayUnix}"),
+            _ => _context.Assignments
+                .FromSql($"SELECT * FROM Assignment WHERE DragonId = {dragonId}")
+        };
+        dragon.Assignments = await assignmentQuery
+            .Include(a => a.Job)
+            .ToListAsync();
+
+        return [ dragon ];
     }
 
     public async Task<IList<Job>> GetJobWithSkillsAsync(int jobId)
