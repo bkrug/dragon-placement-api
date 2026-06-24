@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Moq;
 using Shouldly;
 
-namespace DragonPlacementTests;
+namespace DragonUnitTests;
 
 public class DragonTests
 {

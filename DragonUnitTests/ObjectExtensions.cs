@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace DragonPlacementTests;
+namespace DragonUnitTests;
 
 public static class ObjectExtensions
 {

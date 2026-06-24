@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace DragonPlacementTests;
+namespace DragonUnitTests;
 
 public class ImmutabilityException(string message) : Exception(message)
 {

@@ -7,7 +7,7 @@ using Shouldly;
 using DragonTimekeepingDomain.Models;
 using DragonTimekeepingApplication;
 
-namespace DragonPlacementTests.PayPeriodTests;
+namespace DragonUnitTests.PayPeriodTests;
 
 public class PayPeriodCandidateTests
 {

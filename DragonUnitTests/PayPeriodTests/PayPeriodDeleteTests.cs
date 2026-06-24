@@ -6,7 +6,7 @@ using Moq;
 using Shouldly;
 using DragonTimekeepingApplication;
 
-namespace DragonPlacementTests.PayPeriodTests;
+namespace DragonUnitTests.PayPeriodTests;
 
 public class PayPeriodDeleteTests
 {

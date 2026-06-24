@@ -9,7 +9,7 @@ using DragonTimekeepingDomain.Validation;
 using DragonTimekeepingApplication;
 using DragonTimekeepingApplication.Dto;
 
-namespace DragonPlacementTests.PayPeriodTests;
+namespace DragonUnitTests.PayPeriodTests;
 
 public class PayPeriodCrudTests
 {

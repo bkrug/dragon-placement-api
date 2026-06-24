@@ -1,7 +1,7 @@
 using DragonPlacementApi.Poco;
 using DragonTimekeepingApplication.Dto;
 
-namespace DragonPlacementTests.PayPeriodTests;
+namespace DragonUnitTests.PayPeriodTests;
 
 public class PayPeriodCreateEditBuilder
 {

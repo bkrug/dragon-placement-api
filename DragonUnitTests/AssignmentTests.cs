@@ -6,7 +6,7 @@ using Shouldly;
 using Microsoft.AspNetCore.Http.HttpResults;
 using DragonPlacementApi.Poco;
 
-namespace DragonPlacementTests;
+namespace DragonUnitTests;
 
 public class AssignmentTests
 {

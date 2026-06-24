@@ -1,6 +1,6 @@
 using DragonTimekeepingDomain.Models;
 
-namespace DragonPlacementTests.PayPeriodTests;
+namespace DragonUnitTests.PayPeriodTests;
 
 public class PayPeriodBuilder
 {
