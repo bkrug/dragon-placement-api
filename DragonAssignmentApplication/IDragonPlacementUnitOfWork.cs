@@ -26,7 +26,7 @@ public interface IDragonPlacementUnitOfWork
     Task SaveAsync();
 
     // Many results
-    IEnumerable<Assignment> GetOverlappingAssignments(int dragonId, long periodStartUnix, long periodEndUnix);
+    IEnumerable<Assignment> GetOverlappingAssignments(int dragonId, DateTime periodStartUnix, DateTime periodEndUnix);
     IEnumerable<Dragon> GetDragonsWithoutOverlappingAssignments(int jobId, int[] skillTagIds, string? fightingSkill);
     IEnumerable<Dragon> GetAssignedDragons(int jobId);
     IEnumerable<JobWithCapacity> GetJobsWithCapacity(JobInclusions jobInclusions);

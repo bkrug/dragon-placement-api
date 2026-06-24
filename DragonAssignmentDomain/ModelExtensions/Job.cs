@@ -6,16 +6,16 @@ namespace DragonAssignmentDomain.Models;
 public partial class Job
 {
     //public DateTime StartDate => DateTimeOffset.FromUnixTimeSeconds(StartDateUnix).UtcDateTime;
-    public DateTime GetStartDate() => DateTimeOffset.FromUnixTimeSeconds(StartDateUnix).UtcDateTime;
+    public DateTime GetStartDate() => StartDate;
     public void SetStartDate(DateTime value)
     {
-        StartDateUnix = new DateTimeOffset(value).ToUnixTimeSeconds();
+        StartDate = value;
     }
 
     //public DateTime EndDate => DateTimeOffset.FromUnixTimeSeconds(EndDateUnix).UtcDateTime;
-    public DateTime GetEndDate() => DateTimeOffset.FromUnixTimeSeconds(EndDateUnix).UtcDateTime;
+    public DateTime GetEndDate() => EndDate;
     public void SetEndDate(DateTime value)
     {
-        EndDateUnix = new DateTimeOffset(value).ToUnixTimeSeconds();
+        EndDate = value;
     }
 }

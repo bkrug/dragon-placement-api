@@ -36,6 +36,6 @@ public static class UnixDateConvert
 
     public static long ToUnixSecond(DateTime dateTime)
     {
-        return new DateTimeOffset(dateTime).ToUnixTimeSeconds();
+        return new DateTimeOffset(dateTime, TimeSpan.Zero).ToUnixTimeSeconds();
     }
 }

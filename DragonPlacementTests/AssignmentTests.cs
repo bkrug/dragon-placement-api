@@ -23,7 +23,7 @@ public class AssignmentTests
         var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
         unitOfWorkMock.Setup(m => m.DragonRepository.GetByID(DRAGON_ID)).ReturnsAsync(new Dragon { DragonId = DRAGON_ID, GivenName = "Fred" });
         unitOfWorkMock.Setup(m => m.JobRepository.GetByID(JOB_ID)).ReturnsAsync(jobModel);
-        unitOfWorkMock.Setup(m => m.GetOverlappingAssignments(DRAGON_ID, jobModel.StartDateUnix, jobModel.EndDateUnix))
+        unitOfWorkMock.Setup(m => m.GetOverlappingAssignments(DRAGON_ID, jobModel.StartDate, jobModel.EndDate))
             .Returns([]);
         unitOfWorkMock.Setup(m => m.AssignmentRepository.Insert(It.IsAny<Assignment>())).Callback((Assignment a) => actualInsertedAssignmentRecord.Set(a));
 
@@ -36,8 +36,8 @@ public class AssignmentTests
         {
             DragonId = DRAGON_ID,
             JobId = JOB_ID,
-            StartDate = DateTimeOffset.FromUnixTimeSeconds(jobModel.StartDateUnix).UtcDateTime,
-            EndDate = DateTimeOffset.FromUnixTimeSeconds(jobModel.EndDateUnix).UtcDateTime
+            StartDate = jobModel.StartDate,
+            EndDate = jobModel.EndDate
         });
         unitOfWorkMock.Verify(m => m.SaveAsync(), Times.Once);
     }
@@ -60,7 +60,7 @@ public class AssignmentTests
         var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
         unitOfWorkMock.Setup(m => m.DragonRepository.GetByID(DRAGON_ID)).ReturnsAsync(new Dragon { DragonId = DRAGON_ID, GivenName = "Fred" });
         unitOfWorkMock.Setup(m => m.JobRepository.GetByID(JOB_ID)).ReturnsAsync(jobModel);
-        unitOfWorkMock.Setup(m => m.GetOverlappingAssignments(DRAGON_ID, jobModel.StartDateUnix, jobModel.EndDateUnix))
+        unitOfWorkMock.Setup(m => m.GetOverlappingAssignments(DRAGON_ID, jobModel.StartDate, jobModel.EndDate))
             .Returns([ overlappingAssignment ]);
         unitOfWorkMock.Setup(m => m.AssignmentRepository.Insert(It.IsAny<Assignment>())).Callback((Assignment a) => actualAssignmentRecord.Set(a));
 

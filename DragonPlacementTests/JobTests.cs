@@ -33,8 +33,8 @@ public class JobTests
             JobTitle = "Dragon Wrangler",
             EmployerName = "Dragonscale Inc.",
             NumberOfPositions = 3,
-            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
-            EndDateUnix = 2 * Const.SECONDS_IN_A_DAY,
+            StartDate = new DateTime(1970, 1, 2),
+            EndDate = new DateTime(1970, 1, 3),
             SkillTags = skills
         };
         var insertedJob = new Immutable<Job>();
@@ -137,8 +137,8 @@ public class JobTests
             JobTitle = "Old Title",
             EmployerName = "Old Employer",
             NumberOfPositions = 1,
-            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
-            EndDateUnix = 2 * Const.SECONDS_IN_A_DAY,
+            StartDate = new DateTime(1970, 1, 2),
+            EndDate = new DateTime(1970, 1, 3),
             SkillTags = oldSkills
         };
         var inputJob = new JobCreateEdit
@@ -156,8 +156,8 @@ public class JobTests
             JobTitle = "New Title",
             EmployerName = "New Employer",
             NumberOfPositions = 5,
-            StartDateUnix = 2592000,
-            EndDateUnix = 3456000,
+            StartDate = DateTimeOffset.FromUnixTimeSeconds(2592000).UtcDateTime,
+            EndDate = DateTimeOffset.FromUnixTimeSeconds(3456000).UtcDateTime,
             SkillTags = newSkills
         };
         var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
@@ -203,8 +203,8 @@ public class JobTests
             JobTitle = "Dragon Wrangler",
             EmployerName = "Dragonscale Inc.",
             NumberOfPositions = 3,
-            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
-            EndDateUnix = 2 * Const.SECONDS_IN_A_DAY
+            StartDate = new DateTime(1970, 1, 2),
+            EndDate = new DateTime(1970, 1, 3)
         };
         var inputJob = new JobCreateEdit
         {
@@ -240,8 +240,8 @@ public class JobTests
             JobTitle = "Dragon Wrangler",
             EmployerName = "Dragonscale Inc.",
             NumberOfPositions = 3,
-            StartDateUnix = 1 * Const.SECONDS_IN_A_DAY,
-            EndDateUnix = 2 * Const.SECONDS_IN_A_DAY
+            StartDate = new DateTime(1970, 1, 2),
+            EndDate = new DateTime(1970, 1, 3)
         };
         var inputJob = new JobCreateEdit
         {

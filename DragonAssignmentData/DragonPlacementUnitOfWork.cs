@@ -43,12 +43,11 @@ public class DragonPlacementUnitOfWork(DragonPlacementContext context, ILogger<D
         GC.SuppressFinalize(this);
     }
 
-    public IEnumerable<Assignment> GetOverlappingAssignments(int dragonId, long periodStartUnix, long periodEndUnix)
+    public IEnumerable<Assignment> GetOverlappingAssignments(int dragonId, DateTime periodStartUnix, DateTime periodEndUnix)
     {
         return _context.Assignments
             .Where(a => a.DragonId == dragonId)
-            .Where(a => DateTimeOffset.FromUnixTimeSeconds(periodStartUnix).UtcDateTime <= a.EndDate 
-                    && DateTimeOffset.FromUnixTimeSeconds(periodEndUnix).UtcDateTime >= a.StartDate);
+            .Where(a => periodStartUnix <= a.EndDate && periodEndUnix >= a.StartDate);
     }
 
     public IEnumerable<Dragon> GetDragonsWithoutOverlappingAssignments(int jobId, int[] skillTagIds, string? fightingSkill)
@@ -56,12 +55,8 @@ public class DragonPlacementUnitOfWork(DragonPlacementContext context, ILogger<D
         var job = _context.Jobs.Find(jobId);
         if (job == null)
             return [];
-        var periodStart = job.StartDateUnix;
-        var periodEnd = job.EndDateUnix;
         var queryable = _context.Dragons
-            .Where(d => d.Assignments.Count(a => 
-                DateTimeOffset.FromUnixTimeSeconds(periodStart).UtcDateTime <= a.EndDate
-                && DateTimeOffset.FromUnixTimeSeconds(periodEnd).UtcDateTime >= a.StartDate) == 0);
+            .Where(d => d.Assignments.Count(a => job.StartDate <= a.EndDate && job.EndDate >= a.StartDate) == 0);
         if (skillTagIds.Length == 0)
             queryable = queryable.Where(d => skillTagIds.All(stid => d.SkillTags.Any(st => st.SkillTagId == stid)));
         if (!string.IsNullOrWhiteSpace(fightingSkill))
@@ -78,11 +73,11 @@ public class DragonPlacementUnitOfWork(DragonPlacementContext context, ILogger<D
 
     public IEnumerable<JobWithCapacity> GetJobsWithCapacity(JobInclusions jobInclusions)
     {
-        var todayUnix = new DateTimeOffset(DateTime.UtcNow.Date).ToUnixTimeSeconds();
+        var todayUnix = new DateTimeOffset(DateTime.UtcNow.Date, TimeSpan.Zero).ToUnixTimeSeconds();
         var queryable = jobInclusions switch
         {
-            JobInclusions.Past => _context.Jobs.Where(j => j.EndDateUnix < todayUnix),
-            JobInclusions.CurrentAndFuture => _context.Jobs.Where(j => j.EndDateUnix >= todayUnix),
+            JobInclusions.Past => _context.Jobs.Where(j => j.EndDate < DateTime.UtcNow.Date),
+            JobInclusions.CurrentAndFuture => _context.Jobs.Where(j => j.EndDate >= DateTime.UtcNow.Date),
             JobInclusions.All => _context.Jobs.AsQueryable(),
             _ => _context.Jobs.Where(j => false)
         };
@@ -94,8 +89,8 @@ public class DragonPlacementUnitOfWork(DragonPlacementContext context, ILogger<D
                 EmployerName = j.EmployerName,
                 NumberOfPositions = j.NumberOfPositions,
                 FilledPositions = j.Assignments.Count(),
-                StartDateUnix = j.StartDateUnix,
-                EndDateUnix = j.EndDateUnix
+                StartDateUnix = new DateTimeOffset(j.StartDate, TimeSpan.Zero).ToUnixTimeSeconds(),
+                EndDateUnix = new DateTimeOffset(j.EndDate, TimeSpan.Zero).ToUnixTimeSeconds()
             });
     }
 
@@ -106,7 +101,7 @@ public class DragonPlacementUnitOfWork(DragonPlacementContext context, ILogger<D
 
     public async Task<IList<Dragon>> GetDragonWithJobAsync(int dragonId, JobInclusions jobInclusions)
     {
-        var todayUnix = new DateTimeOffset(DateTime.UtcNow.Date).ToUnixTimeSeconds();
+        var todayUnix = new DateTimeOffset(DateTime.UtcNow.Date, TimeSpan.Zero).ToUnixTimeSeconds();
         IQueryable<Dragon> dragonEnumerable = jobInclusions switch
         {
             JobInclusions.All => _context.Dragons

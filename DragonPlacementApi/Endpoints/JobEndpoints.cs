@@ -74,15 +74,15 @@ public class JobEndpoints
                ValidationFailures = [ "Job does not exist" ]
             });
         }
-        var existingJobs = unitOfWork.GetOverlappingAssignments(dragonId, newJob.StartDateUnix, newJob.EndDateUnix);
+        var existingJobs = unitOfWork.GetOverlappingAssignments(dragonId, newJob.StartDate, newJob.EndDate);
         var firstConflict = existingJobs.FirstOrDefault();
         if (firstConflict == null) {
             var assignmentRecord = new Assignment
             {
                 DragonId = dragonId,
                 JobId = jobId,
-                StartDate = DateTimeOffset.FromUnixTimeSeconds(newJob.StartDateUnix).UtcDateTime,
-                EndDate = DateTimeOffset.FromUnixTimeSeconds(newJob.EndDateUnix).UtcDateTime
+                StartDate = newJob.StartDate,
+                EndDate = newJob.EndDate
             };
             unitOfWork.AssignmentRepository.Insert(assignmentRecord);
             await unitOfWork.SaveAsync().ConfigureAwait(false);
@@ -117,8 +117,8 @@ public class JobEndpoints
             JobTitle = inputJob.JobTitle,
             EmployerName = inputJob.EmployerName,
             NumberOfPositions = inputJob.NumberOfPositions,
-            StartDateUnix = inputJob.StartDateUnix,
-            EndDateUnix = inputJob.EndDateUnix,
+            StartDate = DateTimeOffset.FromUnixTimeSeconds(inputJob.StartDateUnix).UtcDateTime,
+            EndDate = DateTimeOffset.FromUnixTimeSeconds(inputJob.EndDateUnix).UtcDateTime,
             SkillTags = unitOfWork.GetSkillTagsById(inputJob.SkillTagIds)
         };
         unitOfWork.JobRepository.Insert(job);
@@ -146,8 +146,8 @@ public class JobEndpoints
         existing.JobTitle = inputJob.JobTitle;
         existing.EmployerName = inputJob.EmployerName;
         existing.NumberOfPositions = inputJob.NumberOfPositions;
-        existing.StartDateUnix = inputJob.StartDateUnix;
-        existing.EndDateUnix = inputJob.EndDateUnix;
+        existing.StartDate = DateTimeOffset.FromUnixTimeSeconds(inputJob.StartDateUnix).UtcDateTime;
+        existing.EndDate = DateTimeOffset.FromUnixTimeSeconds(inputJob.EndDateUnix).UtcDateTime;
         existing.SkillTags = unitOfWork.GetSkillTagsById(inputJob.SkillTagIds);
 
         await unitOfWork.SaveAsync().ConfigureAwait(false);

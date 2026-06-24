@@ -45,7 +45,7 @@ public class PayPeriodEndpoints
 
         var existingStarts = unitOfWork.PayPeriodRepository
             .Get(pp => pp.AssignmentId == assignmentId)
-            .Select(pp => new DateTimeOffset(pp.StartDate).ToUnixTimeSeconds())
+            .Select(pp => new DateTimeOffset(pp.StartDate, TimeSpan.Zero).ToUnixTimeSeconds())
             .ToHashSet();
 
         const long SECONDS_IN_A_WEEK = 7 * Const.SECONDS_IN_A_DAY;
