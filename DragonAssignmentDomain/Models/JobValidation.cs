@@ -1,5 +1,6 @@
 using CSharpFunctionalExtensions;
 using DragonAssignmentDomain.Poco;
+using DragonCommonApplication;
 
 namespace DragonAssignmentDomain.Models;
 
@@ -10,13 +11,13 @@ public class JobValidation
         var failures = new JobValidationFailures();
 
         if (string.IsNullOrWhiteSpace(job.JobTitle))
-            failures.JobTitle = "is required";
+            failures.JobTitle = ValidationMessages.IS_REQUIRED;
         if (job.NumberOfPositions <= 0)
-            failures.NumberOfPositions = "must be a positive number";
+            failures.NumberOfPositions = ValidationMessages.MUST_BE_A_POSITIVE_NUMBER;
         if (job.StartDate.TimeOfDay != TimeSpan.Zero)
-            failures.StartDate = "must be midnight UTC";
+            failures.StartDate = ValidationMessages.MUST_BE_MIDNIGHT_UTC;
         if (job.EndDate.TimeOfDay != TimeSpan.Zero)
-            failures.EndDate = "must be midnight UTC";
+            failures.EndDate = ValidationMessages.MUST_BE_MIDNIGHT_UTC;
 
         if (failures.JobTitle != null || failures.NumberOfPositions != null
             || failures.StartDate != null || failures.EndDate != null)

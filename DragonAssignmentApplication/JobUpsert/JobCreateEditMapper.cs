@@ -1,6 +1,7 @@
 using CSharpFunctionalExtensions;
 using DragonAssignmentDomain.Models;
 using DragonAssignmentDomain.Poco;
+using DragonCommonApplication;
 
 namespace DragonAssignmentApplication.JobUpsert;
 
@@ -43,9 +44,9 @@ public static class JobCreateEditMapper
         var failures = new JobValidationFailures();
 
         if (!DateTime.TryParse(input.StartDate, out startDate))
-            failures.StartDate = "must be an ISO Date";
+            failures.StartDate = ValidationMessages.MUST_BE_AN_ISO_DATE;
         if (!DateTime.TryParse(input.EndDate, out endDate))
-            failures.EndDate = "must be an ISO Date";
+            failures.EndDate = ValidationMessages.MUST_BE_AN_ISO_DATE;
 
         if (failures.StartDate != null || failures.EndDate != null)
             return failures;

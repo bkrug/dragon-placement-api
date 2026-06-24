@@ -1,3 +1,4 @@
+using DragonCommonApplication;
 using DragonCommonApplication.Repositories;
 using DragonPlacementApi.Poco;
 using DragonAssignmentApplication;
@@ -122,11 +123,11 @@ public class DragonEndpoints
         var failures = new DragonValidationFailures();
 
         if (string.IsNullOrWhiteSpace(dragon.GivenName))
-            failures.GivenName = "is required";
+            failures.GivenName = ValidationMessages.IS_REQUIRED;
         if (dragon.WeightInKg <= 0)
-            failures.WeightInKg = "must be a positive number";
+            failures.WeightInKg = ValidationMessages.MUST_BE_A_POSITIVE_NUMBER;
         if (dragon.LengthInMeters <= 0)
-            failures.LengthInMeters = "must be a positive number";
+            failures.LengthInMeters = ValidationMessages.MUST_BE_A_POSITIVE_NUMBER;
         if (dragon.FightingSkills != null && dragon.FightingSkills is not ("b" or "m" or "a"))
             failures.FightingSkills = "must be 'b', 'm', or 'a'";
 

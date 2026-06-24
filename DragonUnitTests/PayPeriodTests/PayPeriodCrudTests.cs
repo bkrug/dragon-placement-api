@@ -78,9 +78,9 @@ public class PayPeriodCrudTests
     }
 
     [Theory]
-    [InlineData("",                    "StartDateTime",  "required")]
+    [InlineData("",                    "StartDateTime",  "is required")]
     [InlineData("Juabary 5th 70ly",    "StartDateTime",  "must be an ISO Date")]
-    [InlineData("",                    "EndDateTime",    "required")]
+    [InlineData("",                    "EndDateTime",    "is required")]
     [InlineData("Juabayr 11th dl",     "EndDateTime",    "must be an ISO Date")]
     public async Task CreatePayPeriod_InvalidHoursWorkedInput_ExpectBadRequestWithValidationFailure(
         string invalidValue,

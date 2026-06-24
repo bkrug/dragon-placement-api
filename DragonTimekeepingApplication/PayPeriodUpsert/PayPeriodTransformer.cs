@@ -1,3 +1,4 @@
+using DragonCommonApplication;
 using DragonTimekeepingDomain.Models;
 using DragonTimekeepingDomain.Validation;
 using CSharpFunctionalExtensions;
@@ -11,12 +12,12 @@ public static class PayPeriodTransformer
         var failures = new PayPeriodValidationFailures();
 
         if (!DateTime.TryParse(input.StartDate, out var parsedStart))
-            failures.StartDate = "must be an ISO Date";
+            failures.StartDate = ValidationMessages.MUST_BE_AN_ISO_DATE;
         // else if (parsedStart.TimeOfDay.TotalSeconds != 0)
         //     failures.StartDate = "must exclude time-of-day or be midnight UTC";
 
         if (!DateTime.TryParse(input.EndDate, out var parsedEnd))
-            failures.EndDate = "must be an ISO Date";
+            failures.EndDate = ValidationMessages.MUST_BE_AN_ISO_DATE;
         // else if (parsedEnd.TimeOfDay.TotalSeconds != 0)
         //     failures.StartDate = "must exclude time-of-day or be midnight UTC";
 
@@ -59,14 +60,14 @@ public static class PayPeriodTransformer
         DateTime parsedHwEnd = DateTime.MinValue;
 
         if (string.IsNullOrEmpty(hw.StartDateTime))
-            hwFailures.StartDateTime = "required";
+            hwFailures.StartDateTime = ValidationMessages.IS_REQUIRED;
         else if (!DateTime.TryParse(hw.StartDateTime, out parsedHwStart))
-            hwFailures.StartDateTime = "must be an ISO Date";
+            hwFailures.StartDateTime = ValidationMessages.MUST_BE_AN_ISO_DATE;
 
         if (string.IsNullOrEmpty(hw.EndDateTime))
-            hwFailures.EndDateTime = "required";
+            hwFailures.EndDateTime = ValidationMessages.IS_REQUIRED;
         else if (!DateTime.TryParse(hw.EndDateTime, out parsedHwEnd))
-            hwFailures.EndDateTime = "must be an ISO Date";
+            hwFailures.EndDateTime = ValidationMessages.MUST_BE_AN_ISO_DATE;
 
         if (string.IsNullOrEmpty(hwFailures.StartDateTime) && string.IsNullOrEmpty(hwFailures.EndDateTime))
         {
