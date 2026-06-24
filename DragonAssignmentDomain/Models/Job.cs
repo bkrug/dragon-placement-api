@@ -20,4 +20,17 @@ public partial class Job
     public virtual ICollection<Assignment> Assignments { get; set; } = [];
 
     public virtual ICollection<SkillTag> SkillTags { get; set; } = [];
+
+    public Assignment Assign(int dragonId)
+    {
+        var assignment = new Assignment
+        {
+            DragonId = dragonId,
+            JobId = JobId,
+            StartDate = StartDate,
+            EndDate = EndDate
+        };
+        Assignments.Add(assignment);
+        return assignment;
+    }
 }

@@ -17,6 +17,7 @@ public class AssignmentTests
         const int JOB_ID = 6002;
         Job jobModel = new()
         {
+            JobId = JOB_ID,
             JobTitle = "Commercial Spokesperson",
             StartDate = DateTime.UtcNow.AddMonths(3),
             EndDate = DateTime.UtcNow.AddMonths(9)

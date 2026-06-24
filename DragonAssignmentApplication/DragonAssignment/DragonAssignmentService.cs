@@ -22,13 +22,7 @@ public static class DragonAssignmentService
             return Result.Failure<Assignment, AssignmentFailure>(
                 new AssignmentOverlap(firstConflict.StartDate, firstConflict.EndDate));
 
-        var assignment = new Assignment
-        {
-            DragonId = dragonId,
-            JobId = jobId,
-            StartDate = job.StartDate,
-            EndDate = job.EndDate
-        };
+        var assignment = job.Assign(dragonId);
         unitOfWork.AssignmentRepository.Insert(assignment);
         await unitOfWork.SaveAsync().ConfigureAwait(false);
 
