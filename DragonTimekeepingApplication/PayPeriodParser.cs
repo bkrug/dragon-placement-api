@@ -4,14 +4,14 @@ using DragonTimekeepingDomain.Validation;
 
 namespace DragonTimekeepingApplication;
 
-public static class PayPeriodApplicationValidator
+public static class PayPeriodParser
 {
     public static (PayPeriod? PayPeriod, PayPeriodValidationFailures? Failures) GetPayPeriodModel(PayPeriodCreateEdit input)
     {
-        var (payPeriod, parsingFailures) = TransformPayPeriod(input);
+        var (payPeriod, parsingFailures) = ParsePayPeriod(input);
 
         if (parsingFailures == null) {
-            var domainFailures = PayPeriodDomainValidator.Validate(payPeriod);
+            var domainFailures = PayPeriodValidator.Validate(payPeriod);
             return (
                 domainFailures == null ? payPeriod : null,
                 domainFailures
@@ -23,7 +23,7 @@ public static class PayPeriodApplicationValidator
         }
     }
 
-    public static (PayPeriod? PayPeriod, PayPeriodValidationFailures? Failures) TransformPayPeriod(PayPeriodCreateEdit input)
+    public static (PayPeriod? PayPeriod, PayPeriodValidationFailures? Failures) ParsePayPeriod(PayPeriodCreateEdit input)
     {
         var failures = new PayPeriodValidationFailures();
 

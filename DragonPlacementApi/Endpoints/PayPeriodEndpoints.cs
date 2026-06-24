@@ -96,7 +96,7 @@ public class PayPeriodEndpoints
             ITimekeepingUnitOfWork unitOfWork,
             [FromBody] PayPeriodCreateEdit input)
     {
-        var (payPeriod, validationFailures) = PayPeriodApplicationValidator.GetPayPeriodModel(input);
+        var (payPeriod, validationFailures) = PayPeriodParser.GetPayPeriodModel(input);
         if (validationFailures != null)
             return TypedResults.BadRequest(new ValidatedForm<PayPeriodValidationFailures>
             {
@@ -121,7 +121,7 @@ public class PayPeriodEndpoints
         if (entry == null)
             return TypedResults.NotFound(ValidatedResponse.NotFound);
 
-        var (parsedPayPeriod, validationFailures) = PayPeriodApplicationValidator.GetPayPeriodModel(input);
+        var (parsedPayPeriod, validationFailures) = PayPeriodParser.GetPayPeriodModel(input);
         if (validationFailures != null)
             return TypedResults.BadRequest(new ValidatedForm<PayPeriodValidationFailures>
             {

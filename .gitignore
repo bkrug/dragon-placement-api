@@ -281,3 +281,6 @@ Database/*.db-wal
 
 # Contains passwords
 TestUsers.txt
+
+# Word documents that are open
+.~lock*

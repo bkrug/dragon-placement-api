@@ -2,7 +2,7 @@ using DragonTimekeepingDomain.Models;
 
 namespace DragonTimekeepingDomain.Validation;
 
-public static class PayPeriodDomainValidator
+public static class PayPeriodValidator
 {
     public static PayPeriodValidationFailures? Validate(PayPeriod payPeriod)
     {
