@@ -1,29 +1,23 @@
 using DragonTimekeepingApplication.Dto;
 using DragonTimekeepingDomain.Models;
 using DragonTimekeepingDomain.Validation;
+using CSharpFunctionalExtensions;
 
 namespace DragonTimekeepingApplication;
 
 public static class PayPeriodParser
 {
-    public static (PayPeriod? PayPeriod, PayPeriodValidationFailures? Failures) GetPayPeriodModel(PayPeriodCreateEdit input)
+    public static Result<PayPeriod, PayPeriodValidationFailures> GetPayPeriodModel(PayPeriodCreateEdit input)
     {
-        var (payPeriod, parsingFailures) = ParsePayPeriod(input);
+        var transformationResult = ParsePayPeriod(input);
 
-        if (parsingFailures == null) {
-            var domainFailures = PayPeriodValidator.Validate(payPeriod);
-            return (
-                domainFailures == null ? payPeriod : null,
-                domainFailures
-            );
-        }
+        if (transformationResult.IsSuccess)
+            return PayPeriodValidator.Validate(transformationResult.Value);
         else
-        {
-            return (payPeriod, parsingFailures);
-        }
+            return transformationResult;
     }
 
-    public static (PayPeriod? PayPeriod, PayPeriodValidationFailures? Failures) ParsePayPeriod(PayPeriodCreateEdit input)
+    public static Result<PayPeriod, PayPeriodValidationFailures> ParsePayPeriod(PayPeriodCreateEdit input)
     {
         var failures = new PayPeriodValidationFailures();
 
@@ -49,7 +43,7 @@ public static class PayPeriodParser
             || !string.IsNullOrEmpty(failures.EndDate)
             || failures.HoursWorked.Count > 0)
         {
-            return (null, failures);
+            return Result.Failure<PayPeriod, PayPeriodValidationFailures>(failures);
         }
         else
         {
@@ -61,7 +55,7 @@ public static class PayPeriodParser
                 SubmissionStatus = input.SubmissionStatus,
                 HoursWorked = parsedHoursWorked.Select(tuple => tuple.Item1!).ToList()
             };
-            return (payPeriod, null);            
+            return Result.Success<PayPeriod, PayPeriodValidationFailures>(payPeriod);
         }
     }
 

@@ -1,10 +1,11 @@
 using DragonTimekeepingDomain.Models;
+using CSharpFunctionalExtensions;
 
 namespace DragonTimekeepingDomain.Validation;
 
 public static class PayPeriodValidator
 {
-    public static PayPeriodValidationFailures? Validate(PayPeriod payPeriod)
+    public static Result<PayPeriod, PayPeriodValidationFailures> Validate(PayPeriod payPeriod)
     {
         var parsedStart = payPeriod.StartDate;
         var parsedEnd = payPeriod.EndDate;
@@ -21,15 +22,18 @@ public static class PayPeriodValidator
 
         var hoursWorkedFailures = ValidateHoursWorked(payPeriod);
 
-        if (failures.Count == 0 && hoursWorkedFailures.Count == 0)
-            return null;
-
-        return new PayPeriodValidationFailures
-        {
-            StartDate = failures.GetValueOrDefault("StartDate", string.Empty),
-            EndDate = failures.GetValueOrDefault("EndDate", string.Empty),
-            HoursWorked = hoursWorkedFailures
-        };
+        if (failures.Count == 0 && hoursWorkedFailures.Count == 0) {
+            return Result.Success<PayPeriod, PayPeriodValidationFailures>(payPeriod);
+        }
+        else {
+            var validationFailures = new PayPeriodValidationFailures
+            {
+                StartDate = failures.GetValueOrDefault("StartDate", string.Empty),
+                EndDate = failures.GetValueOrDefault("EndDate", string.Empty),
+                HoursWorked = hoursWorkedFailures
+            };
+            return Result.Failure<PayPeriod, PayPeriodValidationFailures>(validationFailures);
+        }
     }
 
     private static string? ValidateStartDate(DateTime parsedStart)

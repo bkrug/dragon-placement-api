@@ -96,19 +96,19 @@ public class PayPeriodEndpoints
             ITimekeepingUnitOfWork unitOfWork,
             [FromBody] PayPeriodCreateEdit input)
     {
-        var (payPeriod, validationFailures) = PayPeriodParser.GetPayPeriodModel(input);
-        if (validationFailures != null)
+        var validationResult = PayPeriodParser.GetPayPeriodModel(input);
+        if (validationResult.IsFailure)
             return TypedResults.BadRequest(new ValidatedForm<PayPeriodValidationFailures>
             {
                 IsSuccess = false,
                 IsInternalError = false,
-                ValidationFailures = validationFailures
+                ValidationFailures = validationResult.Error
             });
 
-        unitOfWork.PayPeriodRepository.Insert(payPeriod!);
+        unitOfWork.PayPeriodRepository.Insert(validationResult.Value);
 
         await unitOfWork.SaveAsync().ConfigureAwait(false);
-        return TypedResults.Ok(ValidatedPayload<PayPeriod>.FromPayload(payPeriod!));
+        return TypedResults.Ok(ValidatedPayload<PayPeriod>.FromPayload(validationResult.Value));
     }
 
     public static async Task<Results<Ok<ValidatedPayload<PayPeriod>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<PayPeriodValidationFailures>>>>
@@ -121,16 +121,17 @@ public class PayPeriodEndpoints
         if (entry == null)
             return TypedResults.NotFound(ValidatedResponse.NotFound);
 
-        var (parsedPayPeriod, validationFailures) = PayPeriodParser.GetPayPeriodModel(input);
-        if (validationFailures != null)
+        var validationResult = PayPeriodParser.GetPayPeriodModel(input);
+        if (validationResult.IsFailure)
             return TypedResults.BadRequest(new ValidatedForm<PayPeriodValidationFailures>
             {
                 IsSuccess = false,
                 IsInternalError = false,
-                ValidationFailures = validationFailures
+                ValidationFailures = validationResult.Error
             });
 
-        var inputClockIns = parsedPayPeriod!.HoursWorked.ToList();
+        var parsedPayPeriod = validationResult.Value;
+        var inputClockIns = parsedPayPeriod.HoursWorked.ToList();
 
         var clockInsToDelete = entry.HoursWorked
             .Where(existingHw => !inputClockIns.Any(ih => ih.StartDateTime == existingHw.StartDateTime))
