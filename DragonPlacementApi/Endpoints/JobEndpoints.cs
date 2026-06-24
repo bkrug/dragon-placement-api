@@ -1,6 +1,7 @@
 using DragonCommonApplication.Repositories;
 using DragonPlacementApi.Poco;
 using DragonAssignmentApplication;
+using DragonAssignmentApplication.JobUpsert;
 using DragonAssignmentDomain.Enum;
 using DragonAssignmentDomain.Models;
 using DragonAssignmentDomain.Poco;
@@ -108,18 +109,15 @@ public class JobEndpoints
             IDragonPlacementUnitOfWork unitOfWork,
             [FromBody] JobCreateEdit inputJob)
     {
-        var job = new Job
-        {
-            JobTitle = inputJob.JobTitle,
-            EmployerName = inputJob.EmployerName,
-            NumberOfPositions = inputJob.NumberOfPositions,
-            StartDate = DateTimeOffset.FromUnixTimeSeconds(inputJob.StartDateUnix).UtcDateTime,
-            EndDate = DateTimeOffset.FromUnixTimeSeconds(inputJob.EndDateUnix).UtcDateTime,
-            SkillTags = unitOfWork.GetSkillTagsById(inputJob.SkillTagIds)
-        };
-        var validationFailures = ValidateJob(job);
-        if (validationFailures != null)
-            return TypedResults.BadRequest(validationFailures);
+        var job = JobCreateEditMapper.ToJob(inputJob, unitOfWork.GetSkillTagsById(inputJob.SkillTagIds));
+        var failures = job.Validate();
+        if (failures != null)
+            return TypedResults.BadRequest(new ValidatedForm<JobValidationFailures>
+            {
+                IsSuccess = false,
+                IsInternalError = false,
+                ValidationFailures = failures
+            });
 
         unitOfWork.JobRepository.Insert(job);
         await unitOfWork.SaveAsync().ConfigureAwait(false);
@@ -139,15 +137,15 @@ public class JobEndpoints
             return TypedResults.InternalServerError(ValidatedResponse.ExpectedOneFoundMultiple);
 
         var existing = loadedJobs.Single();
-        existing.JobTitle = inputJob.JobTitle;
-        existing.EmployerName = inputJob.EmployerName;
-        existing.NumberOfPositions = inputJob.NumberOfPositions;
-        existing.StartDate = DateTimeOffset.FromUnixTimeSeconds(inputJob.StartDateUnix).UtcDateTime;
-        existing.EndDate = DateTimeOffset.FromUnixTimeSeconds(inputJob.EndDateUnix).UtcDateTime;
-        existing.SkillTags = unitOfWork.GetSkillTagsById(inputJob.SkillTagIds);
-        var validationFailures = ValidateJob(existing);
-        if (validationFailures != null)
-            return TypedResults.BadRequest(validationFailures);
+        JobCreateEditMapper.ApplyTo(inputJob, existing, unitOfWork.GetSkillTagsById(inputJob.SkillTagIds));
+        var failures = existing.Validate();
+        if (failures != null)
+            return TypedResults.BadRequest(new ValidatedForm<JobValidationFailures>
+            {
+                IsSuccess = false,
+                IsInternalError = false,
+                ValidationFailures = failures
+            });
 
         await unitOfWork.SaveAsync().ConfigureAwait(false);
         return TypedResults.Ok(ValidatedPayload<Job>.FromPayload(existing));
@@ -167,31 +165,6 @@ public class JobEndpoints
 
         await unitOfWork.SaveAsync().ConfigureAwait(false);
         return TypedResults.Ok(ValidatedResponse.Success);
-    }
-
-    private static ValidatedForm<JobValidationFailures>? ValidateJob(Job job)
-    {
-        var failures = new JobValidationFailures();
-
-        if (string.IsNullOrWhiteSpace(job.JobTitle))
-            failures.JobTitle = "is required";
-        if (job.NumberOfPositions <= 0)
-            failures.NumberOfPositions = "must be a positive number";
-        if (job.StartDate.TimeOfDay != TimeSpan.Zero)
-            failures.StartDateUnix = "must be midnight UTC";
-        if (job.EndDate.TimeOfDay != TimeSpan.Zero)
-            failures.EndDateUnix = "must be midnight UTC";
-
-        if (failures.JobTitle != null || failures.NumberOfPositions != null
-            || failures.StartDateUnix != null || failures.EndDateUnix != null)
-            return new ValidatedForm<JobValidationFailures>
-            {
-                IsSuccess = false,
-                IsInternalError = false,
-                ValidationFailures = failures
-            };
-
-        return null;
     }
 
     public async static Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>, InternalServerError<ValidatedResponse>>> UnassignDragonFromJobAsync(
