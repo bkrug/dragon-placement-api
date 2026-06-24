@@ -106,7 +106,7 @@ public class JobEndpoints
             IDragonPlacementUnitOfWork unitOfWork,
             [FromBody] JobCreateEdit inputJob)
     {
-        var result = JobUpsertService.CreateJob(inputJob, unitOfWork);
+        var result = await JobUpsertService.CreateJob(inputJob, unitOfWork).ConfigureAwait(false);
         if (result.IsFailure)
             return TypedResults.BadRequest(new ValidatedForm<JobValidationFailures>
             {
@@ -114,11 +114,7 @@ public class JobEndpoints
                 IsInternalError = false,
                 ValidationFailures = result.Error
             });
-
-        var job = result.Value;
-        unitOfWork.JobRepository.Insert(job);
-        await unitOfWork.SaveAsync().ConfigureAwait(false);
-        return TypedResults.Ok(ValidatedPayload<Job>.FromPayload(job));
+        return TypedResults.Ok(ValidatedPayload<Job>.FromPayload(result.Value));
     }
 
     public static async Task<Results<Ok<ValidatedPayload<Job>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<JobValidationFailures>>>>
@@ -127,21 +123,17 @@ public class JobEndpoints
             [FromRoute(Name="jobId")] int jobId,
             [FromBody] JobCreateEdit inputJob)
     {
-        var existing = await unitOfWork.GetJobWithSkillsAsync(jobId).ConfigureAwait(false);
-        if (existing == null)
+        var result = await JobUpsertService.UpdateJob(inputJob, jobId, unitOfWork).ConfigureAwait(false);
+        if (result == null)
             return TypedResults.NotFound(ValidatedResponse.NotFound);
-
-        var result = JobUpsertService.UpdateJob(inputJob, existing, unitOfWork);
-        if (result.IsFailure)
+        if (result.Value.IsFailure)
             return TypedResults.BadRequest(new ValidatedForm<JobValidationFailures>
             {
                 IsSuccess = false,
                 IsInternalError = false,
-                ValidationFailures = result.Error
+                ValidationFailures = result.Value.Error
             });
-
-        await unitOfWork.SaveAsync().ConfigureAwait(false);
-        return TypedResults.Ok(ValidatedPayload<Job>.FromPayload(existing));
+        return TypedResults.Ok(ValidatedPayload<Job>.FromPayload(result.Value.Value));
     }
 
     public static async Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>, Conflict<ValidatedResponse>>>
