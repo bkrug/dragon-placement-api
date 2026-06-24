@@ -1,7 +1,7 @@
-using DragonCommonApplication.Repositories;
 using DragonPlacementApi.Poco;
 using DragonAssignmentApplication;
 using DragonAssignmentApplication.DragonAssignment;
+using DragonAssignmentApplication.JobDelete;
 using DragonAssignmentApplication.JobUpsert;
 using DragonAssignmentDomain.Enum;
 using DragonAssignmentDomain.Models;
@@ -122,33 +122,26 @@ public class JobEndpoints
             IDragonPlacementUnitOfWork unitOfWork,
             [FromRoute(Name="jobId")] int jobId)
     {
-        if (await unitOfWork.JobHasAnAssignment(jobId).ConfigureAwait(false))
-            return TypedResults.Conflict(new ValidatedResponse { ValidationFailures = ["Job has an existing assignment"] });
-
-        var deleteResult = unitOfWork.JobRepository.Delete(jobId);
-        if (deleteResult == DeleteResult.NotFound)
-            return TypedResults.NotFound(ValidatedResponse.NotFound);
-
-        await unitOfWork.SaveAsync().ConfigureAwait(false);
+        var result = await JobDeleteService.DeleteJob(jobId, unitOfWork).ConfigureAwait(false);
+        if (result.IsFailure)
+            return result.Error switch
+            {
+                JobDeleteNotFound => TypedResults.NotFound(ValidatedResponse.NotFound),
+                JobDeleteHasAssignment => TypedResults.Conflict(new ValidatedResponse { ValidationFailures = ["Job has an existing assignment"] }),
+                _ => throw new InvalidOperationException()
+            };
         return TypedResults.Ok(ValidatedResponse.Success);
     }
 
-    public async static Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>, InternalServerError<ValidatedResponse>>> UnassignDragonFromJobAsync(
-        IDragonPlacementUnitOfWork unitOfWork,
-        [FromRoute(Name="jobId")] int jobId,
-        [FromRoute(Name="dragonId")] int dragonId)
+    public static async Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>>>
+        UnassignDragonFromJobAsync(
+            IDragonPlacementUnitOfWork unitOfWork,
+            [FromRoute(Name="jobId")] int jobId,
+            [FromRoute(Name="dragonId")] int dragonId)
     {
-        var foundAssignments = unitOfWork.AssignmentRepository.Get(asgn => asgn.JobId == jobId && asgn.DragonId == dragonId).ToList();
-        switch(foundAssignments.Count)
-        {
-            case 0:
-                return TypedResults.NotFound(ValidatedResponse.NotFound);
-            case 1:
-                unitOfWork.AssignmentRepository.Delete(foundAssignments[0]);
-                await unitOfWork.SaveAsync().ConfigureAwait(false);
-                return TypedResults.Ok(ValidatedResponse.Success);
-            default:
-                return TypedResults.InternalServerError(ValidatedResponse.ExpectedOneFoundMultiple);
-        }
+        var result = await DragonAssignmentService.UnassignDragonFromJob(dragonId, jobId, unitOfWork).ConfigureAwait(false);
+        if (result.IsFailure)
+            return TypedResults.NotFound(ValidatedResponse.NotFound);
+        return TypedResults.Ok(ValidatedResponse.Success);
     }
 }
