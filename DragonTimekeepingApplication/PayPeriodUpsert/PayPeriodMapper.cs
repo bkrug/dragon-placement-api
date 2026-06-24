@@ -5,7 +5,7 @@ using CSharpFunctionalExtensions;
 
 namespace DragonTimekeepingApplication.PayPeriodUpsert;
 
-public static class PayPeriodTransformer
+public static class PayPeriodMapper
 {
     public static Result<PayPeriod, PayPeriodValidationFailures> ToPayPeriodModel(PayPeriodCreateEdit input)
     {

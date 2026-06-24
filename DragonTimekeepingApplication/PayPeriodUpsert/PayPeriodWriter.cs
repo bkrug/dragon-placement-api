@@ -14,7 +14,7 @@ public static class PayPeriodWriter
         ITimekeepingUnitOfWork unitOfWork,
         PayPeriodCreateEdit input)
     {
-        return await PayPeriodTransformer.ToPayPeriodModel(input)
+        return await PayPeriodMapper.ToPayPeriodModel(input)
             .Bind(PayPeriodValidator.Validate)
             .Tap(async payPeriod =>
             {
@@ -32,7 +32,7 @@ public static class PayPeriodWriter
         if (existing == null)
             return Result.Failure<PayPeriod, PayPeriodUpdateFailure>(new PayPeriodNotFound());
 
-        return await PayPeriodTransformer.ToPayPeriodModel(input)
+        return await PayPeriodMapper.ToPayPeriodModel(input)
             .Bind(PayPeriodValidator.Validate)
             .MapError(e => (PayPeriodUpdateFailure)new PayPeriodInvalid(e))
             .Map(parsedInput => { existing.ApplyEdit(parsedInput); return existing; })
