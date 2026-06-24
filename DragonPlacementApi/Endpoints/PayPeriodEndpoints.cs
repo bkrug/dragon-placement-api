@@ -40,7 +40,6 @@ public class PayPeriodEndpoints
             [FromRoute(Name = "assignmentId")] int assignmentId)
     {
         var candidates = PotentialPayPeriodQuerier.GetValidPayPeriods(unitOfWork, assignmentId);
-
         return TypedResults.Ok(ValidatedPayload<List<ValidPaySpan>>.FromPayload(candidates));
     }
 
@@ -59,15 +58,15 @@ public class PayPeriodEndpoints
         var transformedEntry = new PayPeriodView
         {
             AssignmentId = entry.AssignmentId,
-            StartDate = entry.StartDate.ToString("yyyy-MM-dd"),
-            EndDate = entry.EndDate.ToString("yyyy-MM-dd"),
+            StartDate = entry.StartDate.ToString(Const.ISO_DATE),
+            EndDate = entry.EndDate.ToString(Const.ISO_DATE),
             SubmissionStatus = entry.SubmissionStatus,
             DragonName = $"{assignment?.Dragon.GivenName} {assignment?.Dragon.FamilyName}",
             AssignmentDescription = $"{assignment?.Job.JobTitle} at {assignment?.Job.EmployerName}",
             HoursWorked = entry.HoursWorked.Select(hw => new HoursWorkedView
             {
-                StartDateTime = hw.StartDateTime.ToString("yyyy-MM-ddTHH:mm:ss"),
-                EndDateTime = hw.EndDateTime.ToString("yyyy-MM-ddTHH:mm:ss")
+                StartDateTime = hw.StartDateTime.ToString(Const.ISO_DATETIME),
+                EndDateTime = hw.EndDateTime.ToString(Const.ISO_DATETIME)
             }).ToList()
         };
         return TypedResults.Ok(ValidatedPayload<PayPeriodView>.FromPayload(transformedEntry));

@@ -1,3 +1,5 @@
+using DragonPlacementApi.Poco;
+
 namespace DragonPlacementApi.Extensions;
 
 //All Date, Time, and DateTime objects are currently unaware of timezones.
@@ -6,17 +8,17 @@ public static class UnixDateConvert
 {
     public static string ToIsoDate(long unixSeconds)
     {
-        return DateTimeOffset.FromUnixTimeSeconds(unixSeconds).UtcDateTime.ToString("yyyy-MM-dd");
+        return DateTimeOffset.FromUnixTimeSeconds(unixSeconds).UtcDateTime.ToString(Const.ISO_DATE);
     }
 
     public static string ToIsoDateTime(long unixSeconds)
     {
-        return DateTimeOffset.FromUnixTimeSeconds(unixSeconds).UtcDateTime.ToString("yyyy-MM-ddTHH:mm:ss");
+        return DateTimeOffset.FromUnixTimeSeconds(unixSeconds).UtcDateTime.ToString(Const.ISO_DATETIME);
     }
 
     public static string ToIsoTime(long unixSeconds)
     {
-        return DateTimeOffset.FromUnixTimeSeconds(unixSeconds).UtcDateTime.ToString("HH:mm:ss");
+        return DateTimeOffset.FromUnixTimeSeconds(unixSeconds).UtcDateTime.ToString(Const.ISO_TIME);
     }
 
     public static long FromIsoDate(string isoDate)
