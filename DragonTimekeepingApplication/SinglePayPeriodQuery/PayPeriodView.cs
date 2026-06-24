@@ -1,4 +1,4 @@
-namespace DragonPlacementApi.Poco;
+namespace DragonTimekeepingApplication.SinglePayPeriodQuery;
 
 public class HoursWorkedView
 {

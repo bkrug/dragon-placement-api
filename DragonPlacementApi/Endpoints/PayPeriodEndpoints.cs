@@ -1,14 +1,15 @@
+using DragonAssignmentApplication;
 using DragonCommonApplication;
 using DragonCommonApplication.Repositories;
 using DragonPlacementApi.Poco;
-using DragonAssignmentApplication;
 using DragonTimekeepingApplication;
+using DragonTimekeepingApplication.PayPeriodUpsert;
+using DragonTimekeepingApplication.PotentialPayPeriodQuery;
+using DragonTimekeepingApplication.SinglePayPeriodQuery;
+using DragonTimekeepingDomain.Models;
 using DragonTimekeepingDomain.Validation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using DragonTimekeepingDomain.Models;
-using DragonTimekeepingApplication.PayPeriodUpsert;
-using DragonTimekeepingApplication.PotentialPayPeriodQuery;
 
 namespace DragonPlacementApi.Endpoints;
 
@@ -56,21 +57,11 @@ public class PayPeriodEndpoints
 
         var assignment = await assignmentUnitOfWork.GetAssignmentWithDragonAndJobAsync(entry.AssignmentId).ConfigureAwait(false);
 
-        var transformedEntry = new PayPeriodView
-        {
-            AssignmentId = entry.AssignmentId,
-            StartDate = entry.StartDate.ToString(Const.ISO_DATE),
-            EndDate = entry.EndDate.ToString(Const.ISO_DATE),
-            SubmissionStatus = entry.SubmissionStatus,
-            DragonName = $"{assignment?.Dragon.GivenName} {assignment?.Dragon.FamilyName}",
-            AssignmentDescription = $"{assignment?.Job.JobTitle} at {assignment?.Job.EmployerName}",
-            HoursWorked = entry.HoursWorked.Select(hw => new HoursWorkedView
-            {
-                StartDateTime = hw.StartDateTime.ToString(Const.ISO_DATETIME),
-                EndDateTime = hw.EndDateTime.ToString(Const.ISO_DATETIME)
-            }).ToList()
-        };
-        return TypedResults.Ok(ValidatedPayload<PayPeriodView>.FromPayload(transformedEntry));
+        var view = PayPeriodViewMapper.ToView(
+            entry,
+            dragonName: $"{assignment?.Dragon.GivenName} {assignment?.Dragon.FamilyName}",
+            assignmentDescription: $"{assignment?.Job.JobTitle} at {assignment?.Job.EmployerName}");
+        return TypedResults.Ok(ValidatedPayload<PayPeriodView>.FromPayload(view));
     }
 
     public static async Task<Results<Ok<ValidatedPayload<PayPeriod>>, BadRequest<ValidatedForm<PayPeriodValidationFailures>>>>
