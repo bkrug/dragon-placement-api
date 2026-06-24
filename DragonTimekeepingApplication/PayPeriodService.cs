@@ -15,7 +15,8 @@ public static class PayPeriodService
         ITimekeepingUnitOfWork unitOfWork,
         PayPeriodCreateEdit input)
     {
-        return await PayPeriodParser.GetPayPeriodModel(input)
+        return await PayPeriodTransformer.ToPayPeriodModel(input)
+            .Bind(PayPeriodValidator.Validate)
             .Tap(async payPeriod =>
             {
                 unitOfWork.PayPeriodRepository.Insert(payPeriod);
@@ -32,16 +33,11 @@ public static class PayPeriodService
         if (existing == null)
             return Result.Failure<PayPeriod, PayPeriodUpdateFailure>(new PayPeriodNotFound());
 
-        var validationResult = PayPeriodParser.GetPayPeriodModel(input);
-        if (validationResult.IsFailure)
-            return Result.Failure<PayPeriod, PayPeriodUpdateFailure>(new PayPeriodInvalid(validationResult.Error));
-
-        var parsedInput = validationResult.Value;
-
-        existing = EditPayPeriod(existing, parsedInput);
-
-        await unitOfWork.SaveAsync().ConfigureAwait(false);
-        return Result.Success<PayPeriod, PayPeriodUpdateFailure>(existing);
+        return await PayPeriodTransformer.ToPayPeriodModel(input)
+            .Bind(PayPeriodValidator.Validate)
+            .MapError(e => (PayPeriodUpdateFailure)new PayPeriodInvalid(e))
+            .Map(parsedInput => EditPayPeriod(existing, parsedInput))
+            .Tap(async _ => await unitOfWork.SaveAsync().ConfigureAwait(false));
     }
 
     private static PayPeriod EditPayPeriod(PayPeriod existing, PayPeriod input)

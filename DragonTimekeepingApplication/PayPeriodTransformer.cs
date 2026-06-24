@@ -5,15 +5,9 @@ using CSharpFunctionalExtensions;
 
 namespace DragonTimekeepingApplication;
 
-public static class PayPeriodParser
+public static class PayPeriodTransformer
 {
-    public static Result<PayPeriod, PayPeriodValidationFailures> GetPayPeriodModel(PayPeriodCreateEdit input)
-    {
-        return ParsePayPeriod(input)
-            .Bind(PayPeriodValidator.Validate);
-    }
-
-    public static Result<PayPeriod, PayPeriodValidationFailures> ParsePayPeriod(PayPeriodCreateEdit input)
+    public static Result<PayPeriod, PayPeriodValidationFailures> ToPayPeriodModel(PayPeriodCreateEdit input)
     {
         var failures = new PayPeriodValidationFailures();
 
