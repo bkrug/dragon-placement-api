@@ -3,7 +3,7 @@ using DragonTimekeepingDomain.Models;
 using DragonTimekeepingDomain.Validation;
 using CSharpFunctionalExtensions;
 
-namespace DragonTimekeepingApplication;
+namespace DragonTimekeepingApplication.PayPeriodUpsert;
 
 public static class PayPeriodTransformer
 {

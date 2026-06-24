@@ -3,7 +3,7 @@ using DragonTimekeepingApplication.Dto;
 using DragonTimekeepingDomain.Models;
 using DragonTimekeepingDomain.Validation;
 
-namespace DragonTimekeepingApplication;
+namespace DragonTimekeepingApplication.PayPeriodUpsert;
 
 public abstract record PayPeriodUpdateFailure;
 public record PayPeriodNotFound : PayPeriodUpdateFailure;
