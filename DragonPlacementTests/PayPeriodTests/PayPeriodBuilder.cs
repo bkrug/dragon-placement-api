@@ -64,7 +64,7 @@ public class PayPeriodBuilder
     {
         PayPeriodId = _payPeriodId,
         AssignmentId = _assignmentId,
-        StartDate = _startDateUnix,
+        StartDate = DateTimeOffset.FromUnixTimeSeconds(_startDateUnix).UtcDateTime,
         EndDateUnix = _endDateUnix,
         SubmissionStatus = _submissionStatus,
         HoursWorked = _hoursWorked

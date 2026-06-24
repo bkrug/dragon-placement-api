@@ -29,9 +29,13 @@ public static class PayPeriodApplicationValidator
 
         if (!DateTime.TryParse(input.StartDate, out var parsedStart))
             failures.StartDate = "must be an ISO Date";
+        // else if (parsedStart.TimeOfDay.TotalSeconds != 0)
+        //     failures.StartDate = "must exclude time-of-day or be midnight UTC";
 
         if (!DateTime.TryParse(input.EndDate, out var parsedEnd))
             failures.EndDate = "must be an ISO Date";
+        // else if (parsedEnd.TimeOfDay.TotalSeconds != 0)
+        //     failures.StartDate = "must exclude time-of-day or be midnight UTC";
 
         if (!string.IsNullOrEmpty(failures.StartDate) || !string.IsNullOrEmpty(failures.EndDate))
             return (null, failures);
@@ -47,7 +51,7 @@ public static class PayPeriodApplicationValidator
         var payPeriod = new PayPeriod
         {
             AssignmentId = input.AssignmentId,
-            StartDate = new DateTimeOffset(parsedStart, TimeSpan.Zero).ToUnixTimeSeconds(),
+            StartDate = parsedStart,
             EndDateUnix = new DateTimeOffset(parsedEnd, TimeSpan.Zero).ToUnixTimeSeconds(),
             SubmissionStatus = input.SubmissionStatus,
             HoursWorked = parsedHoursWorked.Select(hw => new HoursWorked

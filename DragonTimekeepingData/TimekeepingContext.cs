@@ -45,7 +45,12 @@ public partial class TimekeepingContext : DbContext
 
             entity.HasKey(e => e.PayPeriodId);
 
-            entity.Property(e => e.StartDate).HasColumnName("StartDateUnix");
+            entity.Property(e => e.StartDate)
+                .HasColumnName("StartDateUnix")
+                .HasConversion(
+                    d => new DateTimeOffset(d, TimeSpan.Zero).ToUnixTimeSeconds(),
+                    unix => DateTimeOffset.FromUnixTimeSeconds(unix).UtcDateTime
+                );
         });
 
         OnModelCreatingPartial(modelBuilder);

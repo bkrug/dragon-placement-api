@@ -45,7 +45,7 @@ public class PayPeriodEndpoints
 
         var existingStarts = unitOfWork.PayPeriodRepository
             .Get(pp => pp.AssignmentId == assignmentId)
-            .Select(pp => pp.StartDate)
+            .Select(pp => new DateTimeOffset(pp.StartDate).ToUnixTimeSeconds())
             .ToHashSet();
 
         const long SECONDS_IN_A_WEEK = 7 * Const.SECONDS_IN_A_DAY;
@@ -77,7 +77,7 @@ public class PayPeriodEndpoints
         var transformedEntry = new PayPeriodView
         {
             AssignmentId = entry.AssignmentId,
-            StartDate = UnixDateConvert.ToIsoDate(entry.StartDate),
+            StartDate = entry.StartDate.ToString("yyyy-MM-dd"),
             EndDate = UnixDateConvert.ToIsoDate(entry.EndDateUnix),
             SubmissionStatus = entry.SubmissionStatus,
             DragonName = $"{assignment?.Dragon.GivenName} {assignment?.Dragon.FamilyName}",
