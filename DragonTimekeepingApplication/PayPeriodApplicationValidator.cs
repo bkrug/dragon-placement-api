@@ -52,7 +52,7 @@ public static class PayPeriodApplicationValidator
         {
             AssignmentId = input.AssignmentId,
             StartDate = parsedStart,
-            EndDateUnix = new DateTimeOffset(parsedEnd, TimeSpan.Zero).ToUnixTimeSeconds(),
+            EndDate = parsedEnd,
             SubmissionStatus = input.SubmissionStatus,
             HoursWorked = parsedHoursWorked.Select(hw => new HoursWorked
             {

@@ -78,7 +78,7 @@ public class PayPeriodEndpoints
         {
             AssignmentId = entry.AssignmentId,
             StartDate = entry.StartDate.ToString("yyyy-MM-dd"),
-            EndDate = UnixDateConvert.ToIsoDate(entry.EndDateUnix),
+            EndDate = entry.EndDate.ToString("yyyy-MM-dd"),
             SubmissionStatus = entry.SubmissionStatus,
             DragonName = $"{assignment?.Dragon.GivenName} {assignment?.Dragon.FamilyName}",
             AssignmentDescription = $"{assignment?.Job.JobTitle} at {assignment?.Job.EmployerName}",
@@ -140,7 +140,7 @@ public class PayPeriodEndpoints
 
         entry.AssignmentId = parsedPayPeriod.AssignmentId;
         entry.StartDate = parsedPayPeriod.StartDate;
-        entry.EndDateUnix = parsedPayPeriod.EndDateUnix;
+        entry.EndDate = parsedPayPeriod.EndDate;
         entry.SubmissionStatus = parsedPayPeriod.SubmissionStatus;
 
         foreach (var inputClockIn in inputClockIns)

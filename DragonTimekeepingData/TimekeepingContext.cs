@@ -51,6 +51,12 @@ public partial class TimekeepingContext : DbContext
                     d => new DateTimeOffset(d, TimeSpan.Zero).ToUnixTimeSeconds(),
                     unix => DateTimeOffset.FromUnixTimeSeconds(unix).UtcDateTime
                 );
+            entity.Property(e => e.EndDate)
+                .HasColumnName("EndDateUnix")
+                .HasConversion(
+                    d => new DateTimeOffset(d, TimeSpan.Zero).ToUnixTimeSeconds(),
+                    unix => DateTimeOffset.FromUnixTimeSeconds(unix).UtcDateTime
+                );
         });
 
         OnModelCreatingPartial(modelBuilder);
