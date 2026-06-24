@@ -58,7 +58,7 @@ public class DragonPlacementUnitOfWork(DragonPlacementContext context, ILogger<D
             return [];
         var queryable = _context.Dragons
             .Where(d => d.Assignments.Count(a => job.StartDate <= a.EndDate && job.EndDate >= a.StartDate) == 0);
-        if (skillTagIds.Length == 0)
+        if (skillTagIds.Length > 0)
             queryable = queryable.Where(d => skillTagIds.All(stid => d.SkillTags.Any(st => st.SkillTagId == stid)));
         if (!string.IsNullOrWhiteSpace(fightingSkill))
             queryable = queryable.Where(d => d.FightingSkills == fightingSkill);
