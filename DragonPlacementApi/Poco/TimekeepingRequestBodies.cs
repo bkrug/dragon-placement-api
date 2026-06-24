@@ -16,9 +16,3 @@ public class PayPeriodView
     public string SubmissionStatus { get; set; } = null!;
     public IList<HoursWorkedView> HoursWorked { get; set; } = [];
 }
-
-public class ValidPaySpan
-{
-    public string StartDate { get;set; } = string.Empty;
-    public string EndDate { get;set; } = string.Empty;
-}

@@ -1,11 +1,12 @@
 using System.Linq.Expressions;
 using DragonPlacementApi.Endpoints;
-using DragonPlacementApi.Extensions;
+using DragonCommonApplication;
 using DragonPlacementApi.Poco;
 using Moq;
 using Shouldly;
 using DragonTimekeepingDomain.Models;
 using DragonTimekeepingApplication;
+using DragonTimekeepingApplication.PotentialPayPeriodQuery;
 
 namespace DragonUnitTests.PayPeriodTests;
 
