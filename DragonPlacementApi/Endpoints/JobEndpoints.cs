@@ -1,4 +1,3 @@
-using DragonCommonApplication;
 using DragonCommonApplication.Repositories;
 using DragonPlacementApi.Poco;
 using DragonAssignmentApplication;
@@ -109,10 +108,6 @@ public class JobEndpoints
             IDragonPlacementUnitOfWork unitOfWork,
             [FromBody] JobCreateEdit inputJob)
     {
-        var validationFailures = ValidateJob(inputJob);
-        if (validationFailures != null)
-            return TypedResults.BadRequest(validationFailures);
-
         var job = new Job
         {
             JobTitle = inputJob.JobTitle,
@@ -122,6 +117,10 @@ public class JobEndpoints
             EndDate = DateTimeOffset.FromUnixTimeSeconds(inputJob.EndDateUnix).UtcDateTime,
             SkillTags = unitOfWork.GetSkillTagsById(inputJob.SkillTagIds)
         };
+        var validationFailures = ValidateJob(job);
+        if (validationFailures != null)
+            return TypedResults.BadRequest(validationFailures);
+
         unitOfWork.JobRepository.Insert(job);
         await unitOfWork.SaveAsync().ConfigureAwait(false);
         return TypedResults.Ok(ValidatedPayload<Job>.FromPayload(job));
@@ -139,10 +138,6 @@ public class JobEndpoints
         else if (loadedJobs.Count > 1)
             return TypedResults.InternalServerError(ValidatedResponse.ExpectedOneFoundMultiple);
 
-        var validationFailures = ValidateJob(inputJob);
-        if (validationFailures != null)
-            return TypedResults.BadRequest(validationFailures);
-
         var existing = loadedJobs.Single();
         existing.JobTitle = inputJob.JobTitle;
         existing.EmployerName = inputJob.EmployerName;
@@ -150,6 +145,9 @@ public class JobEndpoints
         existing.StartDate = DateTimeOffset.FromUnixTimeSeconds(inputJob.StartDateUnix).UtcDateTime;
         existing.EndDate = DateTimeOffset.FromUnixTimeSeconds(inputJob.EndDateUnix).UtcDateTime;
         existing.SkillTags = unitOfWork.GetSkillTagsById(inputJob.SkillTagIds);
+        var validationFailures = ValidateJob(existing);
+        if (validationFailures != null)
+            return TypedResults.BadRequest(validationFailures);
 
         await unitOfWork.SaveAsync().ConfigureAwait(false);
         return TypedResults.Ok(ValidatedPayload<Job>.FromPayload(existing));
@@ -171,7 +169,7 @@ public class JobEndpoints
         return TypedResults.Ok(ValidatedResponse.Success);
     }
 
-    private static ValidatedForm<JobValidationFailures>? ValidateJob(JobCreateEdit job)
+    private static ValidatedForm<JobValidationFailures>? ValidateJob(Job job)
     {
         var failures = new JobValidationFailures();
 
@@ -179,9 +177,9 @@ public class JobEndpoints
             failures.JobTitle = "is required";
         if (job.NumberOfPositions <= 0)
             failures.NumberOfPositions = "must be a positive number";
-        if (job.StartDateUnix % Const.SECONDS_IN_A_DAY != 0)
+        if (job.StartDate.TimeOfDay != TimeSpan.Zero)
             failures.StartDateUnix = "must be midnight UTC";
-        if (job.EndDateUnix % Const.SECONDS_IN_A_DAY != 0)
+        if (job.EndDate.TimeOfDay != TimeSpan.Zero)
             failures.EndDateUnix = "must be midnight UTC";
 
         if (failures.JobTitle != null || failures.NumberOfPositions != null
