@@ -1,5 +1,5 @@
 using DragonPlacementApi.Poco;
-using DragonTimekeepingApplication.Dto;
+using DragonTimekeepingApplication.PayPeriodUpsert;
 
 namespace DragonUnitTests.PayPeriodTests;
 

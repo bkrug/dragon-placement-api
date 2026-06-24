@@ -1,4 +1,4 @@
-namespace DragonTimekeepingApplication.Dto;
+namespace DragonTimekeepingApplication.PayPeriodUpsert;
 
 public class HoursWorkedCreateEdit
 {

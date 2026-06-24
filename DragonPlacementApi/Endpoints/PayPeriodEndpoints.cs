@@ -7,7 +7,6 @@ using DragonTimekeepingDomain.Validation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using DragonTimekeepingDomain.Models;
-using DragonTimekeepingApplication.Dto;
 using DragonTimekeepingApplication.PayPeriodUpsert;
 
 namespace DragonPlacementApi.Endpoints;
