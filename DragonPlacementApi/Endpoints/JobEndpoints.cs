@@ -1,6 +1,7 @@
 using DragonCommonApplication.Repositories;
 using DragonPlacementApi.Poco;
 using DragonAssignmentApplication;
+using DragonAssignmentApplication.DragonAssignment;
 using DragonAssignmentApplication.JobUpsert;
 using DragonAssignmentDomain.Enum;
 using DragonAssignmentDomain.Models;
@@ -58,47 +59,24 @@ public class JobEndpoints
         };
     }
 
-    public static async Task<Results<Ok<ValidatedResponse>, BadRequest<ValidatedResponse>, NotFound<ValidatedResponse>>> 
+    public static async Task<Results<Ok<ValidatedResponse>, BadRequest<ValidatedResponse>, NotFound<ValidatedResponse>>>
         AssignDragonToJobAsync(IDragonPlacementUnitOfWork unitOfWork, [FromRoute(Name="dragonId")] int dragonId, [FromRoute(Name="jobId")] int jobId)
-
     {
-        var newJob = await unitOfWork.JobRepository.GetByID(jobId).ConfigureAwait(false);
-        if (newJob == null)
-        {
-            return TypedResults.NotFound(new ValidatedResponse
+        var result = await DragonAssignmentService.AssignDragonToJob(dragonId, jobId, unitOfWork).ConfigureAwait(false);
+        if (result.IsFailure)
+            return result.Error switch
             {
-               IsSuccess = false,
-               IsInternalError = false,
-               ValidationFailures = [ "Job does not exist" ]
-            });
-        }
-        var existingJobs = unitOfWork.GetOverlappingAssignments(dragonId, newJob.StartDate, newJob.EndDate);
-        var firstConflict = existingJobs.FirstOrDefault();
-        if (firstConflict == null) {
-            var assignmentRecord = new Assignment
-            {
-                DragonId = dragonId,
-                JobId = jobId,
-                StartDate = newJob.StartDate,
-                EndDate = newJob.EndDate
+                AssignmentJobNotFound => TypedResults.NotFound(new ValidatedResponse
+                {
+                    ValidationFailures = ["Job does not exist"]
+                }),
+                AssignmentOverlap e => TypedResults.BadRequest(new ValidatedResponse
+                {
+                    ValidationFailures = [$"Overlaps with at least one job which has period of {e.StartDate.ToShortDateString()} to {e.EndDate.ToShortDateString()}"]
+                }),
+                _ => throw new InvalidOperationException()
             };
-            unitOfWork.AssignmentRepository.Insert(assignmentRecord);
-            await unitOfWork.SaveAsync().ConfigureAwait(false);
-            return TypedResults.Ok(new ValidatedResponse
-            {
-                IsSuccess = true
-            });
-        }
-        else {
-            var periodStart = firstConflict.StartDate.ToShortDateString();
-            var periodEnd = firstConflict.EndDate.ToShortDateString();
-            return TypedResults.BadRequest(new ValidatedResponse
-            {
-                IsInternalError = false,
-                IsSuccess = false,
-                ValidationFailures = [ $"Overlaps with at least one job which has period of {periodStart} to {periodEnd}" ]
-            });
-        }
+        return TypedResults.Ok(ValidatedResponse.Success);
     }    
 
     public static async Task<Results<Ok<ValidatedPayload<Job>>, BadRequest<ValidatedForm<JobValidationFailures>>>>

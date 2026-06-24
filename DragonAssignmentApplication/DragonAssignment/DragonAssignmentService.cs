@@ -1,0 +1,37 @@
+using CSharpFunctionalExtensions;
+using DragonAssignmentDomain.Models;
+
+namespace DragonAssignmentApplication.DragonAssignment;
+
+public abstract record AssignmentFailure;
+public record AssignmentJobNotFound : AssignmentFailure;
+public record AssignmentOverlap(DateTime StartDate, DateTime EndDate) : AssignmentFailure;
+
+public static class DragonAssignmentService
+{
+    public static async Task<Result<Assignment, AssignmentFailure>> AssignDragonToJob(
+        int dragonId, int jobId, IDragonPlacementUnitOfWork unitOfWork)
+    {
+        var job = await unitOfWork.JobRepository.GetByID(jobId).ConfigureAwait(false);
+        if (job == null)
+            return Result.Failure<Assignment, AssignmentFailure>(new AssignmentJobNotFound());
+
+        var firstConflict = unitOfWork.GetOverlappingAssignments(dragonId, job.StartDate, job.EndDate)
+            .FirstOrDefault();
+        if (firstConflict != null)
+            return Result.Failure<Assignment, AssignmentFailure>(
+                new AssignmentOverlap(firstConflict.StartDate, firstConflict.EndDate));
+
+        var assignment = new Assignment
+        {
+            DragonId = dragonId,
+            JobId = jobId,
+            StartDate = job.StartDate,
+            EndDate = job.EndDate
+        };
+        unitOfWork.AssignmentRepository.Insert(assignment);
+        await unitOfWork.SaveAsync().ConfigureAwait(false);
+
+        return Result.Success<Assignment, AssignmentFailure>(assignment);
+    }
+}
