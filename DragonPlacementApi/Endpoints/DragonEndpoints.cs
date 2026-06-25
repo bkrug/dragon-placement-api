@@ -1,5 +1,6 @@
 using DragonCommonApplication;
 using DragonCommonApplication.Repositories;
+using DragonAssignmentApplication.DragonSelect;
 using DragonPlacementApi.Poco;
 using DragonAssignmentApplication;
 using DragonAssignmentDomain.Enum;
@@ -29,25 +30,25 @@ public class DragonEndpoints
             [FromQuery(Name="jobId")] int? jobId = null
         )
     {
-        if (skillTagIds.Length > 0 && jobId == null)
-            return TypedResults.BadRequest(new ValidatedResponse
+        var result = DragonSelectService.GetDragons(unitOfWork, skillTagIds, fightingSkill, jobId);
+        if (result.IsFailure)
+            return result.Error switch
             {
-                IsSuccess = false,
-                IsInternalError = false,
-                ValidationFailures = ["Filtering by skills is only allowed when a jobId is specified"]
+                DragonSelectInvalidFilter e => TypedResults.BadRequest(new ValidatedResponse
+                {
+                    ValidationFailures = [e.Message]
+                }),
+                _ => throw new InvalidOperationException()
+            };
+        else {
+            return TypedResults.Ok(new PagedData<Dragon>
+            {
+                Offset = offset,
+                Limit = limit,
+                TotalRecords = result.Value.Count(),
+                Data = result.Value.Skip(offset).Take(limit).ToList()
             });
-
-        var dataAsEnumerable = jobId == null
-            ? unitOfWork.DragonRepository.Get()
-            : unitOfWork.GetDragonsWithoutOverlappingAssignments(jobId.Value, skillTagIds, fightingSkill);
-        var pagedData = new PagedData<Dragon>
-        {
-            Offset = offset,
-            Limit = limit,
-            TotalRecords = dataAsEnumerable.Count(),
-            Data = dataAsEnumerable.Skip(offset).Take(limit).ToList()
-        };
-        return TypedResults.Ok(pagedData);
+        }
     }
 
     public static async Task<Results<Ok<ValidatedPayload<Dragon>>, NotFound<ValidatedResponse>, InternalServerError<ValidatedResponse>>>
@@ -139,7 +140,7 @@ public class DragonEndpoints
                 IsSuccess = false,
                 IsInternalError = false,
                 ValidationFailures = failures
-            };
+            }; 
         }
 
         return null;
