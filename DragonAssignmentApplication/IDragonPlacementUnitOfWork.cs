@@ -9,7 +9,7 @@ namespace DragonAssignmentApplication;
 /// You see more than one UnitOfWork context in this git-repository.
 ///
 /// Each UnitOfWork uses GenericRepositories,
-/// which should allow us to do write-operations and select-by-id-operations agaist single talbes with little boiler-plate code.
+/// which should allow us to do write-operations and select-by-id-operations agaist single tables with little boiler-plate code.
 ///
 /// UnitOfWork classes also contain multiple methods for doing select-queries,
 /// which need to be hand-written because their patterns are less consistent than create/update/delete or select-by-id.
@@ -31,11 +31,12 @@ public interface IDragonPlacementUnitOfWork
     IEnumerable<Dragon> GetAssignedDragons(int jobId);
     IEnumerable<JobWithCapacity> GetJobsWithCapacity(JobInclusions jobInclusions);
     IList<SkillTag> GetSkillTagsById(IList<int> skillTagIds);
-    // 0, 1, or 2 results
-    Task<IList<Dragon>> GetDragonWithJobAsync(int dragonId, JobInclusions jobInclusions);
+
     // 0 or 1 results
+    Task<Dragon?> GetDragonWithJobAsync(int dragonId, JobInclusions jobInclusions);
     Task<Job?> GetJobWithSkillsAsync(int jobId);
     Task<Assignment?> GetAssignmentWithDragonAndJobAsync(int assignmentId);
+    
     // boolean results
     Task<bool> DragonHasAnAssignment(int dragonId);
     Task<bool> JobHasAnAssignment(int jobId);

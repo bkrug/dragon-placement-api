@@ -51,20 +51,17 @@ public class DragonEndpoints
         }
     }
 
-    public static async Task<Results<Ok<ValidatedPayload<Dragon>>, NotFound<ValidatedResponse>, InternalServerError<ValidatedResponse>>>
+    public static async Task<Results<Ok<ValidatedPayload<Dragon>>, NotFound<ValidatedResponse>>>
         GetDragonAsync(
             IDragonPlacementUnitOfWork unitOfWork,
             [FromRoute(Name="dragonId")] int dragonId,
             [FromQuery(Name="jobInclusions")] JobInclusions jobInclusions = JobInclusions.None
         )
     {
-        var dragons = await unitOfWork.GetDragonWithJobAsync(dragonId, jobInclusions).ConfigureAwait(false);
-        return dragons.Count switch
-        {
-            0 => TypedResults.NotFound(ValidatedResponse.NotFound),
-            1 => TypedResults.Ok(ValidatedPayload<Dragon>.FromPayload(dragons.First())),
-            _ => TypedResults.InternalServerError(ValidatedResponse.ExpectedOneFoundMultiple),
-        };
+        var dragon = await unitOfWork.GetDragonWithJobAsync(dragonId, jobInclusions).ConfigureAwait(false);
+        return dragon == null
+            ? TypedResults.NotFound(ValidatedResponse.NotFound)
+            : TypedResults.Ok(ValidatedPayload<Dragon>.FromPayload(dragon));
     }
 
     public static async Task<Results<Ok<ValidatedPayload<Dragon>>, BadRequest<ValidatedForm<DragonValidationFailures>>>>
@@ -91,23 +88,20 @@ public class DragonEndpoints
         return TypedResults.Ok(ValidatedPayload<Dragon>.FromPayload(newDragon));
     }
 
-    public static async Task<Results<Ok<ValidatedPayload<Dragon>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<DragonValidationFailures>>, InternalServerError<ValidatedResponse>>>
+    public static async Task<Results<Ok<ValidatedPayload<Dragon>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<DragonValidationFailures>>>>
         UpdateDragonAsync(
             IDragonPlacementUnitOfWork unitOfWork,
             [FromRoute(Name="dragonId")] int dragonId,
             [FromBody] DragonCreateEdit inputDragon)
     {
-        var loadedDragons = await unitOfWork.GetDragonWithJobAsync(dragonId, JobInclusions.None).ConfigureAwait(false);
-        if (loadedDragons.Count == 0)
+        var existing = await unitOfWork.GetDragonWithJobAsync(dragonId, JobInclusions.None).ConfigureAwait(false);
+        if (existing == null)
             return TypedResults.NotFound(ValidatedResponse.NotFound);
-        else if (loadedDragons.Count > 1)
-            return TypedResults.InternalServerError(ValidatedResponse.ExpectedOneFoundMultiple);
 
         var validationFailures = ValidateDragon(inputDragon);
         if (validationFailures != null)
             return TypedResults.BadRequest(validationFailures);
 
-        var existing = loadedDragons.Single();
         existing.GivenName = inputDragon.GivenName;
         existing.FamilyName = inputDragon.FamilyName;
         existing.WeightInKg = inputDragon.WeightInKg;
