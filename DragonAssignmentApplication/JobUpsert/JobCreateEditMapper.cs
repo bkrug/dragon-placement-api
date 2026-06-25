@@ -44,9 +44,9 @@ public static class JobCreateEditMapper
         var failures = new JobValidationFailures();
 
         if (!DateTime.TryParse(input.StartDate, out startDate))
-            failures.StartDate = ValidationMessages.MUST_BE_AN_ISO_DATE;
+            failures.StartDate = MappingMessages.MUST_BE_AN_ISO_DATE;
         if (!DateTime.TryParse(input.EndDate, out endDate))
-            failures.EndDate = ValidationMessages.MUST_BE_AN_ISO_DATE;
+            failures.EndDate = MappingMessages.MUST_BE_AN_ISO_DATE;
 
         if (failures.StartDate != null || failures.EndDate != null)
             return failures;

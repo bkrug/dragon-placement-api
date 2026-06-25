@@ -1,7 +1,7 @@
+using CSharpFunctionalExtensions;
 using DragonCommonApplication;
 using DragonTimekeepingDomain.Models;
 using DragonTimekeepingDomain.Validation;
-using CSharpFunctionalExtensions;
 
 namespace DragonTimekeepingApplication.PayPeriodUpsert;
 
@@ -12,12 +12,12 @@ public static class PayPeriodMapper
         var failures = new PayPeriodValidationFailures();
 
         if (!DateTime.TryParse(input.StartDate, out var parsedStart))
-            failures.StartDate = ValidationMessages.MUST_BE_AN_ISO_DATE;
+            failures.StartDate = MappingMessages.MUST_BE_AN_ISO_DATE;
         // else if (parsedStart.TimeOfDay.TotalSeconds != 0)
         //     failures.StartDate = "must exclude time-of-day or be midnight UTC";
 
         if (!DateTime.TryParse(input.EndDate, out var parsedEnd))
-            failures.EndDate = ValidationMessages.MUST_BE_AN_ISO_DATE;
+            failures.EndDate = MappingMessages.MUST_BE_AN_ISO_DATE;
         // else if (parsedEnd.TimeOfDay.TotalSeconds != 0)
         //     failures.StartDate = "must exclude time-of-day or be midnight UTC";
 
@@ -60,14 +60,14 @@ public static class PayPeriodMapper
         DateTime parsedHwEnd = DateTime.MinValue;
 
         if (string.IsNullOrEmpty(hw.StartDateTime))
-            hwFailures.StartDateTime = ValidationMessages.IS_REQUIRED;
+            hwFailures.StartDateTime = MappingMessages.IS_REQUIRED;
         else if (!DateTime.TryParse(hw.StartDateTime, out parsedHwStart))
-            hwFailures.StartDateTime = ValidationMessages.MUST_BE_AN_ISO_DATE;
+            hwFailures.StartDateTime = MappingMessages.MUST_BE_AN_ISO_DATE;
 
         if (string.IsNullOrEmpty(hw.EndDateTime))
-            hwFailures.EndDateTime = ValidationMessages.IS_REQUIRED;
+            hwFailures.EndDateTime = MappingMessages.IS_REQUIRED;
         else if (!DateTime.TryParse(hw.EndDateTime, out parsedHwEnd))
-            hwFailures.EndDateTime = ValidationMessages.MUST_BE_AN_ISO_DATE;
+            hwFailures.EndDateTime = MappingMessages.MUST_BE_AN_ISO_DATE;
 
         if (string.IsNullOrEmpty(hwFailures.StartDateTime) && string.IsNullOrEmpty(hwFailures.EndDateTime))
         {

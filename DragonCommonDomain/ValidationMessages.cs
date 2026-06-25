@@ -1,4 +1,4 @@
-namespace DragonCommonApplication;
+namespace DragonCommonDomain;
 
 public static class ValidationMessages
 {

@@ -1,6 +1,6 @@
 using CSharpFunctionalExtensions;
 using DragonAssignmentDomain.Poco;
-using DragonCommonApplication;
+using DragonCommonDomain;
 
 namespace DragonAssignmentDomain.Models;
 

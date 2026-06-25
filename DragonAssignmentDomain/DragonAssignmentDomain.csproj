@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../DragonCommonApplication/DragonCommonApplication.csproj" />
+    <ProjectReference Include="../DragonCommonDomain/DragonCommonDomain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
