@@ -1,10 +1,11 @@
-using DragonCommonApplication;
 using DragonCommonApplication.Repositories;
 using DragonAssignmentApplication.DragonSelect;
+using DragonAssignmentApplication.DragonUpsert;
 using DragonPlacementApi.Poco;
 using DragonAssignmentApplication;
 using DragonAssignmentDomain.Enum;
 using DragonAssignmentDomain.Models;
+using DragonAssignmentDomain.Poco;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -69,23 +70,15 @@ public class DragonEndpoints
             IDragonPlacementUnitOfWork unitOfWork,
             [FromBody] DragonCreateEdit inputDragon)
     {
-        var newDragon = new Dragon
-        {
-            GivenName = inputDragon.GivenName,
-            FamilyName = inputDragon.FamilyName,
-            WeightInKg = inputDragon.WeightInKg,
-            LengthInMeters = inputDragon.LengthInMeters,
-            FightingSkills = inputDragon.FightingSkills,
-            SkillTags = unitOfWork.GetSkillTagsById(inputDragon.SkillTagIds)
-        };
-        var validationFailures = ValidateDragon(newDragon);
-        if (validationFailures != null)
-            return TypedResults.BadRequest(validationFailures);
-
-        unitOfWork.DragonRepository.Insert(newDragon);
-
-        await unitOfWork.SaveAsync().ConfigureAwait(false);
-        return TypedResults.Ok(ValidatedPayload<Dragon>.FromPayload(newDragon));
+        var result = await DragonUpsertService.CreateDragon(inputDragon, unitOfWork).ConfigureAwait(false);
+        if (result.IsFailure)
+            return TypedResults.BadRequest(new ValidatedForm<DragonValidationFailures>
+            {
+                IsSuccess = false,
+                IsInternalError = false,
+                ValidationFailures = result.Error
+            });
+        return TypedResults.Ok(ValidatedPayload<Dragon>.FromPayload(result.Value));
     }
 
     public static async Task<Results<Ok<ValidatedPayload<Dragon>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<DragonValidationFailures>>>>
@@ -94,50 +87,20 @@ public class DragonEndpoints
             [FromRoute(Name="dragonId")] int dragonId,
             [FromBody] DragonCreateEdit inputDragon)
     {
-        var existing = await unitOfWork.GetDragonWithJobAsync(dragonId, JobInclusions.None).ConfigureAwait(false);
-        if (existing == null)
-            return TypedResults.NotFound(ValidatedResponse.NotFound);
-
-        existing.GivenName = inputDragon.GivenName;
-        existing.FamilyName = inputDragon.FamilyName;
-        existing.WeightInKg = inputDragon.WeightInKg;
-        existing.LengthInMeters = inputDragon.LengthInMeters;
-        existing.FightingSkills = inputDragon.FightingSkills;
-        existing.SkillTags = unitOfWork.GetSkillTagsById(inputDragon.SkillTagIds);
-
-        var validationFailures = ValidateDragon(existing);
-        if (validationFailures != null)
-            return TypedResults.BadRequest(validationFailures);
-
-        await unitOfWork.SaveAsync().ConfigureAwait(false);
-        return TypedResults.Ok(ValidatedPayload<Dragon>.FromPayload(existing));
-    }
-
-    private static ValidatedForm<DragonValidationFailures>? ValidateDragon(Dragon dragon)
-    {
-        var failures = new DragonValidationFailures();
-
-        if (string.IsNullOrWhiteSpace(dragon.GivenName))
-            failures.GivenName = ValidationMessages.IS_REQUIRED;
-        if (dragon.WeightInKg <= 0)
-            failures.WeightInKg = ValidationMessages.MUST_BE_A_POSITIVE_NUMBER;
-        if (dragon.LengthInMeters <= 0)
-            failures.LengthInMeters = ValidationMessages.MUST_BE_A_POSITIVE_NUMBER;
-        if (dragon.FightingSkills != null && dragon.FightingSkills is not ("b" or "m" or "a"))
-            failures.FightingSkills = "must be 'b', 'm', or 'a'";
-
-        if (failures.GivenName != null
-            || failures.WeightInKg != null || failures.LengthInMeters != null || failures.FightingSkills != null)
-        {
-            return new ValidatedForm<DragonValidationFailures>
+        var result = await DragonUpsertService.UpdateDragon(inputDragon, dragonId, unitOfWork).ConfigureAwait(false);
+        if (result.IsFailure)
+            return result.Error switch
             {
-                IsSuccess = false,
-                IsInternalError = false,
-                ValidationFailures = failures
-            }; 
-        }
-
-        return null;
+                DragonNotFound => TypedResults.NotFound(ValidatedResponse.NotFound),
+                DragonInvalid e => TypedResults.BadRequest(new ValidatedForm<DragonValidationFailures>
+                {
+                    IsSuccess = false,
+                    IsInternalError = false,
+                    ValidationFailures = e.Failures
+                }),
+                _ => throw new InvalidOperationException()
+            };
+        return TypedResults.Ok(ValidatedPayload<Dragon>.FromPayload(result.Value));
     }
 
     public static async Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>, Conflict<ValidatedResponse>>>
