@@ -1,4 +1,3 @@
-using DragonCommonApplication.Repositories;
 using DragonAssignmentApplication.DragonSelect;
 using DragonAssignmentApplication.DragonUpsert;
 using DragonPlacementApi.Poco;
@@ -8,6 +7,7 @@ using DragonAssignmentDomain.Models;
 using DragonAssignmentDomain.Poco;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using DragonAssignmentApplication.DragonDelete;
 
 namespace DragonPlacementApi.Endpoints;
 
@@ -108,16 +108,14 @@ public class DragonEndpoints
             IDragonPlacementUnitOfWork unitOfWork,
             [FromRoute(Name="dragonId")] int dragonId)
     {
-        if (await unitOfWork.DragonHasAnAssignment(dragonId).ConfigureAwait(false))
-        {
-            return TypedResults.Conflict(new ValidatedResponse { ValidationFailures = ["Dragon has an existing assignment"] });
-        }
-        var deleteResult = unitOfWork.DragonRepository.Delete(dragonId);
-        if (deleteResult == DeleteResult.NotFound)
-        {
-            return TypedResults.NotFound(ValidatedResponse.NotFound);
-        }
-        await unitOfWork.SaveAsync().ConfigureAwait(false);
+        var result = await DragonDeletionService.DeleteDragon(dragonId, unitOfWork).ConfigureAwait(false);
+        if (result.IsFailure)
+            return result.Error switch
+            {
+                DragonDeleteNotFound => TypedResults.NotFound(ValidatedResponse.NotFound),
+                DragonDeleteHasAssignment => TypedResults.Conflict(new ValidatedResponse { ValidationFailures = ["Dragon has an existing assignment"] }),
+                _ => throw new InvalidOperationException()
+            };
         return TypedResults.Ok(ValidatedResponse.Success);
     }
 }
