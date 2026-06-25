@@ -69,10 +69,6 @@ public class DragonEndpoints
             IDragonPlacementUnitOfWork unitOfWork,
             [FromBody] DragonCreateEdit inputDragon)
     {
-        var validationFailures = ValidateDragon(inputDragon);
-        if (validationFailures != null)
-            return TypedResults.BadRequest(validationFailures);
-
         var newDragon = new Dragon
         {
             GivenName = inputDragon.GivenName,
@@ -82,6 +78,10 @@ public class DragonEndpoints
             FightingSkills = inputDragon.FightingSkills,
             SkillTags = unitOfWork.GetSkillTagsById(inputDragon.SkillTagIds)
         };
+        var validationFailures = ValidateDragon(newDragon);
+        if (validationFailures != null)
+            return TypedResults.BadRequest(validationFailures);
+
         unitOfWork.DragonRepository.Insert(newDragon);
 
         await unitOfWork.SaveAsync().ConfigureAwait(false);
@@ -98,10 +98,6 @@ public class DragonEndpoints
         if (existing == null)
             return TypedResults.NotFound(ValidatedResponse.NotFound);
 
-        var validationFailures = ValidateDragon(inputDragon);
-        if (validationFailures != null)
-            return TypedResults.BadRequest(validationFailures);
-
         existing.GivenName = inputDragon.GivenName;
         existing.FamilyName = inputDragon.FamilyName;
         existing.WeightInKg = inputDragon.WeightInKg;
@@ -109,11 +105,15 @@ public class DragonEndpoints
         existing.FightingSkills = inputDragon.FightingSkills;
         existing.SkillTags = unitOfWork.GetSkillTagsById(inputDragon.SkillTagIds);
 
+        var validationFailures = ValidateDragon(existing);
+        if (validationFailures != null)
+            return TypedResults.BadRequest(validationFailures);
+
         await unitOfWork.SaveAsync().ConfigureAwait(false);
         return TypedResults.Ok(ValidatedPayload<Dragon>.FromPayload(existing));
     }
 
-    private static ValidatedForm<DragonValidationFailures>? ValidateDragon(DragonCreateEdit dragon)
+    private static ValidatedForm<DragonValidationFailures>? ValidateDragon(Dragon dragon)
     {
         var failures = new DragonValidationFailures();
 
