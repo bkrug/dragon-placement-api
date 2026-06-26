@@ -34,24 +34,18 @@ public class DragonValidation
         }
     }
 
-    private static string ValidateGivenName(string givenName)
-    {
-        if (string.IsNullOrWhiteSpace(givenName))
-            return ValidationMessages.IS_REQUIRED;
-        return string.Empty;
-    }
+    private static string ValidateGivenName(string givenName) =>
+        string.IsNullOrWhiteSpace(givenName)
+        ? ValidationMessages.IS_REQUIRED
+        : string.Empty;
 
-    private static string ValidatePositiveNumber(int? value)
-    {
-        if (value <= 0)
-            return ValidationMessages.MUST_BE_A_POSITIVE_NUMBER;
-        return string.Empty;
-    }
+    private static string ValidatePositiveNumber(int? value) =>
+        value <= 0
+        ? ValidationMessages.MUST_BE_A_POSITIVE_NUMBER
+        : string.Empty;
 
-    private static string ValidateFightingSkills(string? fightingSkills)
-    {
-        if (fightingSkills != null && fightingSkills is not ("b" or "m" or "a"))
-            return "must be 'b', 'm', or 'a'";
-        return string.Empty;
-    }
+    private static string ValidateFightingSkills(string? fightingSkills) =>
+        fightingSkills != null && fightingSkills is not ("b" or "m" or "a")
+        ? "must be 'b', 'm', or 'a'"
+        : string.Empty;
 }

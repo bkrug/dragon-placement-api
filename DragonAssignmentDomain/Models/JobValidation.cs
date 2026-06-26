@@ -34,24 +34,12 @@ public class JobValidation
         }
     }
 
-    private static string ValidateJobTitle(string jobTitle)
-    {
-        if (string.IsNullOrWhiteSpace(jobTitle))
-            return ValidationMessages.IS_REQUIRED;
-        return string.Empty;
-    }
+    private static string ValidateJobTitle(string jobTitle) =>
+        string.IsNullOrWhiteSpace(jobTitle) ? ValidationMessages.IS_REQUIRED : string.Empty;
 
-    private static string ValidateNumberOfPositions(int numberOfPositions)
-    {
-        if (numberOfPositions <= 0)
-            return ValidationMessages.MUST_BE_A_POSITIVE_NUMBER;
-        return string.Empty;
-    }
+    private static string ValidateNumberOfPositions(int numberOfPositions) =>
+        numberOfPositions <= 0 ? ValidationMessages.MUST_BE_A_POSITIVE_NUMBER : string.Empty;
 
-    private static string ValidateDate(DateTime date)
-    {
-        if (date.TimeOfDay != TimeSpan.Zero)
-            return ValidationMessages.MUST_BE_MIDNIGHT_UTC;
-        return string.Empty;
-    }
+    private static string ValidateDate(DateTime date) =>
+        date.TimeOfDay != TimeSpan.Zero ? ValidationMessages.MUST_BE_MIDNIGHT_UTC : string.Empty;
 }
