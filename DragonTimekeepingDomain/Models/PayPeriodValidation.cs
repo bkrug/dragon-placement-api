@@ -1,9 +1,10 @@
 using DragonTimekeepingDomain.Models;
 using CSharpFunctionalExtensions;
+using DragonTimekeepingDomain.Poco;
 
 namespace DragonTimekeepingDomain.Validation;
 
-public static class PayPeriodValidator
+public static class PayPeriodValidation
 {
     public static Result<PayPeriod, PayPeriodValidationFailures> Validate(PayPeriod payPeriod)
     {

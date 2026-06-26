@@ -1,11 +1,6 @@
-namespace DragonTimekeepingDomain.Validation;
+using DragonCommonDomain.Poco;
 
-//TODO: Move this class to some "CommonDomain" project.
-public class GridRowValidationFailures
-{
-    public int Index { get;set; } = -1;
-    public string RowValidationMessage { get; set; } = string.Empty;
-}
+namespace DragonTimekeepingDomain.Poco;
 
 public class HoursWorkedValidationFailures : GridRowValidationFailures
 {

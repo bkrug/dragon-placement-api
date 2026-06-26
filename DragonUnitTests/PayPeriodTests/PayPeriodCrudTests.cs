@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Moq;
 using Shouldly;
 using DragonTimekeepingDomain.Models;
-using DragonTimekeepingDomain.Validation;
 using DragonTimekeepingApplication;
 using DragonTimekeepingApplication.PayPeriodUpsert;
+using DragonTimekeepingDomain.Poco;
 
 namespace DragonUnitTests.PayPeriodTests;
 

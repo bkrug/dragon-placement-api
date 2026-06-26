@@ -6,7 +6,7 @@ using DragonTimekeepingApplication.PayPeriodUpsert;
 using DragonTimekeepingApplication.PotentialPayPeriodQuery;
 using DragonTimekeepingApplication.SinglePayPeriodQuery;
 using DragonTimekeepingDomain.Models;
-using DragonTimekeepingDomain.Validation;
+using DragonTimekeepingDomain.Poco;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
