@@ -8,6 +8,11 @@ using DragonPlacementApi.Poco;
 
 namespace DragonUnitTests;
 
+//TODO: Add some field to the "Assignment" table to indicate that the worker has already done billable work.
+// When this has happened, it is no longer valid to delete the assignment.
+// Assert that assignments can only be deleted before billing has occurred, not after.
+// This check will remain impossible until some billing module is added to the system.
+
 public class AssignmentTests
 {
     [Fact]
