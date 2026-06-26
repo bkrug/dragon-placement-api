@@ -14,8 +14,8 @@ public static class PayPeriodValidation
         Dictionary<string, string> failures = 
             new List<(string, string)>()
             {
-                ( "StartDate", ValidateStartDate(parsedStart) ),
-                ( "EndDate", ValidateEndDate(parsedEnd, parsedStart) )
+                ( nameof(PayPeriod.StartDate), ValidateStartDate(parsedStart) ),
+                ( nameof(PayPeriod.EndDate), ValidateEndDate(parsedEnd, parsedStart) )
             }
             .Where(tuple => tuple.Item2 != string.Empty)
             .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
@@ -28,8 +28,8 @@ public static class PayPeriodValidation
         else {
             var validationFailures = new PayPeriodValidationFailures
             {
-                StartDate = failures.GetValueOrDefault("StartDate", string.Empty),
-                EndDate = failures.GetValueOrDefault("EndDate", string.Empty),
+                StartDate = failures.GetValueOrDefault(nameof(PayPeriod.StartDate), string.Empty),
+                EndDate = failures.GetValueOrDefault(nameof(PayPeriod.EndDate), string.Empty),
                 HoursWorked = hoursWorkedFailures
             };
             return Result.Failure<PayPeriod, PayPeriodValidationFailures>(validationFailures);

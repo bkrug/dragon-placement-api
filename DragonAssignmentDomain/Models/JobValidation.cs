@@ -11,10 +11,10 @@ public class JobValidation
         Dictionary<string, string> failures =
             new List<(string, string)>()
             {
-                ( "JobTitle", ValidateJobTitle(job.JobTitle) ),
-                ( "NumberOfPositions", ValidateNumberOfPositions(job.NumberOfPositions) ),
-                ( "StartDate", ValidateDate(job.StartDate) ),
-                ( "EndDate", ValidateDate(job.EndDate) )
+                ( nameof(Job.JobTitle), ValidateJobTitle(job.JobTitle) ),
+                ( nameof(Job.NumberOfPositions), ValidateNumberOfPositions(job.NumberOfPositions) ),
+                ( nameof(Job.StartDate), ValidateDate(job.StartDate) ),
+                ( nameof(Job.EndDate), ValidateDate(job.EndDate) )
             }
             .Where(tuple => tuple.Item2 != string.Empty)
             .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
@@ -25,10 +25,10 @@ public class JobValidation
         else {
             var validationFailures = new JobValidationFailures
             {
-                JobTitle = failures.GetValueOrDefault("JobTitle", null!),
-                NumberOfPositions = failures.GetValueOrDefault("NumberOfPositions", null!),
-                StartDate = failures.GetValueOrDefault("StartDate", null!),
-                EndDate = failures.GetValueOrDefault("EndDate", null!)
+                JobTitle = failures.GetValueOrDefault(nameof(Job.JobTitle), null!),
+                NumberOfPositions = failures.GetValueOrDefault(nameof(Job.NumberOfPositions), null!),
+                StartDate = failures.GetValueOrDefault(nameof(Job.StartDate), null!),
+                EndDate = failures.GetValueOrDefault(nameof(Job.EndDate), null!)
             };
             return Result.Failure<Job, JobValidationFailures>(validationFailures);
         }

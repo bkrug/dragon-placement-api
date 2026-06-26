@@ -11,10 +11,10 @@ public class DragonValidation
         Dictionary<string, string> failures =
             new List<(string, string)>()
             {
-                ( "GivenName", ValidateGivenName(dragon.GivenName) ),
-                ( "WeightInKg", ValidatePositiveNumber(dragon.WeightInKg) ),
-                ( "LengthInMeters", ValidatePositiveNumber(dragon.LengthInMeters) ),
-                ( "FightingSkills", ValidateFightingSkills(dragon.FightingSkills) )
+                ( nameof(Dragon.GivenName), ValidateGivenName(dragon.GivenName) ),
+                ( nameof(Dragon.WeightInKg), ValidatePositiveNumber(dragon.WeightInKg) ),
+                ( nameof(Dragon.LengthInMeters), ValidatePositiveNumber(dragon.LengthInMeters) ),
+                ( nameof(Dragon.FightingSkills), ValidateFightingSkills(dragon.FightingSkills) )
             }
             .Where(tuple => tuple.Item2 != string.Empty)
             .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
@@ -25,10 +25,10 @@ public class DragonValidation
         else {
             var validationFailures = new DragonValidationFailures
             {
-                GivenName = failures.GetValueOrDefault("GivenName", null!),
-                WeightInKg = failures.GetValueOrDefault("WeightInKg", null!),
-                LengthInMeters = failures.GetValueOrDefault("LengthInMeters", null!),
-                FightingSkills = failures.GetValueOrDefault("FightingSkills", null!)
+                GivenName = failures.GetValueOrDefault(nameof(Dragon.GivenName), null!),
+                WeightInKg = failures.GetValueOrDefault(nameof(Dragon.WeightInKg), null!),
+                LengthInMeters = failures.GetValueOrDefault(nameof(Dragon.LengthInMeters), null!),
+                FightingSkills = failures.GetValueOrDefault(nameof(Dragon.FightingSkills), null!)
             };
             return Result.Failure<Dragon, DragonValidationFailures>(validationFailures);
         }
