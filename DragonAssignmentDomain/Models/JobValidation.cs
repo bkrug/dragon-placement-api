@@ -8,21 +8,50 @@ public class JobValidation
 {
     public static Result<Job, JobValidationFailures> Validate(Job job)
     {
-        var failures = new JobValidationFailures();
+        Dictionary<string, string> failures =
+            new List<(string, string)>()
+            {
+                ( "JobTitle", ValidateJobTitle(job.JobTitle) ),
+                ( "NumberOfPositions", ValidateNumberOfPositions(job.NumberOfPositions) ),
+                ( "StartDate", ValidateDate(job.StartDate) ),
+                ( "EndDate", ValidateDate(job.EndDate) )
+            }
+            .Where(tuple => tuple.Item2 != string.Empty)
+            .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
 
-        if (string.IsNullOrWhiteSpace(job.JobTitle))
-            failures.JobTitle = ValidationMessages.IS_REQUIRED;
-        if (job.NumberOfPositions <= 0)
-            failures.NumberOfPositions = ValidationMessages.MUST_BE_A_POSITIVE_NUMBER;
-        if (job.StartDate.TimeOfDay != TimeSpan.Zero)
-            failures.StartDate = ValidationMessages.MUST_BE_MIDNIGHT_UTC;
-        if (job.EndDate.TimeOfDay != TimeSpan.Zero)
-            failures.EndDate = ValidationMessages.MUST_BE_MIDNIGHT_UTC;
+        if (failures.Count == 0) {
+            return Result.Success<Job, JobValidationFailures>(job);
+        }
+        else {
+            var validationFailures = new JobValidationFailures
+            {
+                JobTitle = failures.GetValueOrDefault("JobTitle", null!),
+                NumberOfPositions = failures.GetValueOrDefault("NumberOfPositions", null!),
+                StartDate = failures.GetValueOrDefault("StartDate", null!),
+                EndDate = failures.GetValueOrDefault("EndDate", null!)
+            };
+            return Result.Failure<Job, JobValidationFailures>(validationFailures);
+        }
+    }
 
-        if (failures.JobTitle != null || failures.NumberOfPositions != null
-            || failures.StartDate != null || failures.EndDate != null)
-            return Result.Failure<Job, JobValidationFailures>(failures);
+    private static string ValidateJobTitle(string jobTitle)
+    {
+        if (string.IsNullOrWhiteSpace(jobTitle))
+            return ValidationMessages.IS_REQUIRED;
+        return string.Empty;
+    }
 
-        return Result.Success<Job, JobValidationFailures>(job);
+    private static string ValidateNumberOfPositions(int numberOfPositions)
+    {
+        if (numberOfPositions <= 0)
+            return ValidationMessages.MUST_BE_A_POSITIVE_NUMBER;
+        return string.Empty;
+    }
+
+    private static string ValidateDate(DateTime date)
+    {
+        if (date.TimeOfDay != TimeSpan.Zero)
+            return ValidationMessages.MUST_BE_MIDNIGHT_UTC;
+        return string.Empty;
     }
 }

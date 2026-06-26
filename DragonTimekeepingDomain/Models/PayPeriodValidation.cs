@@ -11,15 +11,14 @@ public static class PayPeriodValidation
         var parsedStart = payPeriod.StartDate;
         var parsedEnd = payPeriod.EndDate;
 
-        var failures = new Dictionary<string, string>();
-
-        var startDateMessage = ValidateStartDate(parsedStart);
-        if (startDateMessage != null)
-            failures["StartDate"] = startDateMessage;
-
-        var endDateMessage = ValidateEndDate(parsedEnd, parsedStart);
-        if (endDateMessage != null)
-            failures["EndDate"] = endDateMessage;
+        Dictionary<string, string> failures = 
+            new List<(string, string)>()
+            {
+                ( "StartDate", ValidateStartDate(parsedStart) ),
+                ( "EndDate", ValidateEndDate(parsedEnd, parsedStart) )
+            }
+            .Where(tuple => tuple.Item2 != string.Empty)
+            .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
 
         var hoursWorkedFailures = ValidateHoursWorked(payPeriod);
 
@@ -37,16 +36,16 @@ public static class PayPeriodValidation
         }
     }
 
-    private static string? ValidateStartDate(DateTime parsedStart)
+    private static string ValidateStartDate(DateTime parsedStart)
     {
         if (parsedStart.DayOfWeek != DayOfWeek.Monday)
             return "must be a Monday";
         if (parsedStart.TimeOfDay.TotalSeconds != 0)
             return "must exclude time-of-day or be midnight UTC";
-        return null;
+        return string.Empty;
     }
 
-    private static string? ValidateEndDate(DateTime parsedEnd, DateTime parsedStart)
+    private static string ValidateEndDate(DateTime parsedEnd, DateTime parsedStart)
     {
         if (parsedEnd.DayOfWeek != DayOfWeek.Sunday)
             return "must be a Sunday";
@@ -54,7 +53,7 @@ public static class PayPeriodValidation
             return "must exclude time-of-day or be midnight UTC";
         if (parsedEnd <= parsedStart)
             return "must be greater than StartDate";
-        return null;
+        return string.Empty;
     }
 
     private static IList<HoursWorkedValidationFailures> ValidateHoursWorked(PayPeriod payPeriod)
