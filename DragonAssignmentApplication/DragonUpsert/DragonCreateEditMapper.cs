@@ -1,12 +1,12 @@
 using CSharpFunctionalExtensions;
 using DragonAssignmentDomain.Models;
-using DragonAssignmentDomain.Poco;
+using DragonCommonDomain.Poco;
 
 namespace DragonAssignmentApplication.DragonUpsert;
 
 public static class DragonCreateEditMapper
 {
-    public static Result<Dragon, DragonValidationFailures> ToDragon(DragonCreateEdit input, IList<SkillTag> skillTags)
+    public static Result<Dragon, ValidationFailures> ToDragon(DragonCreateEdit input, IList<SkillTag> skillTags)
     {
         var dragon = new Dragon
         {
@@ -17,10 +17,10 @@ public static class DragonCreateEditMapper
             FightingSkills = input.FightingSkills,
             SkillTags = skillTags
         };
-        return Result.Success<Dragon, DragonValidationFailures>(dragon);
+        return Result.Success<Dragon, ValidationFailures>(dragon);
     }
 
-    public static Result<Dragon, DragonValidationFailures> ApplyTo(DragonCreateEdit input, Dragon existing, IList<SkillTag> skillTags)
+    public static Result<Dragon, ValidationFailures> ApplyTo(DragonCreateEdit input, Dragon existing, IList<SkillTag> skillTags)
     {
         existing.GivenName = input.GivenName;
         existing.FamilyName = input.FamilyName;
@@ -28,6 +28,6 @@ public static class DragonCreateEditMapper
         existing.LengthInMeters = input.LengthInMeters;
         existing.FightingSkills = input.FightingSkills;
         existing.SkillTags = skillTags;
-        return Result.Success<Dragon, DragonValidationFailures>(existing);
+        return Result.Success<Dragon, ValidationFailures>(existing);
     }
 }

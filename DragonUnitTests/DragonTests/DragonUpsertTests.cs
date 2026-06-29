@@ -1,6 +1,6 @@
 using DragonCommonApplication.Repositories;
 using DragonAssignmentApplication.DragonUpsert;
-using DragonAssignmentDomain.Poco;
+using DragonCommonDomain.Poco;
 using DragonPlacementApi.Endpoints;
 using DragonPlacementApi.Poco;
 using DragonAssignmentDomain.Enum;
@@ -79,13 +79,10 @@ public class DragonUpsertTests
         var response = await DragonEndpoints.CreateDragonAsync(unitOfWorkMock.Object, inputDragon);
 
         //Assert
-        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<DragonValidationFailures>>>();
-        var badResult = (BadRequest<ValidatedForm<DragonValidationFailures>>)response.Result;
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<ValidationFailures>>>();
+        var badResult = (BadRequest<ValidatedForm<ValidationFailures>>)response.Result;
         var failures = badResult.Value!.ValidationFailures;
-        var actualMessage = typeof(DragonValidationFailures)
-            .GetProperty(expectedFailureField)!
-            .GetValue(failures) as string;
-        actualMessage.ShouldBe(expectedFailureMessage);
+        failures.FieldFailures[expectedFailureField].ShouldBe(expectedFailureMessage);
     }
 
     [Fact]
@@ -105,15 +102,15 @@ public class DragonUpsertTests
         var response = await DragonEndpoints.CreateDragonAsync(unitOfWorkMock.Object, inputDragon);
 
         //Assert
-        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<DragonValidationFailures>>>();
-        var badResult = (BadRequest<ValidatedForm<DragonValidationFailures>>)response.Result;
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<ValidationFailures>>>();
+        var badResult = (BadRequest<ValidatedForm<ValidationFailures>>)response.Result;
         var failures = badResult.Value!.ValidationFailures;
-        failures.ShouldBeEquivalentTo(new DragonValidationFailures
+        failures.FieldFailures.ShouldBeEquivalentTo(new Dictionary<string, string>
         {
-            GivenName = "is required",
-            WeightInKg = "must be a positive number",
-            LengthInMeters = "must be a positive number",
-            FightingSkills = "must be 'b', 'm', or 'a'"
+            { "GivenName", "is required" },
+            { "WeightInKg", "must be a positive number" },
+            { "LengthInMeters", "must be a positive number" },
+            { "FightingSkills", "must be 'b', 'm', or 'a'" }
         });
     }
 
@@ -220,13 +217,10 @@ public class DragonUpsertTests
         var response = await DragonEndpoints.UpdateDragonAsync(unitOfWorkMock.Object, DRAGON_ID, inputDragon);
 
         //Assert
-        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<DragonValidationFailures>>>();
-        var badResult = (BadRequest<ValidatedForm<DragonValidationFailures>>)response.Result;
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<ValidationFailures>>>();
+        var badResult = (BadRequest<ValidatedForm<ValidationFailures>>)response.Result;
         var failures = badResult.Value!.ValidationFailures;
-        var actualMessage = typeof(DragonValidationFailures)
-            .GetProperty(expectedFailureField)!
-            .GetValue(failures) as string;
-        actualMessage.ShouldBe(expectedFailureMessage);
+        failures.FieldFailures[expectedFailureField].ShouldBe(expectedFailureMessage);
     }
 
     [Fact]
@@ -254,15 +248,15 @@ public class DragonUpsertTests
         var response = await DragonEndpoints.UpdateDragonAsync(unitOfWorkMock.Object, DRAGON_ID, inputDragon);
 
         //Assert
-        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<DragonValidationFailures>>>();
-        var badResult = (BadRequest<ValidatedForm<DragonValidationFailures>>)response.Result;
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<ValidationFailures>>>();
+        var badResult = (BadRequest<ValidatedForm<ValidationFailures>>)response.Result;
         var failures = badResult.Value!.ValidationFailures;
-        failures.ShouldBeEquivalentTo(new DragonValidationFailures
+        failures.FieldFailures.ShouldBeEquivalentTo(new Dictionary<string, string>
         {
-            GivenName = "is required",
-            WeightInKg = "must be a positive number",
-            LengthInMeters = "must be a positive number",
-            FightingSkills = "must be 'b', 'm', or 'a'"
+            { "GivenName", "is required" },
+            { "WeightInKg", "must be a positive number" },
+            { "LengthInMeters", "must be a positive number" },
+            { "FightingSkills", "must be 'b', 'm', or 'a'" }
         });
     }
 }

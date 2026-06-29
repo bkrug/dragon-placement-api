@@ -1,16 +1,16 @@
 using CSharpFunctionalExtensions;
 using DragonAssignmentDomain.Models;
-using DragonAssignmentDomain.Poco;
+using DragonCommonDomain.Poco;
 
 namespace DragonAssignmentApplication.DragonUpsert;
 
 public abstract record DragonUpdateFailure;
 public record DragonNotFound : DragonUpdateFailure;
-public record DragonInvalid(DragonValidationFailures Failures) : DragonUpdateFailure;
+public record DragonInvalid(ValidationFailures Failures) : DragonUpdateFailure;
 
 public static class DragonUpsertService
 {
-    public static async Task<Result<Dragon, DragonValidationFailures>> CreateDragon(DragonCreateEdit input, IDragonPlacementUnitOfWork unitOfWork)
+    public static async Task<Result<Dragon, ValidationFailures>> CreateDragon(DragonCreateEdit input, IDragonPlacementUnitOfWork unitOfWork)
     {
         var skillTags = unitOfWork.GetSkillTagsById(input.SkillTagIds);
         var result = DragonCreateEditMapper.ToDragon(input, skillTags)

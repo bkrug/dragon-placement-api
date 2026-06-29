@@ -4,7 +4,7 @@ using DragonPlacementApi.Poco;
 using DragonAssignmentApplication;
 using DragonAssignmentDomain.Enum;
 using DragonAssignmentDomain.Models;
-using DragonAssignmentDomain.Poco;
+using DragonCommonDomain.Poco;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using DragonAssignmentApplication.DragonDelete;
@@ -65,14 +65,14 @@ public class DragonEndpoints
             : TypedResults.Ok(ValidatedPayload<Dragon>.FromPayload(dragon));
     }
 
-    public static async Task<Results<Ok<ValidatedPayload<Dragon>>, BadRequest<ValidatedForm<DragonValidationFailures>>>>
+    public static async Task<Results<Ok<ValidatedPayload<Dragon>>, BadRequest<ValidatedForm<ValidationFailures>>>>
         CreateDragonAsync(
             IDragonPlacementUnitOfWork unitOfWork,
             [FromBody] DragonCreateEdit inputDragon)
     {
         var result = await DragonUpsertService.CreateDragon(inputDragon, unitOfWork).ConfigureAwait(false);
         if (result.IsFailure)
-            return TypedResults.BadRequest(new ValidatedForm<DragonValidationFailures>
+            return TypedResults.BadRequest(new ValidatedForm<ValidationFailures>
             {
                 IsSuccess = false,
                 IsInternalError = false,
@@ -81,7 +81,7 @@ public class DragonEndpoints
         return TypedResults.Ok(ValidatedPayload<Dragon>.FromPayload(result.Value));
     }
 
-    public static async Task<Results<Ok<ValidatedPayload<Dragon>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<DragonValidationFailures>>>>
+    public static async Task<Results<Ok<ValidatedPayload<Dragon>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<ValidationFailures>>>>
         UpdateDragonAsync(
             IDragonPlacementUnitOfWork unitOfWork,
             [FromRoute(Name="dragonId")] int dragonId,
@@ -92,7 +92,7 @@ public class DragonEndpoints
             return result.Error switch
             {
                 DragonNotFound => TypedResults.NotFound(ValidatedResponse.NotFound),
-                DragonInvalid e => TypedResults.BadRequest(new ValidatedForm<DragonValidationFailures>
+                DragonInvalid e => TypedResults.BadRequest(new ValidatedForm<ValidationFailures>
                 {
                     IsSuccess = false,
                     IsInternalError = false,

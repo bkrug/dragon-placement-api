@@ -1,12 +1,12 @@
 using CSharpFunctionalExtensions;
-using DragonAssignmentDomain.Poco;
 using DragonCommonDomain;
+using DragonCommonDomain.Poco;
 
 namespace DragonAssignmentDomain.Models;
 
 public class DragonValidation
 {
-    public static Result<Dragon, DragonValidationFailures> Validate(Dragon dragon)
+    public static Result<Dragon, ValidationFailures> Validate(Dragon dragon)
     {
         Dictionary<string, string> failures =
             new List<(string, string)>()
@@ -20,17 +20,10 @@ public class DragonValidation
             .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
 
         if (failures.Count == 0) {
-            return Result.Success<Dragon, DragonValidationFailures>(dragon);
+            return Result.Success<Dragon, ValidationFailures>(dragon);
         }
         else {
-            var validationFailures = new DragonValidationFailures
-            {
-                GivenName = failures.GetValueOrDefault(nameof(Dragon.GivenName), null!),
-                WeightInKg = failures.GetValueOrDefault(nameof(Dragon.WeightInKg), null!),
-                LengthInMeters = failures.GetValueOrDefault(nameof(Dragon.LengthInMeters), null!),
-                FightingSkills = failures.GetValueOrDefault(nameof(Dragon.FightingSkills), null!)
-            };
-            return Result.Failure<Dragon, DragonValidationFailures>(validationFailures);
+            return Result.Failure<Dragon, ValidationFailures>(new ValidationFailures { FieldFailures = failures });
         }
     }
 
