@@ -1,7 +1,6 @@
 using CSharpFunctionalExtensions;
 using DragonCommonDomain.Poco;
 using DragonTimekeepingDomain.Models;
-using DragonTimekeepingDomain.Validation;
 
 namespace DragonTimekeepingApplication.PayPeriodUpsert;
 
@@ -9,14 +8,14 @@ public abstract record PayPeriodUpdateFailure;
 public record PayPeriodNotFound : PayPeriodUpdateFailure;
 public record PayPeriodInvalid(ValidationFailures Failures) : PayPeriodUpdateFailure;
 
-public static class PayPeriodWriter
+public static class PayPeriodUpsertService
 {
     public static async Task<Result<PayPeriod, ValidationFailures>> CreatePayPeriodAsync(
         ITimekeepingUnitOfWork unitOfWork,
         PayPeriodCreateEdit input)
     {
         return await PayPeriodMapper.ToPayPeriodModel(input)
-            .Bind(PayPeriodValidation.Validate)
+            .Bind(pp => pp.Validate())
             .Tap(async payPeriod =>
             {
                 unitOfWork.PayPeriodRepository.Insert(payPeriod);
@@ -34,7 +33,7 @@ public static class PayPeriodWriter
             return Result.Failure<PayPeriod, PayPeriodUpdateFailure>(new PayPeriodNotFound());
 
         return await PayPeriodMapper.ToPayPeriodModel(input)
-            .Bind(PayPeriodValidation.Validate)
+            .Bind(pp => pp.Validate())
             .MapError(e => (PayPeriodUpdateFailure)new PayPeriodInvalid(e))
             .Map(parsedInput => { existing.ApplyEdit(parsedInput); return existing; })
             .Tap(async _ => await unitOfWork.SaveAsync().ConfigureAwait(false));

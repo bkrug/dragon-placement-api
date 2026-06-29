@@ -1,5 +1,6 @@
-using System;
-using System.Collections.Generic;
+using CSharpFunctionalExtensions;
+using DragonCommonDomain;
+using DragonCommonDomain.Poco;
 
 namespace DragonAssignmentDomain.Models;
 
@@ -20,4 +21,37 @@ public partial class Dragon
     public virtual ICollection<Assignment> Assignments { get; set; } = [];
 
     public virtual ICollection<SkillTag> SkillTags { get; set; } = [];
+
+    public Result<Dragon, ValidationFailures> Validate()
+    {
+        Dictionary<string, string> failures =
+            new List<(string, string)>()
+            {
+                ( nameof(GivenName), ValidateGivenName() ),
+                ( nameof(WeightInKg), ValidatePositiveNumber(WeightInKg) ),
+                ( nameof(LengthInMeters), ValidatePositiveNumber(LengthInMeters) ),
+                ( nameof(FightingSkills), ValidateFightingSkills() )
+            }
+            .Where(tuple => tuple.Item2 != string.Empty)
+            .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
+
+        return failures.Count == 0
+            ? Result.Success<Dragon, ValidationFailures>(this)
+            : Result.Failure<Dragon, ValidationFailures>(new ValidationFailures { FieldFailures = failures });
+    }
+
+    private string ValidateGivenName() =>
+        string.IsNullOrWhiteSpace(GivenName)
+        ? ValidationMessages.IS_REQUIRED
+        : string.Empty;
+
+    private static string ValidatePositiveNumber(int? value) =>
+        value <= 0
+        ? ValidationMessages.MUST_BE_A_POSITIVE_NUMBER
+        : string.Empty;
+
+    private string ValidateFightingSkills() =>
+        FightingSkills != null && FightingSkills is not ("b" or "m" or "a")
+        ? "must be 'b', 'm', or 'a'"
+        : string.Empty;
 }

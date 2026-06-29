@@ -68,7 +68,7 @@ public class PayPeriodEndpoints
             ITimekeepingUnitOfWork unitOfWork,
             [FromBody] PayPeriodCreateEdit input)
     {
-        var creationResult = await PayPeriodWriter.CreatePayPeriodAsync(unitOfWork, input);
+        var creationResult = await PayPeriodUpsertService.CreatePayPeriodAsync(unitOfWork, input);
         if (creationResult.IsSuccess)
             return TypedResults.Ok(ValidatedPayload<PayPeriod>.FromPayload(creationResult.Value));
         else
@@ -86,7 +86,7 @@ public class PayPeriodEndpoints
             [FromRoute(Name = "payPeriodId")] int payPeriodId,
             [FromBody] PayPeriodCreateEdit input)
     {
-        var result = await PayPeriodWriter.UpdatePayPeriodAsync(unitOfWork, payPeriodId, input);
+        var result = await PayPeriodUpsertService.UpdatePayPeriodAsync(unitOfWork, payPeriodId, input);
         if (result.IsSuccess)
             return TypedResults.Ok(ValidatedPayload<PayPeriod>.FromPayload(result.Value));
         else

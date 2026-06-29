@@ -14,7 +14,7 @@ public static class JobUpsertService
     {
         var skillTags = unitOfWork.GetSkillTagsById(input.SkillTagIds);
         var result = JobCreateEditMapper.ToJob(input, skillTags)
-            .Bind(JobValidation.Validate);
+            .Bind(j => j.Validate());
 
         if (result.IsSuccess)
         {
@@ -33,7 +33,7 @@ public static class JobUpsertService
 
         var skillTags = unitOfWork.GetSkillTagsById(input.SkillTagIds);
         return await JobCreateEditMapper.ApplyTo(input, existing, skillTags)
-            .Bind(JobValidation.Validate)
+            .Bind(j => j.Validate())
             .MapError(e => (JobUpdateFailure)new JobInvalid(e))
             .Tap(async _ => await unitOfWork.SaveAsync().ConfigureAwait(false));
     }

@@ -14,7 +14,7 @@ public static class DragonUpsertService
     {
         var skillTags = unitOfWork.GetSkillTagsById(input.SkillTagIds);
         var result = DragonCreateEditMapper.ToDragon(input, skillTags)
-            .Bind(DragonValidation.Validate);
+            .Bind(d => d.Validate());
 
         if (result.IsSuccess)
         {
@@ -33,7 +33,7 @@ public static class DragonUpsertService
 
         var skillTags = unitOfWork.GetSkillTagsById(input.SkillTagIds);
         return await DragonCreateEditMapper.ApplyTo(input, existing, skillTags)
-            .Bind(DragonValidation.Validate)
+            .Bind(d => d.Validate())
             .MapError(e => (DragonUpdateFailure)new DragonInvalid(e))
             .Tap(async _ => await unitOfWork.SaveAsync().ConfigureAwait(false));
     }
