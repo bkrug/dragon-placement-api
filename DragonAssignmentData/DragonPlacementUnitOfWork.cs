@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 using DragonAssignmentApplication;
+using DragonCommonApplication;
 
 namespace DragonAssignmentData;
 
@@ -92,8 +93,8 @@ public class DragonPlacementUnitOfWork(DragonPlacementContext context, ILogger<D
                 EmployerName = j.EmployerName,
                 NumberOfPositions = j.NumberOfPositions,
                 FilledPositions = j.Assignments.Count(),
-                StartDateUnix = new DateTimeOffset(j.StartDate, TimeSpan.Zero).ToUnixTimeSeconds(),
-                EndDateUnix = new DateTimeOffset(j.EndDate, TimeSpan.Zero).ToUnixTimeSeconds()
+                StartDate = j.StartDate.ToIsoDateString(),
+                EndDate = j.EndDate.ToIsoDateString()
             });
     }
 
