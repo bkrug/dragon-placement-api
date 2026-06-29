@@ -1,16 +1,16 @@
 using CSharpFunctionalExtensions;
 using DragonAssignmentDomain.Models;
-using DragonAssignmentDomain.Poco;
+using DragonCommonDomain.Poco;
 
 namespace DragonAssignmentApplication.JobUpsert;
 
 public abstract record JobUpdateFailure;
 public record JobNotFound : JobUpdateFailure;
-public record JobInvalid(JobValidationFailures Failures) : JobUpdateFailure;
+public record JobInvalid(ValidationFailures Failures) : JobUpdateFailure;
 
 public static class JobUpsertService
 {
-    public static async Task<Result<Job, JobValidationFailures>> CreateJob(JobCreateEdit input, IDragonPlacementUnitOfWork unitOfWork)
+    public static async Task<Result<Job, ValidationFailures>> CreateJob(JobCreateEdit input, IDragonPlacementUnitOfWork unitOfWork)
     {
         var skillTags = unitOfWork.GetSkillTagsById(input.SkillTagIds);
         var result = JobCreateEditMapper.ToJob(input, skillTags)

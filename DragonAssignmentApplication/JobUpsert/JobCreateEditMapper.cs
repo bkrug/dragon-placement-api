@@ -1,16 +1,17 @@
 using CSharpFunctionalExtensions;
 using DragonAssignmentDomain.Models;
-using DragonAssignmentDomain.Poco;
 using DragonCommonApplication;
+using DragonCommonDomain.Poco;
 
 namespace DragonAssignmentApplication.JobUpsert;
 
 public static class JobCreateEditMapper
 {
-    public static Result<Job, JobValidationFailures> ToJob(JobCreateEdit input, IList<SkillTag> skillTags)
+    public static Result<Job, ValidationFailures> ToJob(JobCreateEdit input, IList<SkillTag> skillTags)
     {
-        if (TryParseDates(input, out var startDate, out var endDate) is { } failures)
-            return Result.Failure<Job, JobValidationFailures>(failures);
+        var parsingFailures = TryParseDates(input, out var startDate, out var endDate);
+        if (parsingFailures.FieldFailures.Count > 0)
+            return Result.Failure<Job, ValidationFailures>(parsingFailures);
 
         var job = new Job
         {
@@ -21,13 +22,13 @@ public static class JobCreateEditMapper
             EndDate = endDate,
             SkillTags = skillTags
         };
-        return Result.Success<Job, JobValidationFailures>(job);
+        return Result.Success<Job, ValidationFailures>(job);
     }
 
-    public static Result<Job, JobValidationFailures> ApplyTo(JobCreateEdit input, Job existing, IList<SkillTag> skillTags)
+    public static Result<Job, ValidationFailures> ApplyTo(JobCreateEdit input, Job existing, IList<SkillTag> skillTags)
     {
         if (TryParseDates(input, out var startDate, out var endDate) is { } failures)
-            return Result.Failure<Job, JobValidationFailures>(failures);
+            return Result.Failure<Job, ValidationFailures>(failures);
 
         existing.JobTitle = input.JobTitle;
         existing.EmployerName = input.EmployerName;
@@ -35,22 +36,19 @@ public static class JobCreateEditMapper
         existing.StartDate = startDate;
         existing.EndDate = endDate;
         existing.SkillTags = skillTags;
-        return Result.Success<Job, JobValidationFailures>(existing);
+        return Result.Success<Job, ValidationFailures>(existing);
     }
 
-    private static JobValidationFailures? TryParseDates(
+    private static ValidationFailures TryParseDates(
         JobCreateEdit input, out DateTime startDate, out DateTime endDate)
     {
-        var failures = new JobValidationFailures();
+        var fieldFailures = new Dictionary<string, string>();
 
         if (!DateTime.TryParse(input.StartDate, out startDate))
-            failures.StartDate = MappingMessages.MUST_BE_AN_ISO_DATE;
+            fieldFailures[nameof(Job.StartDate)] = MappingMessages.MUST_BE_AN_ISO_DATE;
         if (!DateTime.TryParse(input.EndDate, out endDate))
-            failures.EndDate = MappingMessages.MUST_BE_AN_ISO_DATE;
+            fieldFailures[nameof(Job.EndDate)] = MappingMessages.MUST_BE_AN_ISO_DATE;
 
-        if (failures.StartDate != null || failures.EndDate != null)
-            return failures;
-
-        return null;
+        return new ValidationFailures { FieldFailures = fieldFailures };
     }
 }

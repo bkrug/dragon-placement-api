@@ -1,6 +1,6 @@
 using DragonCommonApplication.Repositories;
 using DragonAssignmentApplication.JobUpsert;
-using DragonAssignmentDomain.Poco;
+using DragonCommonDomain.Poco;
 using DragonPlacementApi.Endpoints;
 using DragonPlacementApi.Poco;
 using DragonAssignmentDomain.Models;
@@ -83,13 +83,10 @@ public class JobTests
         var response = await JobEndpoints.CreateJobAsync(unitOfWorkMock.Object, inputJob);
 
         //Assert
-        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<JobValidationFailures>>>();
-        var badResult = (BadRequest<ValidatedForm<JobValidationFailures>>)response.Result;
-        var failures = badResult.Value!.ValidationFailures;
-        var actualMessage = typeof(JobValidationFailures)
-            .GetProperty(expectedFailureField)!
-            .GetValue(failures) as string;
-        actualMessage.ShouldBe(expectedFailureMessage);
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<ValidationFailures>>>();
+        var badResult = (BadRequest<ValidatedForm<ValidationFailures>>)response.Result;
+        var failures = badResult.Value!.ValidationFailures.FieldFailures;
+        failures[expectedFailureField].ShouldBe(expectedFailureMessage);
     }
 
     [Fact]
@@ -109,15 +106,15 @@ public class JobTests
         var response = await JobEndpoints.CreateJobAsync(unitOfWorkMock.Object, inputJob);
 
         //Assert
-        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<JobValidationFailures>>>();
-        var badResult = (BadRequest<ValidatedForm<JobValidationFailures>>)response.Result;
-        var failures = badResult.Value!.ValidationFailures;
-        failures.ShouldBeEquivalentTo(new JobValidationFailures
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<ValidationFailures>>>();
+        var badResult = (BadRequest<ValidatedForm<ValidationFailures>>)response.Result;
+        var failures = badResult.Value!.ValidationFailures.FieldFailures;
+        failures.ShouldBeEquivalentTo(new Dictionary<string, string>
         {
-            JobTitle = "is required",
-            NumberOfPositions = "must be a positive number",
-            StartDate = "must be midnight UTC",
-            EndDate = "must be midnight UTC"
+            ["JobTitle"] = "is required",
+            ["NumberOfPositions"] = "must be a positive number",
+            ["StartDate"] = "must be midnight UTC",
+            ["EndDate"] = "must be midnight UTC"
         });
     }
 
@@ -228,13 +225,10 @@ public class JobTests
         var response = await JobEndpoints.UpdateJobAsync(unitOfWorkMock.Object, JOB_ID, inputJob);
 
         //Assert
-        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<JobValidationFailures>>>();
-        var badResult = (BadRequest<ValidatedForm<JobValidationFailures>>)response.Result;
-        var failures = badResult.Value!.ValidationFailures;
-        var actualMessage = typeof(JobValidationFailures)
-            .GetProperty(expectedFailureField)!
-            .GetValue(failures) as string;
-        actualMessage.ShouldBe(expectedFailureMessage);
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<ValidationFailures>>>();
+        var badResult = (BadRequest<ValidatedForm<ValidationFailures>>)response.Result;
+        var failures = badResult.Value!.ValidationFailures.FieldFailures;
+        failures[expectedFailureField].ShouldBe(expectedFailureMessage);
     }
 
     [Fact]
@@ -263,15 +257,15 @@ public class JobTests
         var response = await JobEndpoints.UpdateJobAsync(unitOfWorkMock.Object, JOB_ID, inputJob);
 
         //Assert
-        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<JobValidationFailures>>>();
-        var badResult = (BadRequest<ValidatedForm<JobValidationFailures>>)response.Result;
-        var failures = badResult.Value!.ValidationFailures;
-        failures.ShouldBeEquivalentTo(new JobValidationFailures
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<ValidationFailures>>>();
+        var badResult = (BadRequest<ValidatedForm<ValidationFailures>>)response.Result;
+        var failures = badResult.Value!.ValidationFailures.FieldFailures;
+        failures.ShouldBeEquivalentTo(new Dictionary<string, string>
         {
-            JobTitle = "is required",
-            NumberOfPositions = "must be a positive number",
-            StartDate = "must be midnight UTC",
-            EndDate = "must be midnight UTC"
+            ["JobTitle"] = "is required",
+            ["NumberOfPositions"] = "must be a positive number",
+            ["StartDate"] = "must be midnight UTC",
+            ["EndDate"] = "must be midnight UTC"
         });
     }
 

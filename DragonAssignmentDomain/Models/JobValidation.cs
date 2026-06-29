@@ -1,12 +1,12 @@
 using CSharpFunctionalExtensions;
-using DragonAssignmentDomain.Poco;
 using DragonCommonDomain;
+using DragonCommonDomain.Poco;
 
 namespace DragonAssignmentDomain.Models;
 
 public class JobValidation
 {
-    public static Result<Job, JobValidationFailures> Validate(Job job)
+    public static Result<Job, ValidationFailures> Validate(Job job)
     {
         Dictionary<string, string> failures =
             new List<(string, string)>()
@@ -14,23 +14,19 @@ public class JobValidation
                 ( nameof(Job.JobTitle), ValidateJobTitle(job.JobTitle) ),
                 ( nameof(Job.NumberOfPositions), ValidateNumberOfPositions(job.NumberOfPositions) ),
                 ( nameof(Job.StartDate), ValidateDate(job.StartDate) ),
-                ( nameof(Job.EndDate), ValidateDate(job.EndDate) )
+                ( nameof(Job.EndDate), ValidateEndDate(job.EndDate, job.StartDate) )
             }
             .Where(tuple => tuple.Item2 != string.Empty)
             .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
 
         if (failures.Count == 0) {
-            return Result.Success<Job, JobValidationFailures>(job);
+            return Result.Success<Job, ValidationFailures>(job);
         }
         else {
-            var validationFailures = new JobValidationFailures
+            return Result.Failure<Job, ValidationFailures>(new ValidationFailures
             {
-                JobTitle = failures.GetValueOrDefault(nameof(Job.JobTitle), null!),
-                NumberOfPositions = failures.GetValueOrDefault(nameof(Job.NumberOfPositions), null!),
-                StartDate = failures.GetValueOrDefault(nameof(Job.StartDate), null!),
-                EndDate = failures.GetValueOrDefault(nameof(Job.EndDate), null!)
-            };
-            return Result.Failure<Job, JobValidationFailures>(validationFailures);
+                FieldFailures = failures
+            });
         }
     }
 
@@ -42,4 +38,13 @@ public class JobValidation
 
     private static string ValidateDate(DateTime date) =>
         date.TimeOfDay != TimeSpan.Zero ? ValidationMessages.MUST_BE_MIDNIGHT_UTC : string.Empty;
+
+    private static string ValidateEndDate(DateTime endDate, DateTime startDate)
+    {
+        if (endDate.TimeOfDay != TimeSpan.Zero)
+            return ValidationMessages.MUST_BE_MIDNIGHT_UTC;
+        if (endDate < startDate)
+            return "must be later than start date";
+        return string.Empty;
+    }
 }

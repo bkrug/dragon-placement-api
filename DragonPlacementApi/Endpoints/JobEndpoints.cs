@@ -6,6 +6,7 @@ using DragonAssignmentApplication.JobUpsert;
 using DragonAssignmentDomain.Enum;
 using DragonAssignmentDomain.Models;
 using DragonAssignmentDomain.Poco;
+using DragonCommonDomain.Poco;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -79,14 +80,14 @@ public class JobEndpoints
         return TypedResults.Ok(ValidatedResponse.Success);
     }    
 
-    public static async Task<Results<Ok<ValidatedPayload<Job>>, BadRequest<ValidatedForm<JobValidationFailures>>>>
+    public static async Task<Results<Ok<ValidatedPayload<Job>>, BadRequest<ValidatedForm<ValidationFailures>>>>
         CreateJobAsync(
             IDragonPlacementUnitOfWork unitOfWork,
             [FromBody] JobCreateEdit inputJob)
     {
         var result = await JobUpsertService.CreateJob(inputJob, unitOfWork).ConfigureAwait(false);
         if (result.IsFailure)
-            return TypedResults.BadRequest(new ValidatedForm<JobValidationFailures>
+            return TypedResults.BadRequest(new ValidatedForm<ValidationFailures>
             {
                 IsSuccess = false,
                 IsInternalError = false,
@@ -95,7 +96,7 @@ public class JobEndpoints
         return TypedResults.Ok(ValidatedPayload<Job>.FromPayload(result.Value));
     }
 
-    public static async Task<Results<Ok<ValidatedPayload<Job>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<JobValidationFailures>>>>
+    public static async Task<Results<Ok<ValidatedPayload<Job>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<ValidationFailures>>>>
         UpdateJobAsync(
             IDragonPlacementUnitOfWork unitOfWork,
             [FromRoute(Name="jobId")] int jobId,
@@ -106,7 +107,7 @@ public class JobEndpoints
             return result.Error switch
             {
                 JobNotFound => TypedResults.NotFound(ValidatedResponse.NotFound),
-                JobInvalid e => TypedResults.BadRequest(new ValidatedForm<JobValidationFailures>
+                JobInvalid e => TypedResults.BadRequest(new ValidatedForm<ValidationFailures>
                 {
                     IsSuccess = false,
                     IsInternalError = false,
