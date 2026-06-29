@@ -19,15 +19,12 @@ public class JobValidation
             .Where(tuple => tuple.Item2 != string.Empty)
             .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
 
-        if (failures.Count == 0) {
-            return Result.Success<Job, ValidationFailures>(job);
-        }
-        else {
-            return Result.Failure<Job, ValidationFailures>(new ValidationFailures
+        return failures.Count == 0
+            ? Result.Success<Job, ValidationFailures>(job)
+            : Result.Failure<Job, ValidationFailures>(new ValidationFailures
             {
                 FieldFailures = failures
             });
-        }
     }
 
     private static string ValidateJobTitle(string jobTitle) =>

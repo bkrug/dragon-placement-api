@@ -19,12 +19,9 @@ public class DragonValidation
             .Where(tuple => tuple.Item2 != string.Empty)
             .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
 
-        if (failures.Count == 0) {
-            return Result.Success<Dragon, ValidationFailures>(dragon);
-        }
-        else {
-            return Result.Failure<Dragon, ValidationFailures>(new ValidationFailures { FieldFailures = failures });
-        }
+        return failures.Count == 0
+            ? Result.Success<Dragon, ValidationFailures>(dragon)
+            : Result.Failure<Dragon, ValidationFailures>(new ValidationFailures { FieldFailures = failures });
     }
 
     private static string ValidateGivenName(string givenName) =>
