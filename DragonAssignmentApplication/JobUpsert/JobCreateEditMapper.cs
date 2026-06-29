@@ -27,8 +27,9 @@ public static class JobCreateEditMapper
 
     public static Result<Job, ValidationFailures> ApplyTo(JobCreateEdit input, Job existing, IList<SkillTag> skillTags)
     {
-        if (TryParseDates(input, out var startDate, out var endDate) is { } failures)
-            return Result.Failure<Job, ValidationFailures>(failures);
+        var parsingFailures = TryParseDates(input, out var startDate, out var endDate);
+        if (parsingFailures.FieldFailures.Count > 0)
+            return Result.Failure<Job, ValidationFailures>(parsingFailures);
 
         existing.JobTitle = input.JobTitle;
         existing.EmployerName = input.EmployerName;
