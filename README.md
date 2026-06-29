@@ -24,11 +24,22 @@ Run this command from the DragonPlacementDataLayer folder to update the models
 
 Use the `--force` tag, if you want to replace the old models.
 
+## Domains/Modules
+
+In this application, there are two domain-modules: assigment and timekeeping.
+Assignment is responsible for matching a dragon with a job based on required skills.
+Timekeeping is responsible for keeping track of how much a dragon has worked at a given job.
+
+Someday there can be a billing module, separate from timekeeping or assignment.
+It would know how many hours to bill a client for work done by a particular dragon.
+The billing module wouldn't know the dragon's hours in the same detail as the timekeeping module.
+It also wouldn't care about the skills associated with a dragon or a job.
+
 ## Clean Architecture
 
 The main criticism of Clean Architecture that I am aware of is that people don't always like having so many extra projects within the solution.
 That is a reasonable criticism.
-The soution indeed has three projects for each business domain, and three (very small) common projects.
+The soution indeed has three projects for each domain-module, and three (very small) common projects.
 
 One could potentially reduce the number of projects.
 In this example, projects are a low-tech solution for enforcing one-directional dependencies between layers.
