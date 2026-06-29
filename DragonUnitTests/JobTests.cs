@@ -62,6 +62,7 @@ public class JobTests
     [InlineData("not-a-date",      "EndDate",            "must be an ISO Date")]
     [InlineData("1970-01-02T13:00:00", "StartDate",      "must be midnight UTC")]
     [InlineData("1970-01-02T13:00:00", "EndDate",        "must be midnight UTC")]
+    [InlineData("1970-01-01",          "EndDate",        "must be later than start date")]
     public async Task CreateJob_InvalidInput_ExpectBadRequestWithValidationFailure(
         object? invalidValue,
         string expectedFailureField,
@@ -195,6 +196,7 @@ public class JobTests
     [InlineData("not-a-date",          "EndDate",            "must be an ISO Date")]
     [InlineData("1970-01-02T13:00:00", "StartDate",          "must be midnight UTC")]
     [InlineData("1970-01-02T13:00:00", "EndDate",            "must be midnight UTC")]
+    [InlineData("1970-01-01",          "EndDate",            "must be later than start date")]
     public async Task UpdateJob_InvalidInput_ExpectBadRequestWithValidationFailure(
         object? invalidValue,
         string expectedFailureField,
