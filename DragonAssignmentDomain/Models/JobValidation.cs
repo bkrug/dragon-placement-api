@@ -43,6 +43,8 @@ public class JobValidation
     {
         if (endDate.TimeOfDay != TimeSpan.Zero)
             return ValidationMessages.MUST_BE_MIDNIGHT_UTC;
+        //TODO: Consider moving this to some row-level or form-level validation failure message,
+        // as it can be corrected by chaning either of two fields.
         if (endDate < startDate)
             return "must be later than start date";
         return string.Empty;
