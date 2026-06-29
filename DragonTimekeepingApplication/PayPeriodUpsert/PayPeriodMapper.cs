@@ -1,39 +1,35 @@
 using CSharpFunctionalExtensions;
 using DragonCommonApplication;
+using DragonCommonDomain.Poco;
 using DragonTimekeepingDomain.Models;
-using DragonTimekeepingDomain.Poco;
 
 namespace DragonTimekeepingApplication.PayPeriodUpsert;
 
 public static class PayPeriodMapper
 {
-    public static Result<PayPeriod, PayPeriodValidationFailures> ToPayPeriodModel(PayPeriodCreateEdit input)
+    public static Result<PayPeriod, ValidationFailures> ToPayPeriodModel(PayPeriodCreateEdit input)
     {
-        var failures = new PayPeriodValidationFailures();
+        var failures = new ValidationFailures();
 
         if (!DateTime.TryParse(input.StartDate, out var parsedStart))
-            failures.StartDate = MappingMessages.MUST_BE_AN_ISO_DATE;
-        // else if (parsedStart.TimeOfDay.TotalSeconds != 0)
-        //     failures.StartDate = "must exclude time-of-day or be midnight UTC";
+            failures.FieldFailures[nameof(PayPeriod.StartDate)] = MappingMessages.MUST_BE_AN_ISO_DATE;
 
         if (!DateTime.TryParse(input.EndDate, out var parsedEnd))
-            failures.EndDate = MappingMessages.MUST_BE_AN_ISO_DATE;
-        // else if (parsedEnd.TimeOfDay.TotalSeconds != 0)
-        //     failures.StartDate = "must exclude time-of-day or be midnight UTC";
+            failures.FieldFailures[nameof(PayPeriod.EndDate)] = MappingMessages.MUST_BE_AN_ISO_DATE;
 
-        List<(HoursWorked?, HoursWorkedValidationFailures?)> parsedHoursWorked = input.HoursWorked
+        List<(HoursWorked?, GridRowValidationFailures?)> parsedHoursWorked = input.HoursWorked
             .Select((HoursWorkedCreateEdit hw, int index) => ParseHoursWorked(hw, index))
             .ToList();
-        failures.HoursWorked = parsedHoursWorked
+        var hwFailures = parsedHoursWorked
             .Where(tuple => tuple.Item2 != null)
             .Select(tuple => tuple.Item2!)
             .ToList();
+        if (hwFailures.Count > 0)
+            failures.GridRowFailures[nameof(PayPeriod.HoursWorked)] = hwFailures;
 
-        if (!string.IsNullOrEmpty(failures.StartDate)
-            || !string.IsNullOrEmpty(failures.EndDate)
-            || failures.HoursWorked.Count > 0)
+        if (failures.FieldFailures.Count > 0 || failures.GridRowFailures.Count > 0)
         {
-            return Result.Failure<PayPeriod, PayPeriodValidationFailures>(failures);
+            return Result.Failure<PayPeriod, ValidationFailures>(failures);
         }
         else
         {
@@ -45,14 +41,14 @@ public static class PayPeriodMapper
                 SubmissionStatus = input.SubmissionStatus,
                 HoursWorked = parsedHoursWorked.Select(tuple => tuple.Item1!).ToList()
             };
-            return Result.Success<PayPeriod, PayPeriodValidationFailures>(payPeriod);
+            return Result.Success<PayPeriod, ValidationFailures>(payPeriod);
         }
     }
 
-    private static (HoursWorked? transformed, HoursWorkedValidationFailures? failure) 
+    private static (HoursWorked? transformed, GridRowValidationFailures? failure)
         ParseHoursWorked(HoursWorkedCreateEdit hw, int index)
     {
-        var hwFailures = new HoursWorkedValidationFailures
+        var hwFailures = new GridRowValidationFailures
         {
             Index = index
         };
@@ -60,16 +56,16 @@ public static class PayPeriodMapper
         DateTime parsedHwEnd = DateTime.MinValue;
 
         if (string.IsNullOrEmpty(hw.StartDateTime))
-            hwFailures.StartDateTime = MappingMessages.IS_REQUIRED;
+            hwFailures.FieldFailures[nameof(HoursWorked.StartDateTime)] = MappingMessages.IS_REQUIRED;
         else if (!DateTime.TryParse(hw.StartDateTime, out parsedHwStart))
-            hwFailures.StartDateTime = MappingMessages.MUST_BE_AN_ISO_DATE;
+            hwFailures.FieldFailures[nameof(HoursWorked.StartDateTime)] = MappingMessages.MUST_BE_AN_ISO_DATE;
 
         if (string.IsNullOrEmpty(hw.EndDateTime))
-            hwFailures.EndDateTime = MappingMessages.IS_REQUIRED;
+            hwFailures.FieldFailures[nameof(HoursWorked.EndDateTime)] = MappingMessages.IS_REQUIRED;
         else if (!DateTime.TryParse(hw.EndDateTime, out parsedHwEnd))
-            hwFailures.EndDateTime = MappingMessages.MUST_BE_AN_ISO_DATE;
+            hwFailures.FieldFailures[nameof(HoursWorked.EndDateTime)] = MappingMessages.MUST_BE_AN_ISO_DATE;
 
-        if (string.IsNullOrEmpty(hwFailures.StartDateTime) && string.IsNullOrEmpty(hwFailures.EndDateTime))
+        if (hwFailures.FieldFailures.Count == 0)
         {
             var hwModel = new HoursWorked
             {

@@ -1,17 +1,17 @@
 using CSharpFunctionalExtensions;
+using DragonCommonDomain.Poco;
 using DragonTimekeepingDomain.Models;
-using DragonTimekeepingDomain.Poco;
 using DragonTimekeepingDomain.Validation;
 
 namespace DragonTimekeepingApplication.PayPeriodUpsert;
 
 public abstract record PayPeriodUpdateFailure;
 public record PayPeriodNotFound : PayPeriodUpdateFailure;
-public record PayPeriodInvalid(PayPeriodValidationFailures Failures) : PayPeriodUpdateFailure;
+public record PayPeriodInvalid(ValidationFailures Failures) : PayPeriodUpdateFailure;
 
 public static class PayPeriodWriter
 {
-    public static async Task<Result<PayPeriod, PayPeriodValidationFailures>> CreatePayPeriodAsync(
+    public static async Task<Result<PayPeriod, ValidationFailures>> CreatePayPeriodAsync(
         ITimekeepingUnitOfWork unitOfWork,
         PayPeriodCreateEdit input)
     {

@@ -6,7 +6,7 @@ using DragonTimekeepingApplication.PayPeriodUpsert;
 using DragonTimekeepingApplication.PotentialPayPeriodQuery;
 using DragonTimekeepingApplication.SinglePayPeriodQuery;
 using DragonTimekeepingDomain.Models;
-using DragonTimekeepingDomain.Poco;
+using DragonCommonDomain.Poco;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -63,7 +63,7 @@ public class PayPeriodEndpoints
         return TypedResults.Ok(ValidatedPayload<PayPeriodView>.FromPayload(view));
     }
 
-    public static async Task<Results<Ok<ValidatedPayload<PayPeriod>>, BadRequest<ValidatedForm<PayPeriodValidationFailures>>>>
+    public static async Task<Results<Ok<ValidatedPayload<PayPeriod>>, BadRequest<ValidatedForm<ValidationFailures>>>>
         CreatePayPeriodAsync(
             ITimekeepingUnitOfWork unitOfWork,
             [FromBody] PayPeriodCreateEdit input)
@@ -72,7 +72,7 @@ public class PayPeriodEndpoints
         if (creationResult.IsSuccess)
             return TypedResults.Ok(ValidatedPayload<PayPeriod>.FromPayload(creationResult.Value));
         else
-            return TypedResults.BadRequest(new ValidatedForm<PayPeriodValidationFailures>
+            return TypedResults.BadRequest(new ValidatedForm<ValidationFailures>
             {
                 IsSuccess = false,
                 IsInternalError = false,
@@ -80,7 +80,7 @@ public class PayPeriodEndpoints
             });
     }
 
-    public static async Task<Results<Ok<ValidatedPayload<PayPeriod>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<PayPeriodValidationFailures>>>>
+    public static async Task<Results<Ok<ValidatedPayload<PayPeriod>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<ValidationFailures>>>>
         UpdatePayPeriodAsync(
             ITimekeepingUnitOfWork unitOfWork,
             [FromRoute(Name = "payPeriodId")] int payPeriodId,
@@ -93,7 +93,7 @@ public class PayPeriodEndpoints
             return result.Error switch
             {
                 PayPeriodNotFound => TypedResults.NotFound(ValidatedResponse.NotFound),
-                PayPeriodInvalid(var f) => TypedResults.BadRequest(new ValidatedForm<PayPeriodValidationFailures>
+                PayPeriodInvalid(var f) => TypedResults.BadRequest(new ValidatedForm<ValidationFailures>
                 {
                     IsSuccess = false,
                     IsInternalError = false,

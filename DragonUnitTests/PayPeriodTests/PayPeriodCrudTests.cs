@@ -7,7 +7,7 @@ using Shouldly;
 using DragonTimekeepingDomain.Models;
 using DragonTimekeepingApplication;
 using DragonTimekeepingApplication.PayPeriodUpsert;
-using DragonTimekeepingDomain.Poco;
+using DragonCommonDomain.Poco;
 
 namespace DragonUnitTests.PayPeriodTests;
 
@@ -69,12 +69,9 @@ public class PayPeriodCrudTests
         var response = await PayPeriodEndpoints.CreatePayPeriodAsync(unitOfWorkMock.Object, input);
 
         //Assert
-        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailures>>>();
-        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailures>>)response.Result).Value!.ValidationFailures;
-        var actualMessage = typeof(PayPeriodValidationFailures)
-            .GetProperty(expectedFailureField)!
-            .GetValue(failures) as string;
-        actualMessage.ShouldBe(expectedFailureMessage);
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<ValidationFailures>>>();
+        var failures = ((BadRequest<ValidatedForm<ValidationFailures>>)response.Result).Value!.ValidationFailures;
+        failures.FieldFailures[expectedFailureField].ShouldBe(expectedFailureMessage);
     }
 
     [Theory]
@@ -100,13 +97,10 @@ public class PayPeriodCrudTests
         var response = await PayPeriodEndpoints.CreatePayPeriodAsync(unitOfWorkMock.Object, input);
 
         //Assert
-        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailures>>>();
-        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailures>>)response.Result).Value!.ValidationFailures;
-        var actualMessage = typeof(HoursWorkedValidationFailures)
-            .GetProperty(fieldName)!
-            .GetValue(failures.HoursWorked[0]) as string;
-        actualMessage.ShouldBe(expectedFailureMessage);
-    }    
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<ValidationFailures>>>();
+        var failures = ((BadRequest<ValidatedForm<ValidationFailures>>)response.Result).Value!.ValidationFailures;
+        failures.GridRowFailures["HoursWorked"][0].FieldFailures[fieldName].ShouldBe(expectedFailureMessage);
+    }
 
     [Fact]
     public async Task CreatePayPeriod_HoursWorkedStartBeforePayPeriod_ExpectBadRequest()
@@ -123,16 +117,15 @@ public class PayPeriodCrudTests
         var response = await PayPeriodEndpoints.CreatePayPeriodAsync(unitOfWorkMock.Object, input);
 
         //Assert
-        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailures>>>();
-        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailures>>)response.Result).Value!.ValidationFailures;
-        failures.ShouldBeEquivalentTo(new PayPeriodValidationFailures
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<ValidationFailures>>>();
+        var failures = ((BadRequest<ValidatedForm<ValidationFailures>>)response.Result).Value!.ValidationFailures;
+        failures.FieldFailures.ShouldBeEmpty();
+        failures.GridRowFailures["HoursWorked"].ShouldBeEquivalentTo(new List<GridRowValidationFailures>
         {
-            HoursWorked = [
-                new HoursWorkedValidationFailures {
-                    Index = 0,
-                    RowValidationMessage = "Clock-in time is outside of the pay period"
-                }
-            ]
+            new() {
+                Index = 0,
+                RowValidationMessage = "Clock-in time is outside of the pay period"
+            }
         });
     }
 
@@ -153,18 +146,16 @@ public class PayPeriodCrudTests
         var response = await PayPeriodEndpoints.CreatePayPeriodAsync(unitOfWorkMock.Object, input);
 
         //Assert
-        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailures>>>();
-        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailures>>)response.Result).Value!.ValidationFailures;
-                failures.ShouldBeEquivalentTo(new PayPeriodValidationFailures
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<ValidationFailures>>>();
+        var failures = ((BadRequest<ValidatedForm<ValidationFailures>>)response.Result).Value!.ValidationFailures;
+        failures.FieldFailures.ShouldBeEmpty();
+        failures.GridRowFailures["HoursWorked"].ShouldBeEquivalentTo(new List<GridRowValidationFailures>
         {
-            HoursWorked = [
-                new HoursWorkedValidationFailures {
-                    Index = 2,
-                    RowValidationMessage = "Clock-out time is outside of the pay period"
-                }
-            ]
+            new() {
+                Index = 2,
+                RowValidationMessage = "Clock-out time is outside of the pay period"
+            }
         });
-
     }
 
     [Fact]
@@ -185,20 +176,19 @@ public class PayPeriodCrudTests
         var response = await PayPeriodEndpoints.CreatePayPeriodAsync(unitOfWorkMock.Object, input);
 
         //Assert
-        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailures>>>();
-        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailures>>)response.Result).Value!.ValidationFailures;
-        failures.ShouldBeEquivalentTo(new PayPeriodValidationFailures
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<ValidationFailures>>>();
+        var failures = ((BadRequest<ValidatedForm<ValidationFailures>>)response.Result).Value!.ValidationFailures;
+        failures.FieldFailures.ShouldBeEmpty();
+        failures.GridRowFailures["HoursWorked"].ShouldBeEquivalentTo(new List<GridRowValidationFailures>
         {
-            HoursWorked = [
-                new HoursWorkedValidationFailures {
-                    Index = 1,
-                    RowValidationMessage = "Overlaps with another hours-worked record"
-                },
-                new HoursWorkedValidationFailures {
-                    Index = 2,
-                    RowValidationMessage = "Overlaps with another hours-worked record"
-                }
-            ]
+            new() {
+                Index = 1,
+                RowValidationMessage = "Overlaps with another hours-worked record"
+            },
+            new() {
+                Index = 2,
+                RowValidationMessage = "Overlaps with another hours-worked record"
+            }
         });
     }
 
@@ -217,18 +207,19 @@ public class PayPeriodCrudTests
         var response = await PayPeriodEndpoints.CreatePayPeriodAsync(unitOfWorkMock.Object, input);
 
         //Assert
-        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailures>>>();
-        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailures>>)response.Result).Value!.ValidationFailures;
-        failures.ShouldBeEquivalentTo(new PayPeriodValidationFailures
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<ValidationFailures>>>();
+        var failures = ((BadRequest<ValidatedForm<ValidationFailures>>)response.Result).Value!.ValidationFailures;
+        failures.FieldFailures.ShouldBeEquivalentTo(new Dictionary<string, string>
         {
-            StartDate = "must exclude time-of-day or be midnight UTC",
-            EndDate = "must be a Sunday",
-            HoursWorked = [
-                new HoursWorkedValidationFailures {
-                    Index = 0,
-                    RowValidationMessage = "Clock-in time is outside of the pay period"
-                }
-            ]
+            { "StartDate", "must exclude time-of-day or be midnight UTC" },
+            { "EndDate", "must be a Sunday" }
+        });
+        failures.GridRowFailures["HoursWorked"].ShouldBeEquivalentTo(new List<GridRowValidationFailures>
+        {
+            new() {
+                Index = 0,
+                RowValidationMessage = "Clock-in time is outside of the pay period"
+            }
         });
     }
 
@@ -364,12 +355,9 @@ public class PayPeriodCrudTests
         var response = await PayPeriodEndpoints.UpdatePayPeriodAsync(unitOfWorkMock.Object, PAY_PERIOD_ID, input);
 
         //Assert
-        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailures>>>();
-        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailures>>)response.Result).Value!.ValidationFailures;
-        var actualMessage = typeof(PayPeriodValidationFailures)
-            .GetProperty(expectedFailureField)!
-            .GetValue(failures) as string;
-        actualMessage.ShouldBe(expectedFailureMessage);
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<ValidationFailures>>>();
+        var failures = ((BadRequest<ValidatedForm<ValidationFailures>>)response.Result).Value!.ValidationFailures;
+        failures.FieldFailures[expectedFailureField].ShouldBe(expectedFailureMessage);
     }
 
     [Fact]
@@ -395,16 +383,15 @@ public class PayPeriodCrudTests
         var response = await PayPeriodEndpoints.UpdatePayPeriodAsync(unitOfWorkMock.Object, PAY_PERIOD_ID, input);
 
         //Assert
-        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailures>>>();
-        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailures>>)response.Result).Value!.ValidationFailures;
-        failures.ShouldBeEquivalentTo(new PayPeriodValidationFailures
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<ValidationFailures>>>();
+        var failures = ((BadRequest<ValidatedForm<ValidationFailures>>)response.Result).Value!.ValidationFailures;
+        failures.FieldFailures.ShouldBeEmpty();
+        failures.GridRowFailures["HoursWorked"].ShouldBeEquivalentTo(new List<GridRowValidationFailures>
         {
-            HoursWorked = [
-                new HoursWorkedValidationFailures {
-                    Index = 1,
-                    RowValidationMessage = "Clock-in time is outside of the pay period"
-                }
-            ]
+            new() {
+                Index = 1,
+                RowValidationMessage = "Clock-in time is outside of the pay period"
+            }
         });
     }
 
@@ -432,16 +419,15 @@ public class PayPeriodCrudTests
         var response = await PayPeriodEndpoints.UpdatePayPeriodAsync(unitOfWorkMock.Object, PAY_PERIOD_ID, input);
 
         //Assert
-        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailures>>>();
-        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailures>>)response.Result).Value!.ValidationFailures;
-        failures.ShouldBeEquivalentTo(new PayPeriodValidationFailures
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<ValidationFailures>>>();
+        var failures = ((BadRequest<ValidatedForm<ValidationFailures>>)response.Result).Value!.ValidationFailures;
+        failures.FieldFailures.ShouldBeEmpty();
+        failures.GridRowFailures["HoursWorked"].ShouldBeEquivalentTo(new List<GridRowValidationFailures>
         {
-            HoursWorked = [
-                new HoursWorkedValidationFailures {
-                    Index = 3,
-                    RowValidationMessage = "Clock-out time is outside of the pay period"
-                }
-            ]
+            new() {
+                Index = 3,
+                RowValidationMessage = "Clock-out time is outside of the pay period"
+            }
         });
     }
 
@@ -464,18 +450,19 @@ public class PayPeriodCrudTests
         var response = await PayPeriodEndpoints.UpdatePayPeriodAsync(unitOfWorkMock.Object, PAY_PERIOD_ID, input);
 
         //Assert
-        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<PayPeriodValidationFailures>>>();
-        var failures = ((BadRequest<ValidatedForm<PayPeriodValidationFailures>>)response.Result).Value!.ValidationFailures;
-        failures.ShouldBeEquivalentTo(new PayPeriodValidationFailures
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<ValidationFailures>>>();
+        var failures = ((BadRequest<ValidatedForm<ValidationFailures>>)response.Result).Value!.ValidationFailures;
+        failures.FieldFailures.ShouldBeEquivalentTo(new Dictionary<string, string>
         {
-            StartDate = "must exclude time-of-day or be midnight UTC",
-            EndDate = "must exclude time-of-day or be midnight UTC",
-            HoursWorked = [
-                new HoursWorkedValidationFailures {
-                    Index = 0,
-                    RowValidationMessage = "Clock-in time is outside of the pay period"
-                }
-            ]
+            { "StartDate", "must exclude time-of-day or be midnight UTC" },
+            { "EndDate", "must exclude time-of-day or be midnight UTC" }
+        });
+        failures.GridRowFailures["HoursWorked"].ShouldBeEquivalentTo(new List<GridRowValidationFailures>
+        {
+            new() {
+                Index = 0,
+                RowValidationMessage = "Clock-in time is outside of the pay period"
+            }
         });
     }
 }

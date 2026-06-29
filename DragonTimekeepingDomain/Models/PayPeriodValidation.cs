@@ -1,17 +1,17 @@
 using DragonTimekeepingDomain.Models;
 using CSharpFunctionalExtensions;
-using DragonTimekeepingDomain.Poco;
+using DragonCommonDomain.Poco;
 
 namespace DragonTimekeepingDomain.Validation;
 
 public static class PayPeriodValidation
 {
-    public static Result<PayPeriod, PayPeriodValidationFailures> Validate(PayPeriod payPeriod)
+    public static Result<PayPeriod, ValidationFailures> Validate(PayPeriod payPeriod)
     {
         var parsedStart = payPeriod.StartDate;
         var parsedEnd = payPeriod.EndDate;
 
-        Dictionary<string, string> failures = 
+        Dictionary<string, string> failures =
             new List<(string, string)>()
             {
                 ( nameof(PayPeriod.StartDate), ValidateStartDate(parsedStart) ),
@@ -23,16 +23,13 @@ public static class PayPeriodValidation
         var hoursWorkedFailures = ValidateHoursWorked(payPeriod);
 
         if (failures.Count == 0 && hoursWorkedFailures.Count == 0) {
-            return Result.Success<PayPeriod, PayPeriodValidationFailures>(payPeriod);
+            return Result.Success<PayPeriod, ValidationFailures>(payPeriod);
         }
         else {
-            var validationFailures = new PayPeriodValidationFailures
-            {
-                StartDate = failures.GetValueOrDefault(nameof(PayPeriod.StartDate), string.Empty),
-                EndDate = failures.GetValueOrDefault(nameof(PayPeriod.EndDate), string.Empty),
-                HoursWorked = hoursWorkedFailures
-            };
-            return Result.Failure<PayPeriod, PayPeriodValidationFailures>(validationFailures);
+            var validationFailures = new ValidationFailures { FieldFailures = failures };
+            if (hoursWorkedFailures.Count > 0)
+                validationFailures.GridRowFailures[nameof(PayPeriod.HoursWorked)] = hoursWorkedFailures;
+            return Result.Failure<PayPeriod, ValidationFailures>(validationFailures);
         }
     }
 
@@ -56,7 +53,7 @@ public static class PayPeriodValidation
         return string.Empty;
     }
 
-    private static IList<HoursWorkedValidationFailures> ValidateHoursWorked(PayPeriod payPeriod)
+    private static List<GridRowValidationFailures> ValidateHoursWorked(PayPeriod payPeriod)
     {
         var payPeriodEndPlusOneDay = payPeriod.EndDate.AddDays(1);
 
@@ -73,7 +70,7 @@ public static class PayPeriodValidation
                 return (index, validationMessage);
             })
             .Where(tuple => tuple.validationMessage != string.Empty)
-            .Select(tuple => new HoursWorkedValidationFailures
+            .Select(tuple => new GridRowValidationFailures
             {
                 Index = tuple.index,
                 RowValidationMessage = tuple.validationMessage
