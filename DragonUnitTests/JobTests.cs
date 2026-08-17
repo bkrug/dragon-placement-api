@@ -1,6 +1,6 @@
-using DragonCommonApplication.Repositories;
+using DragonCommon.Application.Repositories;
 using DragonAssignment.Application.JobUpsert;
-using DragonCommonDomain.Poco;
+using DragonCommon.Domain.Poco;
 using DragonPlacementApi.Endpoints;
 using DragonPlacementApi.Poco;
 using DragonAssignment.Domain.Models;

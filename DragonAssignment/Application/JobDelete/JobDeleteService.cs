@@ -1,5 +1,5 @@
 using CSharpFunctionalExtensions;
-using DragonCommonApplication.Repositories;
+using DragonCommon.Application.Repositories;
 
 namespace DragonAssignment.Application.JobDelete;
 

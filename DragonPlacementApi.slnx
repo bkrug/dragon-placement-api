@@ -1,8 +1,6 @@
 <Solution>
   <Project Path="DragonAssignment/DragonAssignment.csproj" />
-  <Project Path="DragonCommonApplication/DragonCommonApplication.csproj" />
-  <Project Path="DragonCommonDataLayer/DragonCommonDataLayer.csproj" />
-  <Project Path="DragonCommonDomain/DragonCommonDomain.csproj" />
+  <Project Path="DragonCommon/DragonCommon.csproj" />
   <Project Path="DragonPlacementApi/DragonPlacementApi.csproj" />
   <Project Path="DragonUnitTests/DragonUnitTests.csproj" />
   <Project Path="DragonTimekeeping/DragonTimekeeping.csproj" />

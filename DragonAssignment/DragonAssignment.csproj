@@ -21,9 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../DragonCommonDomain/DragonCommonDomain.csproj" />
-    <ProjectReference Include="../DragonCommonApplication/DragonCommonApplication.csproj" />
-    <ProjectReference Include="../DragonCommonDataLayer/DragonCommonDataLayer.csproj" />
+    <ProjectReference Include="../DragonCommon/DragonCommon.csproj" />
   </ItemGroup>
 
 </Project>

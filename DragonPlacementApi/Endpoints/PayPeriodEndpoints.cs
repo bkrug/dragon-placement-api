@@ -1,12 +1,12 @@
 using DragonAssignment.Application;
-using DragonCommonApplication.Repositories;
+using DragonCommon.Application.Repositories;
 using DragonPlacementApi.Poco;
 using DragonTimekeeping.Application;
 using DragonTimekeeping.Application.PayPeriodUpsert;
 using DragonTimekeeping.Application.PotentialPayPeriodQuery;
 using DragonTimekeeping.Application.SinglePayPeriodQuery;
 using DragonTimekeeping.Domain.Models;
-using DragonCommonDomain.Poco;
+using DragonCommon.Domain.Poco;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 

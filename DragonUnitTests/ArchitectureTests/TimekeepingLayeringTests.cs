@@ -21,15 +21,7 @@ public class TimekeepingLayeringTests
             .ShouldNot().HaveDependencyOnAny(
                 "DragonTimekeeping.Application",
                 "DragonTimekeeping.Data",
-                "DragonCommonApplication",
                 "DragonCommon.Application",
-                "DragonCommonDataLayer",
-                "DragonCommon.DataLayer",
-                "DragonCommon.Data",
-                "DragonCommonApplication",
-                "DragonCommon.Application",
-                "DragonCommonDataLayer",
-                "DragonCommon.DataLayer",
                 "DragonCommon.Data")
             .GetResult();
 
@@ -43,8 +35,6 @@ public class TimekeepingLayeringTests
             .That().ResideInNamespace("DragonTimekeeping.Application")
             .ShouldNot().HaveDependencyOnAny(
                 "DragonTimekeeping.Data",
-                "DragonCommonDataLayer",
-                "DragonCommon.DataLayer",
                 "DragonCommon.Data")
             .GetResult();
 

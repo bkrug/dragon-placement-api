@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace DragonCommonDataLayer;
+namespace DragonCommon.Data;
 
 public static class EntityPropertyExtensions
 {

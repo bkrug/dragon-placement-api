@@ -1,4 +1,4 @@
-using DragonCommonApplication.Repositories;
+using DragonCommon.Application.Repositories;
 using DragonAssignment.Domain.Enum;
 using DragonAssignment.Domain.Models;
 using DragonAssignment.Domain.Poco;

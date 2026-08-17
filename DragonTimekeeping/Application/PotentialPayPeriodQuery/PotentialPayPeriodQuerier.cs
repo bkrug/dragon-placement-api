@@ -1,4 +1,4 @@
-using DragonCommonApplication;
+using DragonCommon.Application;
 
 namespace DragonTimekeeping.Application.PotentialPayPeriodQuery;
 

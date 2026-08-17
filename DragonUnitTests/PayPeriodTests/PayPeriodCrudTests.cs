@@ -1,4 +1,4 @@
-using DragonCommonApplication.Repositories;
+using DragonCommon.Application.Repositories;
 using DragonPlacementApi.Endpoints;
 using DragonPlacementApi.Poco;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -7,7 +7,7 @@ using Shouldly;
 using DragonTimekeeping.Domain.Models;
 using DragonTimekeeping.Application;
 using DragonTimekeeping.Application.PayPeriodUpsert;
-using DragonCommonDomain.Poco;
+using DragonCommon.Domain.Poco;
 
 namespace DragonUnitTests.PayPeriodTests;
 

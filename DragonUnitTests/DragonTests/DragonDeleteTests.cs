@@ -1,4 +1,4 @@
-using DragonCommonApplication.Repositories;
+using DragonCommon.Application.Repositories;
 using DragonPlacementApi.Endpoints;
 using DragonPlacementApi.Poco;
 using DragonAssignment.Application;

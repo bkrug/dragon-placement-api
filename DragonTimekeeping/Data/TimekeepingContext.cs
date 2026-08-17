@@ -1,4 +1,4 @@
-using DragonCommonDataLayer;
+using DragonCommon.Data;
 using DragonTimekeeping.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 

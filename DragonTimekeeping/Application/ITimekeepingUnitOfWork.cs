@@ -1,4 +1,4 @@
-using DragonCommonApplication.Repositories;
+using DragonCommon.Application.Repositories;
 using DragonTimekeeping.Domain.Models;
 
 namespace DragonTimekeeping.Application;

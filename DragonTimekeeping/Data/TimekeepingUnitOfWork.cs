@@ -1,5 +1,5 @@
-using DragonCommonDataLayer.Repositories;
-using DragonCommonApplication.Repositories;
+using DragonCommon.Data.Repositories;
+using DragonCommon.Application.Repositories;
 using DragonTimekeeping.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 

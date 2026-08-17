@@ -6,7 +6,7 @@ using DragonAssignment.Application.JobUpsert;
 using DragonAssignment.Domain.Enum;
 using DragonAssignment.Domain.Models;
 using DragonAssignment.Domain.Poco;
-using DragonCommonDomain.Poco;
+using DragonCommon.Domain.Poco;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 

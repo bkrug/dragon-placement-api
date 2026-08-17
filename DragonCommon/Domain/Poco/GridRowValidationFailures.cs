@@ -1,4 +1,4 @@
-namespace DragonCommonDomain.Poco;
+namespace DragonCommon.Domain.Poco;
 
 public class ValidationFailures
 {

@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-namespace DragonCommonApplication.Repositories;
+namespace DragonCommon.Application.Repositories;
 
 public enum DeleteResult
 {

@@ -1,4 +1,4 @@
-namespace DragonCommonApplication;
+namespace DragonCommon.Application;
 
 public static class Const
 {

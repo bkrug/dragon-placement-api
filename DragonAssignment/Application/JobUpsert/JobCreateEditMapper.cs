@@ -1,7 +1,7 @@
 using CSharpFunctionalExtensions;
 using DragonAssignment.Domain.Models;
-using DragonCommonApplication;
-using DragonCommonDomain.Poco;
+using DragonCommon.Application;
+using DragonCommon.Domain.Poco;
 
 namespace DragonAssignment.Application.JobUpsert;
 

@@ -5,22 +5,20 @@ using TestResult = NetArchTest.Rules.TestResult;
 
 namespace DragonUnitTests.ArchitectureTests;
 
-// The DragonAssignment project contains three "clean architecture" layers,
+// The DragonCommon project contains three "clean architecture" layers,
 // so the compiler can not prevent layer references in the wrong direction.
 // These tests enforce the domain layer to be independent,
 // and the application layer to be independent of the infrastructure (data) layer.
-public class AssignmentLayeringTests
+public class CommonLayeringTests
 {
-    private static readonly Assembly AssignmentAssembly = typeof(DragonAssignment.Domain.Models.Dragon).Assembly;
+    private static readonly Assembly CommonAssembly = typeof(DragonCommon.Domain.ValidationMessages).Assembly;
 
     [Fact]
     public void Domain_ShouldNot_DependOn_ApplicationOrData()
     {
-        var result = Types.InAssembly(AssignmentAssembly)
-            .That().ResideInNamespace("DragonAssignment.Domain")
+        var result = Types.InAssembly(CommonAssembly)
+            .That().ResideInNamespace("DragonCommon.Domain")
             .ShouldNot().HaveDependencyOnAny(
-                "DragonAssignment.Application",
-                "DragonAssignment.Data",
                 "DragonCommon.Application",
                 "DragonCommon.Data")
             .GetResult();
@@ -31,11 +29,9 @@ public class AssignmentLayeringTests
     [Fact]
     public void Application_ShouldNot_DependOn_Data()
     {
-        var result = Types.InAssembly(AssignmentAssembly)
-            .That().ResideInNamespace("DragonAssignment.Application")
-            .ShouldNot().HaveDependencyOnAny(
-                "DragonAssignment.Data",
-                "DragonCommon.Data")
+        var result = Types.InAssembly(CommonAssembly)
+            .That().ResideInNamespace("DragonCommon.Application")
+            .ShouldNot().HaveDependencyOn("DragonCommon.Data")
             .GetResult();
 
         result.IsSuccessful.ShouldBeTrue(DependencyFailureMessage(result));

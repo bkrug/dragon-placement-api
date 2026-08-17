@@ -1,6 +1,6 @@
 using CSharpFunctionalExtensions;
-using DragonCommonApplication;
-using DragonCommonDomain.Poco;
+using DragonCommon.Application;
+using DragonCommon.Domain.Poco;
 using DragonTimekeeping.Domain.Models;
 
 namespace DragonTimekeeping.Application.PayPeriodUpsert;

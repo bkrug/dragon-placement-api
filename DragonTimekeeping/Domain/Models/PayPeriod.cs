@@ -1,5 +1,5 @@
 using CSharpFunctionalExtensions;
-using DragonCommonDomain.Poco;
+using DragonCommon.Domain.Poco;
 
 namespace DragonTimekeeping.Domain.Models;
 

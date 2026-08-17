@@ -1,4 +1,4 @@
-using DragonCommonApplication;
+using DragonCommon.Application;
 using DragonTimekeeping.Domain.Models;
 
 namespace DragonTimekeeping.Application.SinglePayPeriodQuery;

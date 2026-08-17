@@ -1,5 +1,5 @@
-using DragonCommonDataLayer.Repositories;
-using DragonCommonApplication.Repositories;
+using DragonCommon.Data.Repositories;
+using DragonCommon.Application.Repositories;
 using DragonAssignment.Domain.Enum;
 using DragonAssignment.Domain.Models;
 using DragonAssignment.Domain.Poco;
@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 using DragonAssignment.Application;
-using DragonCommonApplication;
+using DragonCommon.Application;
 
 namespace DragonAssignment.Data;
 
