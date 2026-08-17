@@ -1,11 +1,11 @@
 using DragonCommonDataLayer.Repositories;
 using DragonCommonApplication.Repositories;
-using DragonTimekeepingDomain.Models;
+using DragonTimekeeping.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
-using DragonTimekeepingApplication;
+using DragonTimekeeping.Application;
 
-namespace DragonTimekeepingData;
+namespace DragonTimekeeping.Data;
 
 public class TimekeepingUnitOfWork(TimekeepingContext context) : IDisposable, ITimekeepingUnitOfWork
 {

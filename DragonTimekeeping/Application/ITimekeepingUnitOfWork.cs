@@ -1,7 +1,7 @@
 using DragonCommonApplication.Repositories;
-using DragonTimekeepingDomain.Models;
+using DragonTimekeeping.Domain.Models;
 
-namespace DragonTimekeepingApplication;
+namespace DragonTimekeeping.Application;
 
 public interface ITimekeepingUnitOfWork
 {

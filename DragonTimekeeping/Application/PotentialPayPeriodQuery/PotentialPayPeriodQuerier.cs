@@ -1,6 +1,6 @@
 using DragonCommonApplication;
 
-namespace DragonTimekeepingApplication.PotentialPayPeriodQuery;
+namespace DragonTimekeeping.Application.PotentialPayPeriodQuery;
 
 public static class PotentialPayPeriodQuerier
 {

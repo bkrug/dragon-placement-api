@@ -1,8 +1,8 @@
 using CSharpFunctionalExtensions;
 using DragonCommonDomain.Poco;
-using DragonTimekeepingDomain.Models;
+using DragonTimekeeping.Domain.Models;
 
-namespace DragonTimekeepingApplication.PayPeriodUpsert;
+namespace DragonTimekeeping.Application.PayPeriodUpsert;
 
 public abstract record PayPeriodUpdateFailure;
 public record PayPeriodNotFound : PayPeriodUpdateFailure;

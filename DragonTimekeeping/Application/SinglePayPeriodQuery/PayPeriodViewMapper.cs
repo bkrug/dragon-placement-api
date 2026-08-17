@@ -1,7 +1,7 @@
 using DragonCommonApplication;
-using DragonTimekeepingDomain.Models;
+using DragonTimekeeping.Domain.Models;
 
-namespace DragonTimekeepingApplication.SinglePayPeriodQuery;
+namespace DragonTimekeeping.Application.SinglePayPeriodQuery;
 
 public static class PayPeriodViewMapper
 {

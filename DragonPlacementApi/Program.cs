@@ -2,8 +2,8 @@ using System.Text.Json.Serialization;
 using DragonAssignment.Application;
 using DragonAssignment.Data;
 using DragonPlacementApi.Endpoints;
-using DragonTimekeepingApplication;
-using DragonTimekeepingData;
+using DragonTimekeeping.Application;
+using DragonTimekeeping.Data;
 using Microsoft.EntityFrameworkCore;
 
 const string allowedOriginsPolicy = "DragonPlacementAllowedOrigins";

@@ -1,9 +1,9 @@
 using CSharpFunctionalExtensions;
 using DragonCommonApplication;
 using DragonCommonDomain.Poco;
-using DragonTimekeepingDomain.Models;
+using DragonTimekeeping.Domain.Models;
 
-namespace DragonTimekeepingApplication.PayPeriodUpsert;
+namespace DragonTimekeeping.Application.PayPeriodUpsert;
 
 public static class PayPeriodMapper
 {

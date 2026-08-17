@@ -1,4 +1,4 @@
-using DragonTimekeepingDomain.Models;
+using DragonTimekeeping.Domain.Models;
 
 namespace DragonUnitTests.PayPeriodTests;
 

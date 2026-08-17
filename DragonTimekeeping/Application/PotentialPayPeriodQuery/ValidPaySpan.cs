@@ -1,4 +1,4 @@
-namespace DragonTimekeepingApplication.PotentialPayPeriodQuery;
+namespace DragonTimekeeping.Application.PotentialPayPeriodQuery;
 
 public class ValidPaySpan
 {

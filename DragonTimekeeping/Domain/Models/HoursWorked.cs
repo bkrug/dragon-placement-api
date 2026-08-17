@@ -1,4 +1,4 @@
-namespace DragonTimekeepingDomain.Models;
+namespace DragonTimekeeping.Domain.Models;
 
 public partial class HoursWorked
 {

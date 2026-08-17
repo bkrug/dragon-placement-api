@@ -5,8 +5,8 @@ using DragonAssignment.Application;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Moq;
 using Shouldly;
-using DragonTimekeepingApplication;
-using DragonTimekeepingApplication.SinglePayPeriodQuery;
+using DragonTimekeeping.Application;
+using DragonTimekeeping.Application.SinglePayPeriodQuery;
 
 namespace DragonUnitTests.PayPeriodTests;
 

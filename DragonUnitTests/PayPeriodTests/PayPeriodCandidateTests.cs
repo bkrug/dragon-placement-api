@@ -4,9 +4,9 @@ using DragonCommonApplication;
 using DragonPlacementApi.Poco;
 using Moq;
 using Shouldly;
-using DragonTimekeepingDomain.Models;
-using DragonTimekeepingApplication;
-using DragonTimekeepingApplication.PotentialPayPeriodQuery;
+using DragonTimekeeping.Domain.Models;
+using DragonTimekeeping.Application;
+using DragonTimekeeping.Application.PotentialPayPeriodQuery;
 
 namespace DragonUnitTests.PayPeriodTests;
 

@@ -1,7 +1,7 @@
 using CSharpFunctionalExtensions;
 using DragonCommonDomain.Poco;
 
-namespace DragonTimekeepingDomain.Models;
+namespace DragonTimekeeping.Domain.Models;
 
 public partial class PayPeriod
 {
