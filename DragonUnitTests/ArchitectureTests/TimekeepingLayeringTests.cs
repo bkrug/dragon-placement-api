@@ -18,7 +18,19 @@ public class TimekeepingLayeringTests
     {
         var result = Types.InAssembly(TimekeepingAssembly)
             .That().ResideInNamespace("DragonTimekeeping.Domain")
-            .ShouldNot().HaveDependencyOnAny("DragonTimekeeping.Application", "DragonTimekeeping.Data")
+            .ShouldNot().HaveDependencyOnAny(
+                "DragonTimekeeping.Application",
+                "DragonTimekeeping.Data",
+                "DragonCommonApplication",
+                "DragonCommon.Application",
+                "DragonCommonDataLayer",
+                "DragonCommon.DataLayer",
+                "DragonCommon.Data",
+                "DragonCommonApplication",
+                "DragonCommon.Application",
+                "DragonCommonDataLayer",
+                "DragonCommon.DataLayer",
+                "DragonCommon.Data")
             .GetResult();
 
         result.IsSuccessful.ShouldBeTrue(DependencyFailureMessage(result));
@@ -29,7 +41,11 @@ public class TimekeepingLayeringTests
     {
         var result = Types.InAssembly(TimekeepingAssembly)
             .That().ResideInNamespace("DragonTimekeeping.Application")
-            .ShouldNot().HaveDependencyOn("DragonTimekeeping.Data")
+            .ShouldNot().HaveDependencyOnAny(
+                "DragonTimekeeping.Data",
+                "DragonCommonDataLayer",
+                "DragonCommon.DataLayer",
+                "DragonCommon.Data")
             .GetResult();
 
         result.IsSuccessful.ShouldBeTrue(DependencyFailureMessage(result));

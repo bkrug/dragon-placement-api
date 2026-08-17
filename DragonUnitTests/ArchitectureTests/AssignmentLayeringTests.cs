@@ -18,7 +18,14 @@ public class AssignmentLayeringTests
     {
         var result = Types.InAssembly(AssignmentAssembly)
             .That().ResideInNamespace("DragonAssignment.Domain")
-            .ShouldNot().HaveDependencyOnAny("DragonAssignment.Application", "DragonAssignment.Data")
+            .ShouldNot().HaveDependencyOnAny(
+                "DragonAssignment.Application",
+                "DragonAssignment.Data",
+                "DragonCommonApplication",
+                "DragonCommon.Application",
+                "DragonCommonDataLayer",
+                "DragonCommon.DataLayer",
+                "DragonCommon.Data")
             .GetResult();
 
         result.IsSuccessful.ShouldBeTrue(DependencyFailureMessage(result));
@@ -29,7 +36,11 @@ public class AssignmentLayeringTests
     {
         var result = Types.InAssembly(AssignmentAssembly)
             .That().ResideInNamespace("DragonAssignment.Application")
-            .ShouldNot().HaveDependencyOn("DragonAssignment.Data")
+            .ShouldNot().HaveDependencyOnAny(
+                "DragonAssignment.Data",
+                "DragonCommonDataLayer",
+                "DragonCommon.DataLayer",
+                "DragonCommon.Data")
             .GetResult();
 
         result.IsSuccessful.ShouldBeTrue(DependencyFailureMessage(result));
