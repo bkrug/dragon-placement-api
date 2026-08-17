@@ -55,6 +55,6 @@ public class TimekeepingLayeringTests
         var typeNameString = result.FailingTypeNames == null
             ? string.Empty
             : string.Join(", ", result.FailingTypeNames);
-        return "A namespace is dependent on a namespace that it should be independent of: " + typeNameString;
+        return "A dependency is breaking the clean architecture paradigm: " + typeNameString;
     }
 }
