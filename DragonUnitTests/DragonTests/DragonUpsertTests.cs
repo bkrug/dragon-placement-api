@@ -1,11 +1,11 @@
 using DragonCommonApplication.Repositories;
-using DragonAssignmentApplication.DragonUpsert;
+using DragonAssignment.Application.DragonUpsert;
 using DragonCommonDomain.Poco;
 using DragonPlacementApi.Endpoints;
 using DragonPlacementApi.Poco;
-using DragonAssignmentDomain.Enum;
-using DragonAssignmentDomain.Models;
-using DragonAssignmentApplication;
+using DragonAssignment.Domain.Enum;
+using DragonAssignment.Domain.Models;
+using DragonAssignment.Application;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Moq;
 using Shouldly;

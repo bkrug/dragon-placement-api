@@ -1,7 +1,7 @@
 using DragonCommonApplication.Repositories;
 using DragonPlacementApi.Endpoints;
 using DragonPlacementApi.Poco;
-using DragonAssignmentApplication;
+using DragonAssignment.Application;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Moq;
 using Shouldly;

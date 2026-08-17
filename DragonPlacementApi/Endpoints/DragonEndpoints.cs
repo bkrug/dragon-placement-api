@@ -1,13 +1,13 @@
-using DragonAssignmentApplication.DragonSelect;
-using DragonAssignmentApplication.DragonUpsert;
+using DragonAssignment.Application.DragonSelect;
+using DragonAssignment.Application.DragonUpsert;
 using DragonPlacementApi.Poco;
-using DragonAssignmentApplication;
-using DragonAssignmentDomain.Enum;
-using DragonAssignmentDomain.Models;
+using DragonAssignment.Application;
+using DragonAssignment.Domain.Enum;
+using DragonAssignment.Domain.Models;
 using DragonCommonDomain.Poco;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using DragonAssignmentApplication.DragonDelete;
+using DragonAssignment.Application.DragonDelete;
 
 namespace DragonPlacementApi.Endpoints;
 

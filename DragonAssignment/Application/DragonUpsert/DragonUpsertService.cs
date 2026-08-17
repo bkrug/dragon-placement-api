@@ -1,0 +1,41 @@
+using CSharpFunctionalExtensions;
+using DragonAssignment.Domain.Models;
+using DragonCommonDomain.Poco;
+using DragonAssignment.Domain.Enum;
+
+namespace DragonAssignment.Application.DragonUpsert;
+
+public abstract record DragonUpdateFailure;
+public record DragonNotFound : DragonUpdateFailure;
+public record DragonInvalid(ValidationFailures Failures) : DragonUpdateFailure;
+
+public static class DragonUpsertService
+{
+    public static async Task<Result<Dragon, ValidationFailures>> CreateDragon(DragonCreateEdit input, IDragonPlacementUnitOfWork unitOfWork)
+    {
+        var skillTags = unitOfWork.GetSkillTagsById(input.SkillTagIds);
+        var result = DragonCreateEditMapper.ToDragon(input, skillTags)
+            .Bind(d => d.Validate());
+
+        if (result.IsSuccess)
+        {
+            unitOfWork.DragonRepository.Insert(result.Value);
+            await unitOfWork.SaveAsync().ConfigureAwait(false);
+        }
+
+        return result;
+    }
+
+    public static async Task<Result<Dragon, DragonUpdateFailure>> UpdateDragon(DragonCreateEdit input, int dragonId, IDragonPlacementUnitOfWork unitOfWork)
+    {
+        var existing = await unitOfWork.GetDragonWithJobAsync(dragonId, JobInclusions.None).ConfigureAwait(false);
+        if (existing == null)
+            return Result.Failure<Dragon, DragonUpdateFailure>(new DragonNotFound());
+
+        var skillTags = unitOfWork.GetSkillTagsById(input.SkillTagIds);
+        return await DragonCreateEditMapper.ApplyTo(input, existing, skillTags)
+            .Bind(d => d.Validate())
+            .MapError(e => (DragonUpdateFailure)new DragonInvalid(e))
+            .Tap(async _ => await unitOfWork.SaveAsync().ConfigureAwait(false));
+    }
+}

@@ -12,6 +12,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.7" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageReference Include="Moq" Version="4.20.72" />
+    <PackageReference Include="NetArchTest.Rules" Version="1.3.2" />
     <PackageReference Include="Shouldly" Version="4.3.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -21,12 +22,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../DragonAssignmentApplication/DragonAssignmentApplication.csproj" />
-    <ProjectReference Include="../DragonAssignmentDomain/DragonAssignmentDomain.csproj" />
+    <ProjectReference Include="../DragonAssignment/DragonAssignment.csproj" />
     <ProjectReference Include="../DragonTimekeepingApplication/DragonTimekeepingApplication.csproj" />
     <ProjectReference Include="../DragonTimekeepingDomain/DragonTimekeepingDomain.csproj" />
     <ProjectReference Include="../DragonPlacementApi/DragonPlacementApi.csproj" />
-    <ProjectReference Include="../DragonAssignmentData/DragonAssignmentData.csproj" />
     <ProjectReference Include="../DragonTimekeepingData/DragonTimekeepingData.csproj" />
   </ItemGroup>
 

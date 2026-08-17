@@ -1,5 +1,5 @@
-﻿using DragonAssignmentApplication;
-using DragonAssignmentDomain.Models;
+﻿using DragonAssignment.Application;
+using DragonAssignment.Domain.Models;
 using DragonPlacementApi.Endpoints;
 using Moq;
 using Shouldly;

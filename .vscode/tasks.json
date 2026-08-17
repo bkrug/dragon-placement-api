@@ -2,7 +2,9 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"type": "msbuild",
+			"label": "Build: solution",
+			"type": "dotnet",
+			"task": "build",
 			"problemMatcher": [
 				"$msCompile"
 			],
@@ -10,7 +12,6 @@
 				"kind": "build",
 				"isDefault": true
 			},
-			"label": "Build: solution",
 			"detail": "Build the DragonPlacement.slnx solution using dotnet build"
 		},
 		{

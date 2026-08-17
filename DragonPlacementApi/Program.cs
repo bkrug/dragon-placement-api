@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
-using DragonAssignmentApplication;
-using DragonAssignmentData;
+using DragonAssignment.Application;
+using DragonAssignment.Data;
 using DragonPlacementApi.Endpoints;
 using DragonTimekeepingApplication;
 using DragonTimekeepingData;

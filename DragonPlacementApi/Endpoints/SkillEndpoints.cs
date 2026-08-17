@@ -1,6 +1,6 @@
 using DragonPlacementApi.Poco;
-using DragonAssignmentApplication;
-using DragonAssignmentDomain.Models;
+using DragonAssignment.Application;
+using DragonAssignment.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DragonPlacementApi.Endpoints;

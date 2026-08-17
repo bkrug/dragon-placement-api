@@ -15,11 +15,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../DragonAssignmentApplication/DragonAssignmentApplication.csproj" />
-    <ProjectReference Include="../DragonAssignmentDomain/DragonAssignmentDomain.csproj" />
+    <ProjectReference Include="../DragonAssignment/DragonAssignment.csproj" />
     <ProjectReference Include="../DragonTimekeepingApplication/DragonTimekeepingApplication.csproj" />
     <ProjectReference Include="../DragonTimekeepingDomain/DragonTimekeepingDomain.csproj" />
-    <ProjectReference Include="../DragonAssignmentData/DragonAssignmentData.csproj" />
     <ProjectReference Include="../DragonTimekeepingData/DragonTimekeepingData.csproj" />
   </ItemGroup>
 
