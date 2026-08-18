@@ -1,7 +1,7 @@
 using System.Reflection;
 using NetArchTest.Rules;
 using Shouldly;
-using TestResult = NetArchTest.Rules.TestResult;
+using static DragonUnitTests.ArchitectureTests.LayeringTestHelpers;
 
 namespace DragonUnitTests.ArchitectureTests;
 
@@ -39,12 +39,5 @@ public class AssignmentLayeringTests
             .GetResult();
 
         result.IsSuccessful.ShouldBeTrue(DependencyFailureMessage(result));
-    }
-
-    private static string DependencyFailureMessage(TestResult result) {
-        var typeNameString = result.FailingTypeNames == null
-            ? string.Empty
-            : string.Join(", ", result.FailingTypeNames);
-        return "A dependency is breaking the clean architecture paradigm: " + typeNameString;
     }
 }
