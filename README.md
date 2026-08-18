@@ -39,13 +39,9 @@ It also wouldn't care about the skills associated with a dragon or a job.
 
 The main criticism of Clean Architecture that I am aware of is that people don't always like having so many extra projects within the solution.
 That is a reasonable criticism.
-The soution indeed has three projects for each domain-module, and three (very small) common projects.
-
-One could potentially reduce the number of projects.
-In this example, projects are a low-tech solution for enforcing one-directional dependencies between layers.
-In applications that put layers in their own folders, some sort of unit testing or linting solution is necessary to confrim that a domain layer does not inherit from an infrastructure layer.
-Those solutions are better,
-I just haven't gotten around to implementing them yet.
+So in this repo we are putting layers in their own folders
+The NetArchTest library is being used to enforce the correct dependency direction for different layers.
+See tests in the "ArchitectureTests" folder.
 
 ## Using more of a Domain Driven Design
 
