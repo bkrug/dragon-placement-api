@@ -19,9 +19,15 @@ builder.Services.AddCors(options =>
 );
 
 var connectionString = builder.Configuration.GetConnectionString("DragonPlacementDb");
+var queryDelaySeconds = builder.Configuration.GetValue<int>("QueryDelay");
 builder.Services
     .AddEntityFrameworkSqlite()
-    .AddDbContext<DragonPlacementContext>(options => options.UseSqlite(connectionString))
+    .AddDbContext<DragonPlacementContext>(options =>
+    {
+        options.UseSqlite(connectionString);
+        if (queryDelaySeconds > 0)
+            options.AddInterceptors(new SlowQueryInterceptor(TimeSpan.FromSeconds(queryDelaySeconds)));
+    })
     .AddDbContext<TimekeepingContext>(options => options.UseSqlite(connectionString));
 builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(o => o.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
