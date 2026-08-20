@@ -162,7 +162,7 @@ public class DragonUpsertTests
         unitOfWorkMock.Setup(u => u.GetSkillTagsById(skillIds)).Returns(newSkills.Clone());
 
         //Act
-        var response = await DragonEndpoints.UpdateDragonAsync(unitOfWorkMock.Object, dragonId, inputDragon);
+        var response = await DragonEndpoints.UpdateDragonAsync(unitOfWorkMock.Object, dragonId, inputDragon, CancellationToken.None);
 
         //Assert
         response.Result.ShouldBeOfType<Ok<ValidatedPayload<Dragon>>>();
@@ -177,7 +177,7 @@ public class DragonUpsertTests
         unitOfWorkMock.Setup(u => u.GetDragonWithJobAsync(It.IsAny<int>(), JobInclusions.None, It.IsAny<CancellationToken>())).ReturnsAsync((Dragon?)null);
 
         //Act
-        var response = await DragonEndpoints.UpdateDragonAsync(unitOfWorkMock.Object, 999, new DragonCreateEdit());
+        var response = await DragonEndpoints.UpdateDragonAsync(unitOfWorkMock.Object, 999, new DragonCreateEdit(), CancellationToken.None);
 
         //Assert
         response.Result.ShouldBeOfType<NotFound<ValidatedResponse>>();
@@ -214,7 +214,7 @@ public class DragonUpsertTests
         unitOfWorkMock.Setup(m => m.GetDragonWithJobAsync(DRAGON_ID, JobInclusions.None, It.IsAny<CancellationToken>())).ReturnsAsync(existingDragon);
 
         //Act
-        var response = await DragonEndpoints.UpdateDragonAsync(unitOfWorkMock.Object, DRAGON_ID, inputDragon);
+        var response = await DragonEndpoints.UpdateDragonAsync(unitOfWorkMock.Object, DRAGON_ID, inputDragon, CancellationToken.None);
 
         //Assert
         response.Result.ShouldBeOfType<BadRequest<ValidatedForm<ValidationFailures>>>();
@@ -245,7 +245,7 @@ public class DragonUpsertTests
         unitOfWorkMock.Setup(m => m.GetDragonWithJobAsync(DRAGON_ID, JobInclusions.None, It.IsAny<CancellationToken>())).ReturnsAsync(existingDragon);
 
         //Act
-        var response = await DragonEndpoints.UpdateDragonAsync(unitOfWorkMock.Object, DRAGON_ID, inputDragon);
+        var response = await DragonEndpoints.UpdateDragonAsync(unitOfWorkMock.Object, DRAGON_ID, inputDragon, CancellationToken.None);
 
         //Assert
         response.Result.ShouldBeOfType<BadRequest<ValidatedForm<ValidationFailures>>>();

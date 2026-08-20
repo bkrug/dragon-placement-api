@@ -86,9 +86,10 @@ public class DragonEndpoints
         UpdateDragonAsync(
             IDragonPlacementUnitOfWork unitOfWork,
             [FromRoute(Name="dragonId")] int dragonId,
-            [FromBody] DragonCreateEdit inputDragon)
+            [FromBody] DragonCreateEdit inputDragon,
+            CancellationToken cancellationToken)
     {
-        var result = await DragonUpsertService.UpdateDragon(inputDragon, dragonId, unitOfWork).ConfigureAwait(false);
+        var result = await DragonUpsertService.UpdateDragon(inputDragon, dragonId, unitOfWork, cancellationToken).ConfigureAwait(false);
         if (result.IsFailure)
             return result.Error switch
             {

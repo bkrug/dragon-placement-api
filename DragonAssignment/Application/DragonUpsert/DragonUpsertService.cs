@@ -26,9 +26,9 @@ public static class DragonUpsertService
         return result;
     }
 
-    public static async Task<Result<Dragon, DragonUpdateFailure>> UpdateDragon(DragonCreateEdit input, int dragonId, IDragonPlacementUnitOfWork unitOfWork)
+    public static async Task<Result<Dragon, DragonUpdateFailure>> UpdateDragon(DragonCreateEdit input, int dragonId, IDragonPlacementUnitOfWork unitOfWork, CancellationToken cancellationToken)
     {
-        var existing = await unitOfWork.GetDragonWithJobAsync(dragonId, JobInclusions.None, CancellationToken.None).ConfigureAwait(false);
+        var existing = await unitOfWork.GetDragonWithJobAsync(dragonId, JobInclusions.None, cancellationToken).ConfigureAwait(false);
         if (existing == null)
             return Result.Failure<Dragon, DragonUpdateFailure>(new DragonNotFound());
 
