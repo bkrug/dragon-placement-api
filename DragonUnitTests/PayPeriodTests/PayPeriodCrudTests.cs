@@ -28,7 +28,7 @@ public class PayPeriodCrudTests
             .WithStartDate(new DateTime(1970, 1, 5))
             .WithEndDate(new DateTime(1970, 1, 11))
             .WithAssignmentId(1827)
-            .WithSubmissionStatus(PayPeriodStatus.Draft) //Default value
+            .WithSubmissionStatus(PayPeriodStatus.Draft) //This should be the status of all pay periods upon initial creation.
             .AddHoursWorked(new DateTime(1970, 1, 5, 9, 0, 0), new DateTime(1970, 1, 5, 17, 0, 0))
             .Build();
         var insertedPayPeriod = new Immutable<PayPeriod>();

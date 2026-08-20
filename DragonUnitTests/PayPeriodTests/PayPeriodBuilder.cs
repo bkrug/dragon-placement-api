@@ -46,7 +46,6 @@ public class PayPeriodBuilder
         AssignmentId = _assignmentId,
         StartDate = _startDate,
         EndDate = _endDate,
-        //SubmissionStatus = _submissionStatus,
         SubmissionStatus = _submissionStatusEnum,
         HoursWorked = _hoursWorked
     };

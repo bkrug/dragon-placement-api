@@ -29,7 +29,6 @@ public class PayPeriod
         AssignmentId = input.AssignmentId;
         StartDate = input.StartDate;
         EndDate = input.EndDate;
-        //SubmissionStatus = input.SubmissionStatus;
 
         //Insert and update child records coming from input object.
         foreach (var inputClockIn in inputClockIns)
