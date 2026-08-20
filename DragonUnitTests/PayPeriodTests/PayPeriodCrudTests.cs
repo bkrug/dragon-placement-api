@@ -361,6 +361,34 @@ public class PayPeriodCrudTests
         failures.FieldFailures[expectedFailureField].ShouldBe(expectedFailureMessage);
     }
 
+    [Theory]
+    [InlineData(PayPeriodStatus.Submitted)]
+    [InlineData(PayPeriodStatus.Billed)]
+    public async Task UpdatePayPeriod_NotDraftStatus_ExpectBadRequestWithModelLevelFailure(PayPeriodStatus existingStatus)
+    {
+        const int PAY_PERIOD_ID = 55;
+        var existingEntry = new PayPeriodBuilder()
+            .WithPayPeriodId(PAY_PERIOD_ID)
+            .WithStartDate(new DateTime(1970, 1, 5))
+            .WithEndDate(new DateTime(1970, 1, 11))
+            .WithSubmissionStatus(existingStatus)
+            .Build();
+        var input = new PayPeriodCreateEditBuilder()
+            .WithStartDate("1970-01-05")
+            .WithEndDate("1970-01-11")
+            .Build();
+        var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
+        unitOfWorkMock.Setup(u => u.GetPayPeriodWithHoursWorkedAsync(PAY_PERIOD_ID)).ReturnsAsync(existingEntry);
+
+        //Act
+        var response = await PayPeriodEndpoints.UpdatePayPeriodAsync(unitOfWorkMock.Object, PAY_PERIOD_ID, input);
+
+        //Assert
+        response.Result.ShouldBeOfType<BadRequest<ValidatedForm<ValidationFailures>>>();
+        var failures = ((BadRequest<ValidatedForm<ValidationFailures>>)response.Result).Value!.ValidationFailures;
+        failures.ModelLevelFailure.ShouldBe("Cannot edit a pay period unless it is in status 'Draft'");
+    }
+
     [Fact]
     public async Task UpdatePayPeriod_HoursWorkedStartBeforePayPeriod_ExpectBadRequest()
     {

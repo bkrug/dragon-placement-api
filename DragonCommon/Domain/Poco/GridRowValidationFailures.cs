@@ -2,6 +2,7 @@ namespace DragonCommon.Domain.Poco;
 
 public class ValidationFailures
 {
+    public string ModelLevelFailure { get; set; } = string.Empty;
     public Dictionary<string, string> FieldFailures { get; set; } = [];
     public Dictionary<string, List<GridRowValidationFailures>> GridRowFailures { get; set; } = [];
 }
