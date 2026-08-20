@@ -51,6 +51,7 @@ public partial class TimekeepingContext : DbContext
 
             entity.Property(e => e.StartDate).IsUnixSecondsType("StartDateUnix");
             entity.Property(e => e.EndDate).IsUnixSecondsType("EndDateUnix");
+            entity.Property(e => e.SubmissionStatus).IsEnumNameType("SubmissionStatus");
         });
 
         OnModelCreatingPartial(modelBuilder);
