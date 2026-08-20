@@ -1,15 +1,20 @@
 using CSharpFunctionalExtensions;
 using DragonCommon.Domain.Poco;
+using DragonTimekeeping.Domain.Enums;
 
 namespace DragonTimekeeping.Domain.Models;
 
-public partial class PayPeriod
+public class PayPeriod
 {
     public int PayPeriodId { get; set; }
     public int AssignmentId { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public string SubmissionStatus { get; set; } = null!;
+
+    //TODO: Rename this and remove the string field from the domain model.
+    //The string field is an implementation detail in the database.
+    public PayPeriodStatus SubmissionStatusEnum { get; set; }
 
     public virtual ICollection<HoursWorked> HoursWorked { get; set; } = [];
 
