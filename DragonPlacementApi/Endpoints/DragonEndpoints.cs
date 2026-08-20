@@ -56,10 +56,11 @@ public class DragonEndpoints
         GetDragonAsync(
             IDragonPlacementUnitOfWork unitOfWork,
             [FromRoute(Name="dragonId")] int dragonId,
+            CancellationToken cancellationToken,
             [FromQuery(Name="jobInclusions")] JobInclusions jobInclusions = JobInclusions.None
         )
     {
-        var dragon = await unitOfWork.GetDragonWithJobAsync(dragonId, jobInclusions).ConfigureAwait(false);
+        var dragon = await unitOfWork.GetDragonWithJobAsync(dragonId, jobInclusions, cancellationToken).ConfigureAwait(false);
         return dragon == null
             ? TypedResults.NotFound(ValidatedResponse.NotFound)
             : TypedResults.Ok(ValidatedPayload<Dragon>.FromPayload(dragon));

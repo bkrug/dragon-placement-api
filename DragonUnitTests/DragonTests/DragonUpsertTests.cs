@@ -158,7 +158,7 @@ public class DragonUpsertTests
             SkillTags = newSkills
         };
         var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
-        unitOfWorkMock.Setup(u => u.GetDragonWithJobAsync(dragonId, JobInclusions.None)).ReturnsAsync(existingDragon);
+        unitOfWorkMock.Setup(u => u.GetDragonWithJobAsync(dragonId, JobInclusions.None, It.IsAny<CancellationToken>())).ReturnsAsync(existingDragon);
         unitOfWorkMock.Setup(u => u.GetSkillTagsById(skillIds)).Returns(newSkills.Clone());
 
         //Act
@@ -174,7 +174,7 @@ public class DragonUpsertTests
     public async Task UpdateDragon_DragonNotFound_ExpectNotFoundAndDoesNotSave()
     {
         var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
-        unitOfWorkMock.Setup(u => u.GetDragonWithJobAsync(It.IsAny<int>(), JobInclusions.None)).ReturnsAsync((Dragon?)null);
+        unitOfWorkMock.Setup(u => u.GetDragonWithJobAsync(It.IsAny<int>(), JobInclusions.None, It.IsAny<CancellationToken>())).ReturnsAsync((Dragon?)null);
 
         //Act
         var response = await DragonEndpoints.UpdateDragonAsync(unitOfWorkMock.Object, 999, new DragonCreateEdit());
@@ -211,7 +211,7 @@ public class DragonUpsertTests
         };
         typeof(DragonCreateEdit).GetProperty(expectedFailureField)!.SetValue(inputDragon, invalidValue);
         var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
-        unitOfWorkMock.Setup(m => m.GetDragonWithJobAsync(DRAGON_ID, JobInclusions.None)).ReturnsAsync(existingDragon);
+        unitOfWorkMock.Setup(m => m.GetDragonWithJobAsync(DRAGON_ID, JobInclusions.None, It.IsAny<CancellationToken>())).ReturnsAsync(existingDragon);
 
         //Act
         var response = await DragonEndpoints.UpdateDragonAsync(unitOfWorkMock.Object, DRAGON_ID, inputDragon);
@@ -242,7 +242,7 @@ public class DragonUpsertTests
             FightingSkills = "c"
         };
         var unitOfWorkMock = new Mock<IDragonPlacementUnitOfWork>();
-        unitOfWorkMock.Setup(m => m.GetDragonWithJobAsync(DRAGON_ID, JobInclusions.None)).ReturnsAsync(existingDragon);
+        unitOfWorkMock.Setup(m => m.GetDragonWithJobAsync(DRAGON_ID, JobInclusions.None, It.IsAny<CancellationToken>())).ReturnsAsync(existingDragon);
 
         //Act
         var response = await DragonEndpoints.UpdateDragonAsync(unitOfWorkMock.Object, DRAGON_ID, inputDragon);

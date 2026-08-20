@@ -103,11 +103,11 @@ public class DragonPlacementUnitOfWork(DragonPlacementContext context, ILogger<D
         return _context.SkillTags.Where(st => skillTagIds.Contains(st.SkillTagId)).ToList();
     }
 
-    public async Task<Dragon?> GetDragonWithJobAsync(int dragonId, JobInclusions jobInclusions)
+    public async Task<Dragon?> GetDragonWithJobAsync(int dragonId, JobInclusions jobInclusions, CancellationToken cancellationToken)
     {
         var dragon = await _context.Dragons
             .Include(d => d.SkillTags)
-            .FirstOrDefaultAsync(d => d.DragonId == dragonId);
+            .FirstOrDefaultAsync(d => d.DragonId == dragonId, cancellationToken);
 
         if (dragon == null || jobInclusions == JobInclusions.None)
             return dragon;
@@ -124,7 +124,7 @@ public class DragonPlacementUnitOfWork(DragonPlacementContext context, ILogger<D
         };
         dragon.Assignments = await assignmentQuery
             .Include(a => a.Job)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         return dragon;
     }

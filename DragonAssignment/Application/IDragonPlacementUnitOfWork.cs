@@ -33,7 +33,7 @@ public interface IDragonPlacementUnitOfWork
     IList<SkillTag> GetSkillTagsById(IList<int> skillTagIds);
 
     // 0 or 1 results
-    Task<Dragon?> GetDragonWithJobAsync(int dragonId, JobInclusions jobInclusions);
+    Task<Dragon?> GetDragonWithJobAsync(int dragonId, JobInclusions jobInclusions, CancellationToken cancellationToken);
     Task<Job?> GetJobWithSkillsAsync(int jobId);
     Task<Assignment?> GetAssignmentWithDragonAndJobAsync(int assignmentId);
     
