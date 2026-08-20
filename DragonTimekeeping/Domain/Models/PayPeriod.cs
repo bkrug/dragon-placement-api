@@ -10,11 +10,7 @@ public class PayPeriod
     public int AssignmentId { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
-    public string SubmissionStatus { get; set; } = null!;
-
-    //TODO: Rename this and remove the string field from the domain model.
-    //The string field is an implementation detail in the database.
-    public PayPeriodStatus SubmissionStatusEnum { get; set; }
+    public PayPeriodStatus SubmissionStatus { get; set; } = PayPeriodStatus.Draft;
 
     public virtual ICollection<HoursWorked> HoursWorked { get; set; } = [];
 
@@ -33,7 +29,7 @@ public class PayPeriod
         AssignmentId = input.AssignmentId;
         StartDate = input.StartDate;
         EndDate = input.EndDate;
-        SubmissionStatus = input.SubmissionStatus;
+        //SubmissionStatus = input.SubmissionStatus;
 
         //Insert and update child records coming from input object.
         foreach (var inputClockIn in inputClockIns)

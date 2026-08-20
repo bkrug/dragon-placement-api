@@ -38,7 +38,6 @@ public static class PayPeriodMapper
                 AssignmentId = input.AssignmentId,
                 StartDate = parsedStart,
                 EndDate = parsedEnd,
-                SubmissionStatus = input.SubmissionStatus,
                 HoursWorked = parsedHoursWorked.Select(tuple => tuple.Item1!).ToList()
             };
             return Result.Success<PayPeriod, ValidationFailures>(payPeriod);

@@ -7,6 +7,7 @@ using Moq;
 using Shouldly;
 using DragonTimekeeping.Application;
 using DragonTimekeeping.Application.SinglePayPeriodQuery;
+using DragonTimekeeping.Domain.Enums;
 
 namespace DragonUnitTests.PayPeriodTests;
 
@@ -26,6 +27,7 @@ public class PayPeriodReadTests
             .WithEndDate(new DateTime(1970, 1, 8))
             .AddHoursWorked(401, new DateTime(1970, 1, 2, 9, 0, 0), new DateTime(1970, 1, 2, 17, 0, 0))
             .AddHoursWorked(402, new DateTime(1970, 1, 3, 9, 0, 0), new DateTime(1970, 1, 3, 17, 0, 0))
+            .WithSubmissionStatus(PayPeriodStatus.Draft)
             .Build();
         var dragon = new Dragon { DragonId = DRAGON_ID, GivenName = "Smaug", FamilyName = "the Terrible" };
         var job = new Job { JobId = JOB_ID, JobTitle = "Guard", EmployerName = "Castle Corp" };

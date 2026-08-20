@@ -1,4 +1,5 @@
 using DragonCommon.Application;
+using DragonTimekeeping.Domain.Enums;
 using DragonTimekeeping.Domain.Models;
 
 namespace DragonTimekeeping.Application.SinglePayPeriodQuery;
@@ -12,7 +13,7 @@ public static class PayPeriodViewMapper
             AssignmentId = entry.AssignmentId,
             StartDate = entry.StartDate.ToIsoDateString(),
             EndDate = entry.EndDate.ToIsoDateString(),
-            SubmissionStatus = entry.SubmissionStatus,
+            SubmissionStatus = Enum.GetName(entry.SubmissionStatus) ?? "Unknown",
             DragonName = dragonName,
             AssignmentDescription = assignmentDescription,
             HoursWorked = entry.HoursWorked.Select(hw => new HoursWorkedView

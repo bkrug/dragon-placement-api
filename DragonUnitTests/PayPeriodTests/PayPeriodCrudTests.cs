@@ -8,6 +8,7 @@ using DragonTimekeeping.Domain.Models;
 using DragonTimekeeping.Application;
 using DragonTimekeeping.Application.PayPeriodUpsert;
 using DragonCommon.Domain.Poco;
+using DragonTimekeeping.Domain.Enums;
 
 namespace DragonUnitTests.PayPeriodTests;
 
@@ -22,11 +23,14 @@ public class PayPeriodCrudTests
             .WithAssignmentId(1827)
             .WithDragonId(382)
             .AddHoursWorked("1970-01-05T09:00:00", "1970-01-05T17:00:00")
+            //Requesting a status of 'submitted' should be ignored. Upon creation, all pay periods are "Draft".
+            .WithSubmissionStatus(nameof(PayPeriodStatus.Submitted))
             .Build();
         var expectedPayPeriod = new PayPeriodBuilder()
             .WithStartDate(new DateTime(1970, 1, 5))
             .WithEndDate(new DateTime(1970, 1, 11))
             .WithAssignmentId(1827)
+            .WithSubmissionStatus(PayPeriodStatus.Draft)
             .AddHoursWorked(new DateTime(1970, 1, 5, 9, 0, 0), new DateTime(1970, 1, 5, 17, 0, 0))
             .Build();
         var insertedPayPeriod = new Immutable<PayPeriod>();
@@ -232,7 +236,7 @@ public class PayPeriodCrudTests
             .WithAssignmentId(5)
             .WithStartDate(new DateTime(1970, 1, 12))
             .WithEndDate(new DateTime(1970, 1, 18))
-            .WithSubmissionStatus("Draft")
+            .WithSubmissionStatus(PayPeriodStatus.Draft)
             .Build();
         var input = new PayPeriodCreateEditBuilder()
             .WithAssignmentId(5)
@@ -240,14 +244,13 @@ public class PayPeriodCrudTests
             .WithStartDate("1970-01-12")
             .WithEndDate("1970-01-18")
             .AddHoursWorked("1970-01-12T09:00:00", "1970-01-12T17:00:00")
-            .WithSubmissionStatus("Submitted")
             .Build();
         var expectedEntry = new PayPeriodBuilder()
             .WithPayPeriodId(PAY_PERIOD_ID)
             .WithAssignmentId(5)
             .WithStartDate(new DateTime(1970, 1, 12))
             .WithEndDate(new DateTime(1970, 1, 18))
-            .WithSubmissionStatus("Submitted")
+            .WithSubmissionStatus(PayPeriodStatus.Draft)
             .AddHoursWorked(new DateTime(1970, 1, 12, 9, 0, 0), new DateTime(1970, 1, 12, 17, 0, 0))
             .Build();
         var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
