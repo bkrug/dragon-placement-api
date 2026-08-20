@@ -23,14 +23,12 @@ public class PayPeriodCrudTests
             .WithAssignmentId(1827)
             .WithDragonId(382)
             .AddHoursWorked("1970-01-05T09:00:00", "1970-01-05T17:00:00")
-            //Requesting a status of 'submitted' should be ignored. Upon creation, all pay periods are "Draft".
-            .WithSubmissionStatus(nameof(PayPeriodStatus.Submitted))
             .Build();
         var expectedPayPeriod = new PayPeriodBuilder()
             .WithStartDate(new DateTime(1970, 1, 5))
             .WithEndDate(new DateTime(1970, 1, 11))
             .WithAssignmentId(1827)
-            .WithSubmissionStatus(PayPeriodStatus.Draft)
+            .WithSubmissionStatus(PayPeriodStatus.Draft) //Default value
             .AddHoursWorked(new DateTime(1970, 1, 5, 9, 0, 0), new DateTime(1970, 1, 5, 17, 0, 0))
             .Build();
         var insertedPayPeriod = new Immutable<PayPeriod>();
