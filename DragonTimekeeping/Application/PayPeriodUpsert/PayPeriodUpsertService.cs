@@ -34,10 +34,9 @@ public static class PayPeriodUpsertService
 
         return await PayPeriodMapper.ToPayPeriodModel(input)
             .Bind(pp => pp.Validate())
-            .MapError(e => (PayPeriodUpdateFailure)new PayPeriodInvalid(e))
-            .Bind(parsedInput => existing.ApplyEdit(parsedInput)
-                .MapError(e => (PayPeriodUpdateFailure)new PayPeriodInvalid(e))
-                .Map(() => existing))
-            .Tap(async _ => await unitOfWork.SaveAsync().ConfigureAwait(false));
+            .Bind(existing.ApplyEdit)
+            .Map(() => existing)
+            .Tap(async _ => await unitOfWork.SaveAsync().ConfigureAwait(false))
+            .MapError(e => (PayPeriodUpdateFailure)new PayPeriodInvalid(e));
     }
 }

@@ -359,6 +359,7 @@ public class PayPeriodCrudTests
         response.Result.ShouldBeOfType<BadRequest<ValidatedForm<ValidationFailures>>>();
         var failures = ((BadRequest<ValidatedForm<ValidationFailures>>)response.Result).Value!.ValidationFailures;
         failures.FieldFailures[expectedFailureField].ShouldBe(expectedFailureMessage);
+        unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Never);
     }
 
     [Theory]
@@ -387,6 +388,7 @@ public class PayPeriodCrudTests
         response.Result.ShouldBeOfType<BadRequest<ValidatedForm<ValidationFailures>>>();
         var failures = ((BadRequest<ValidatedForm<ValidationFailures>>)response.Result).Value!.ValidationFailures;
         failures.ModelLevelFailure.ShouldBe("Cannot edit a pay period unless it is in status 'Draft'");
+        unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Never);
     }
 
     [Fact]
