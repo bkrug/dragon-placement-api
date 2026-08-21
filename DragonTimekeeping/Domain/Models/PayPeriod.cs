@@ -16,11 +16,11 @@ public class PayPeriod
 
     public UnitResult<ValidationFailures> EnsureEditable()
     {
-        if (SubmissionStatus != PayPeriodStatus.Draft)
-            return UnitResult.Failure(new ValidationFailures {
+        return SubmissionStatus == PayPeriodStatus.Draft
+            ? UnitResult.Success<ValidationFailures>()
+            : UnitResult.Failure(new ValidationFailures {
                 ModelLevelFailure = $"Cannot edit a pay period unless it is in status '{PayPeriodStatus.Draft}'"
             });
-        return UnitResult.Success<ValidationFailures>();
     }
 
     public UnitResult<ValidationFailures> ApplyEdit(PayPeriod input)
