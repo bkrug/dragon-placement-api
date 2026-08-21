@@ -14,10 +14,12 @@ public class PayPeriod
 
     public virtual ICollection<HoursWorked> HoursWorked { get; set; } = [];
 
-    public UnitResult<string> ApplyEdit(PayPeriod input)
+    public UnitResult<ValidationFailures> ApplyEdit(PayPeriod input)
     {
         if (SubmissionStatus != PayPeriodStatus.Draft)
-            return UnitResult.Failure($"Cannot edit a pay period unless it is in status '{PayPeriodStatus.Draft}'");
+            return UnitResult.Failure(new ValidationFailures {
+                ModelLevelFailure = $"Cannot edit a pay period unless it is in status '{PayPeriodStatus.Draft}'"
+            });
 
         var inputClockIns = input.HoursWorked.ToList();
 
@@ -43,7 +45,7 @@ public class PayPeriod
                 existingClockPunch.EndDateTime = inputClockIn.EndDateTime;
         }
 
-        return UnitResult.Success<string>();
+        return UnitResult.Success<ValidationFailures>();
     }
 
     public Result<PayPeriod, ValidationFailures> Validate()
