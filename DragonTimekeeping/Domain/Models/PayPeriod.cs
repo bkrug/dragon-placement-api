@@ -14,13 +14,17 @@ public class PayPeriod
 
     public virtual ICollection<HoursWorked> HoursWorked { get; set; } = [];
 
-    public UnitResult<ValidationFailures> ApplyEdit(PayPeriod input)
+    public UnitResult<ValidationFailures> EnsureEditable()
     {
         if (SubmissionStatus != PayPeriodStatus.Draft)
             return UnitResult.Failure(new ValidationFailures {
                 ModelLevelFailure = $"Cannot edit a pay period unless it is in status '{PayPeriodStatus.Draft}'"
             });
+        return UnitResult.Success<ValidationFailures>();
+    }
 
+    public UnitResult<ValidationFailures> ApplyEdit(PayPeriod input)
+    {
         var inputClockIns = input.HoursWorked.ToList();
 
         //Delete child records not found in input object

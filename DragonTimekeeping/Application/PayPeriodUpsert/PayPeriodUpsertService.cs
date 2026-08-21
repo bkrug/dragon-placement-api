@@ -32,7 +32,8 @@ public static class PayPeriodUpsertService
         if (existing == null)
             return Result.Failure<PayPeriod, PayPeriodUpdateFailure>(new PayPeriodNotFound());
 
-        return await PayPeriodMapper.ToPayPeriodModel(input)
+        return await existing.EnsureEditable()
+            .Bind(() => PayPeriodMapper.ToPayPeriodModel(input))
             .Bind(pp => pp.Validate())
             .Bind(existing.ApplyEdit)
             .Map(() => existing)

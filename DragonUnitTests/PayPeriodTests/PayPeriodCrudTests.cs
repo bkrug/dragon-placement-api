@@ -375,7 +375,7 @@ public class PayPeriodCrudTests
             .WithSubmissionStatus(existingStatus)
             .Build();
         var input = new PayPeriodCreateEditBuilder()
-            .WithStartDate("1970-01-05")
+            .WithStartDate("not a real date") //Intentionally malformed, to prove the status check wins before field validation runs.
             .WithEndDate("1970-01-11")
             .Build();
         var unitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
