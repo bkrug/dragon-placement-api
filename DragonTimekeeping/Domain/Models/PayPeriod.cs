@@ -14,8 +14,11 @@ public class PayPeriod
 
     public virtual ICollection<HoursWorked> HoursWorked { get; set; } = [];
 
-    public void ApplyEdit(PayPeriod input)
+    public UnitResult<string> ApplyEdit(PayPeriod input)
     {
+        if (SubmissionStatus != PayPeriodStatus.Draft)
+            return UnitResult.Failure($"Cannot edit a pay period unless it is in status '{PayPeriodStatus.Draft}'");
+
         var inputClockIns = input.HoursWorked.ToList();
 
         //Delete child records not found in input object
@@ -39,6 +42,8 @@ public class PayPeriod
             else
                 existingClockPunch.EndDateTime = inputClockIn.EndDateTime;
         }
+
+        return UnitResult.Success<string>();
     }
 
     public Result<PayPeriod, ValidationFailures> Validate()
@@ -47,7 +52,7 @@ public class PayPeriod
             new List<(string, string)>()
             {
                 ( nameof(StartDate), ValidateStartDate() ),
-                ( nameof(EndDate), ValidateEndDate() )
+                ( nameof(EndDate), ValidateEndDate() ),
             }
             .Where(tuple => tuple.Item2 != string.Empty)
             .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
@@ -58,7 +63,9 @@ public class PayPeriod
             return Result.Success<PayPeriod, ValidationFailures>(this);
         }
         else {
-            var validationFailures = new ValidationFailures { FieldFailures = failures };
+            var validationFailures = new ValidationFailures {
+                FieldFailures = failures
+            };
             if (hoursWorkedFailures.Count > 0)
                 validationFailures.GridRowFailures[nameof(HoursWorked)] = hoursWorkedFailures;
             return Result.Failure<PayPeriod, ValidationFailures>(validationFailures);

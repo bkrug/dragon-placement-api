@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+
 namespace DragonCommon.Domain.Poco;
 
 public class ValidationFailures
