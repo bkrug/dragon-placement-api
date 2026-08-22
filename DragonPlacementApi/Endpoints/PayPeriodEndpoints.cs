@@ -117,4 +117,11 @@ public class PayPeriodEndpoints
         return TypedResults.Ok(ValidatedResponse.Success);
     }
 
+    public static Results<Ok<ValidatedResponse>, Conflict<ValidatedResponse>> SubmitPayPeriod(
+            ITimekeepingUnitOfWork unitOfWork,
+            [FromRoute(Name = "payPeriodId")] int payPeriodId)
+    {
+        return TypedResults.Ok(ValidatedResponse.Success);
+    }
+
 }
