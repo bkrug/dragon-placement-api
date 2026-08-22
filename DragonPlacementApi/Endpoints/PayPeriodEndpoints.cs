@@ -1,7 +1,7 @@
 using DragonAssignment.Application;
-using DragonCommon.Application.Repositories;
 using DragonPlacementApi.Poco;
 using DragonTimekeeping.Application;
+using DragonTimekeeping.Application.PayPeriodDelete;
 using DragonTimekeeping.Application.PayPeriodSubmit;
 using DragonTimekeeping.Application.PayPeriodUpsert;
 using DragonTimekeeping.Application.PotentialPayPeriodQuery;
@@ -104,17 +104,19 @@ public class PayPeriodEndpoints
             };
     }
 
-    //TODO: Only allow pay periods to be deleted if they have not yet been submitted.
     public static async Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>, Conflict<ValidatedResponse>>>
         DeletePayPeriodAsync(
             ITimekeepingUnitOfWork unitOfWork,
             [FromRoute(Name = "payPeriodId")] int payPeriodId)
     {
-        var deleteResult = unitOfWork.PayPeriodRepository.Delete(payPeriodId);
-        if (deleteResult == DeleteResult.NotFound)
-            return TypedResults.NotFound(ValidatedResponse.NotFound);
-
-        await unitOfWork.SaveAsync().ConfigureAwait(false);
+        var result = await PayPeriodDeleteService.DeletePayPeriodAsync(unitOfWork, payPeriodId).ConfigureAwait(false);
+        if (result.IsFailure)
+            return result.Error switch
+            {
+                PayPeriodDeleteNotFound => TypedResults.NotFound(ValidatedResponse.NotFound),
+                PayPeriodDeleteInvalid(var f) => TypedResults.Conflict(new ValidatedResponse { ValidationFailures = [f.ModelLevelFailure] }),
+                _ => throw new InvalidOperationException()
+            };
         return TypedResults.Ok(ValidatedResponse.Success);
     }
 

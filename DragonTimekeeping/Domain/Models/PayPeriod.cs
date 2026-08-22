@@ -23,6 +23,15 @@ public class PayPeriod
             });
     }
 
+    public UnitResult<ValidationFailures> EnsureDeletable()
+    {
+        return SubmissionStatus != PayPeriodStatus.Billed
+            ? UnitResult.Success<ValidationFailures>()
+            : UnitResult.Failure(new ValidationFailures {
+                ModelLevelFailure = $"Cannot delete a pay period once it is in status '{PayPeriodStatus.Billed}'"
+            });
+    }
+
     public UnitResult<ValidationFailures> Submit()
     {
         if (SubmissionStatus != PayPeriodStatus.Draft)
