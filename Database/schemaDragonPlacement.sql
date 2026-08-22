@@ -62,3 +62,20 @@ CREATE TABLE PayPeriod (
 	CONSTRAINT PK_PayPeriodId PRIMARY KEY (PayPeriodId),
 	CONSTRAINT FK_AssignmentId FOREIGN KEY (AssignmentId) REFERENCES "Assignment"(AssignmentId)
 );
+CREATE TABLE IF NOT EXISTS "ChargeRate" (
+    ChargeRateId INTEGER NOT NULL,
+    AssignmentId INTEGER NOT NULL,
+    HourlyRate   NUMERIC NOT NULL,
+    CONSTRAINT PK_ChargeRate PRIMARY KEY (ChargeRateId),
+    CONSTRAINT FK_ChargeRate_Assignment FOREIGN KEY (AssignmentId) REFERENCES "Assignment"(AssignmentId)
+);
+CREATE TABLE IF NOT EXISTS "BillableHours" (
+    BillableHoursId INTEGER NOT NULL,
+    ChargeRateId    INTEGER NOT NULL,
+    HourlyRate      NUMERIC NOT NULL,
+    TotalHours      NUMERIC NOT NULL,
+    PeriodStartUnix INTEGER NOT NULL,
+    PeriodEndUnix   INTEGER NOT NULL,
+    CONSTRAINT PK_BillableHours PRIMARY KEY (BillableHoursId),
+    CONSTRAINT FK_BillableHours_ChargeRate FOREIGN KEY (ChargeRateId) REFERENCES "ChargeRate"(ChargeRateId)
+);
