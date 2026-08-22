@@ -11,7 +11,7 @@ namespace DragonUnitTests.PayPeriodTests;
 public class PayPeriodWorkflowTests
 {
     [Fact]
-    public void SubmitPayPeriod_OriginallyInDraftStatus_ExpectSuccess()
+    public async Task SubmitPayPeriod_OriginallyInDraftStatus_ExpectSuccess()
     {
         const int PAY_PERIOD_ID = 14;
         var payPeriod = new PayPeriodBuilder()
@@ -22,7 +22,7 @@ public class PayPeriodWorkflowTests
         unitOfWorkMock.Setup(u => u.PayPeriodRepository.GetByID(PAY_PERIOD_ID)).ReturnsAsync(payPeriod);
 
         //Act
-        var response = PayPeriodEndpoints.SubmitPayPeriod(unitOfWorkMock.Object, PAY_PERIOD_ID);
+        var response = await PayPeriodEndpoints.SubmitPayPeriodAsync(unitOfWorkMock.Object, PAY_PERIOD_ID);
 
         //Assert
         response.Result.ShouldBeOfType<Ok<ValidatedResponse>>();
@@ -33,7 +33,7 @@ public class PayPeriodWorkflowTests
     [Theory]
     [InlineData(PayPeriodStatus.Submitted)]
     [InlineData(PayPeriodStatus.Billed)]
-    public void SubmitPayPeriod_OriginallyNotDraftStatus_ExpectFailure(PayPeriodStatus existingStatus)
+    public async Task SubmitPayPeriod_OriginallyNotDraftStatus_ExpectFailure(PayPeriodStatus existingStatus)
     {
         const int PAY_PERIOD_ID = 15;
         var payPeriod = new PayPeriodBuilder()
@@ -44,7 +44,7 @@ public class PayPeriodWorkflowTests
         unitOfWorkMock.Setup(u => u.PayPeriodRepository.GetByID(PAY_PERIOD_ID)).ReturnsAsync(payPeriod);
 
         //Act
-        var response = PayPeriodEndpoints.SubmitPayPeriod(unitOfWorkMock.Object, PAY_PERIOD_ID);
+        var response = await PayPeriodEndpoints.SubmitPayPeriodAsync(unitOfWorkMock.Object, PAY_PERIOD_ID);
 
         //Assert
         response.Result.ShouldBeOfType<Conflict<ValidatedResponse>>();

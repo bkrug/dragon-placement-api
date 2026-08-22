@@ -2,6 +2,7 @@ using DragonAssignment.Application;
 using DragonCommon.Application.Repositories;
 using DragonPlacementApi.Poco;
 using DragonTimekeeping.Application;
+using DragonTimekeeping.Application.PayPeriodSubmit;
 using DragonTimekeeping.Application.PayPeriodUpsert;
 using DragonTimekeeping.Application.PotentialPayPeriodQuery;
 using DragonTimekeeping.Application.SinglePayPeriodQuery;
@@ -117,10 +118,19 @@ public class PayPeriodEndpoints
         return TypedResults.Ok(ValidatedResponse.Success);
     }
 
-    public static Results<Ok<ValidatedResponse>, Conflict<ValidatedResponse>> SubmitPayPeriod(
+    public static async Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>, Conflict<ValidatedResponse>>>
+        SubmitPayPeriodAsync(
             ITimekeepingUnitOfWork unitOfWork,
             [FromRoute(Name = "payPeriodId")] int payPeriodId)
     {
+        var result = await PayPeriodSubmitService.SubmitPayPeriodAsync(unitOfWork, payPeriodId).ConfigureAwait(false);
+        if (result.IsFailure)
+            return result.Error switch
+            {
+                PayPeriodSubmitNotFound => TypedResults.NotFound(ValidatedResponse.NotFound),
+                PayPeriodSubmitInvalid(var f) => TypedResults.Conflict(new ValidatedResponse { ValidationFailures = [f.ModelLevelFailure] }),
+                _ => throw new InvalidOperationException()
+            };
         return TypedResults.Ok(ValidatedResponse.Success);
     }
 

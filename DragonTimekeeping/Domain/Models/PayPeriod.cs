@@ -23,6 +23,17 @@ public class PayPeriod
             });
     }
 
+    public UnitResult<ValidationFailures> Submit()
+    {
+        if (SubmissionStatus != PayPeriodStatus.Draft)
+            return UnitResult.Failure(new ValidationFailures {
+                ModelLevelFailure = $"Cannot submit a pay period unless it is in status '{PayPeriodStatus.Draft}'"
+            });
+
+        SubmissionStatus = PayPeriodStatus.Submitted;
+        return UnitResult.Success<ValidationFailures>();
+    }
+
     public UnitResult<ValidationFailures> ApplyEdit(PayPeriod input)
     {
         return EnsureEditable()
