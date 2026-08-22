@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../DragonAssignment/DragonAssignment.csproj" />
+    <ProjectReference Include="../DragonBilling/DragonBilling.csproj" />
     <ProjectReference Include="../DragonTimekeeping/DragonTimekeeping.csproj" />
     <ProjectReference Include="../DragonPlacementApi/DragonPlacementApi.csproj" />
   </ItemGroup>
