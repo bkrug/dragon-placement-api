@@ -30,6 +30,16 @@ public class BillableHoursCandidateTests
     private const int SUBMITTED_ASSIGNMENT_ID_3 = 105;
     private const int SUBMITTED_ASSIGNMENT_ID_4 = 106;
 
+    private const int PAY_PERIOD_ID_FULLY_IN_RANGE = 7;
+    private const int PAY_PERIOD_ID_END_DATE_IN_RANGE = 8;
+    private const int PAY_PERIOD_ID_ENDS_BEFORE_RANGE = 9;
+    private const int PAY_PERIOD_ID_ENDS_AFTER_RANGE = 10;
+
+    private const int ASSIGNMENT_ID_FULLY_IN_RANGE = 107;
+    private const int ASSIGNMENT_ID_END_DATE_IN_RANGE = 108;
+    private const int ASSIGNMENT_ID_ENDS_BEFORE_RANGE = 109;
+    private const int ASSIGNMENT_ID_ENDS_AFTER_RANGE = 110;
+
     private static readonly DateTime WEEK_START = new(1970, 1, 5); //Monday
     private static readonly DateTime WEEK_END = new(1970, 1, 11); //Sunday
 
@@ -197,6 +207,87 @@ public class BillableHoursCandidateTests
         {
             SUBMITTED_PAY_PERIOD_ID_3,
             SUBMITTED_PAY_PERIOD_ID_4
+        });
+        billingUnitOfWorkMock.Verify(u => u.SaveAsync(), Times.Once);
+    }
+
+    [Fact]
+    public async Task BuildBillableHoursCandidates_PayPeriodsRelativeToDateRange_ExpectBillableHoursOnlyWhenEndDateInRange()
+    {
+        var payPeriods = new List<PayPeriod>
+        {
+            // A: starts and ends inside the queried range
+            new PayPeriodBuilder()
+                .WithPayPeriodId(PAY_PERIOD_ID_FULLY_IN_RANGE)
+                .WithAssignmentId(ASSIGNMENT_ID_FULLY_IN_RANGE)
+                .WithStartDate(WEEK_START)
+                .WithEndDate(WEEK_END)
+                .WithSubmissionStatus(PayPeriodStatus.Submitted)
+                .Build(),
+            // B: starts before the queried range, but ends inside it
+            new PayPeriodBuilder()
+                .WithPayPeriodId(PAY_PERIOD_ID_END_DATE_IN_RANGE)
+                .WithAssignmentId(ASSIGNMENT_ID_END_DATE_IN_RANGE)
+                .WithStartDate(WEEK_START.AddDays(-7))
+                .WithEndDate(WEEK_END)
+                .WithSubmissionStatus(PayPeriodStatus.Submitted)
+                .Build(),
+            // C: ends before the queried range starts
+            new PayPeriodBuilder()
+                .WithPayPeriodId(PAY_PERIOD_ID_ENDS_BEFORE_RANGE)
+                .WithAssignmentId(ASSIGNMENT_ID_ENDS_BEFORE_RANGE)
+                .WithStartDate(WEEK_START.AddDays(-14))
+                .WithEndDate(WEEK_START.AddDays(-1))
+                .WithSubmissionStatus(PayPeriodStatus.Submitted)
+                .Build(),
+            // D: ends after the queried range ends
+            new PayPeriodBuilder()
+                .WithPayPeriodId(PAY_PERIOD_ID_ENDS_AFTER_RANGE)
+                .WithAssignmentId(ASSIGNMENT_ID_ENDS_AFTER_RANGE)
+                .WithStartDate(WEEK_END.AddDays(1))
+                .WithEndDate(WEEK_END.AddDays(7))
+                .WithSubmissionStatus(PayPeriodStatus.Submitted)
+                .Build(),
+        };
+        var chargeRates = new List<ChargeRate>
+        {
+            new() { ChargeRateId = 601, AssignmentId = ASSIGNMENT_ID_FULLY_IN_RANGE, HourlyRate = 60m },
+            new() { ChargeRateId = 602, AssignmentId = ASSIGNMENT_ID_END_DATE_IN_RANGE, HourlyRate = 65m },
+            new() { ChargeRateId = 603, AssignmentId = ASSIGNMENT_ID_ENDS_BEFORE_RANGE, HourlyRate = 70m },
+            new() { ChargeRateId = 604, AssignmentId = ASSIGNMENT_ID_ENDS_AFTER_RANGE, HourlyRate = 75m },
+        };
+
+        var timekeepingUnitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
+        // Applies the real filter expression rather than ignoring it, since the date-range
+        // filtering under test happens inside that expression, not anywhere downstream.
+        timekeepingUnitOfWorkMock.Setup(u => u.PayPeriodRepository.Get(
+                It.IsAny<Expression<Func<PayPeriod, bool>>>(), null, ""))
+            .Returns((Expression<Func<PayPeriod, bool>> filter,
+                    Func<IQueryable<PayPeriod>, IOrderedQueryable<PayPeriod>>? orderBy,
+                    string includeProperties) =>
+                payPeriods.AsQueryable().Where(filter).ToList());
+
+        var insertedBillableHours = new List<BillableHours>();
+        var billingUnitOfWorkMock = new Mock<IBillingUnitOfWork>();
+        billingUnitOfWorkMock.Setup(u => u.ChargeRateRepository.Get(
+                It.IsAny<Expression<Func<ChargeRate, bool>>>(), null, ""))
+            .Returns(chargeRates);
+        billingUnitOfWorkMock.Setup(u => u.BillableHoursRepository.Insert(It.IsAny<BillableHours>()))
+            .Callback<BillableHours>(insertedBillableHours.Add);
+
+        //Act
+        var response = await BillingEndpoints.BuildBillableHoursCandidatesAsync(
+            billingUnitOfWorkMock.Object,
+            timekeepingUnitOfWorkMock.Object,
+            WEEK_START.ToString("yyyy-MM-dd"),
+            WEEK_END.ToString("yyyy-MM-dd"));
+
+        //Assert
+        response.Result.ShouldBeOfType<Ok<ValidatedResponse>>();
+        insertedBillableHours.Select(bh => bh.PayPeriodId).ToList().ShouldBeEquivalentTo(new List<int>
+        {
+            PAY_PERIOD_ID_FULLY_IN_RANGE,
+            PAY_PERIOD_ID_END_DATE_IN_RANGE
         });
         billingUnitOfWorkMock.Verify(u => u.SaveAsync(), Times.Once);
     }
