@@ -1,6 +1,5 @@
 using CSharpFunctionalExtensions;
 using DragonCommon.Domain;
-using DragonTimekeeping.Domain.Enums;
 
 namespace DragonTimekeeping.Application.PayPeriodBillingQuery;
 
@@ -20,12 +19,12 @@ public static class PayPeriodBillingQuerier
 
         var submittedPayPeriods = unitOfWork.PayPeriodRepository
             .Get(filter: pp => pp.EndDate >= startDate && pp.EndDate <= endDate)
-            .Where(pp => pp.SubmissionStatus == PayPeriodStatus.Submitted)
+            .Where(pp => pp.IsSubmitted)
             .Select(pp => new PayPeriodDataForBilling
             {
                 PayPeriodId = pp.PayPeriodId,
                 AssignmentId = pp.AssignmentId,
-                TotalHoursWorked = (decimal)pp.HoursWorked.Sum(hw => (hw.EndDateTime - hw.StartDateTime).TotalHours)
+                TotalHoursWorked = pp.CalculateTotalHoursWorked()
             })
             .ToList();
 

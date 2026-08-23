@@ -14,6 +14,13 @@ public class PayPeriod
 
     public virtual ICollection<HoursWorked> HoursWorked { get; set; } = [];
 
+    public bool IsSubmitted => SubmissionStatus == PayPeriodStatus.Submitted;
+
+    public decimal CalculateTotalHoursWorked()
+    {
+        return (decimal)HoursWorked.Sum(hw => (hw.EndDateTime - hw.StartDateTime).TotalHours);
+    }
+
     public UnitResult<ValidationFailures> EnsureEditable()
     {
         return SubmissionStatus == PayPeriodStatus.Draft

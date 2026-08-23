@@ -51,3 +51,9 @@ Note to self: Reference these every once in a while
 - https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/
 - https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/infrastructure-persistence-layer-implementation-entity-framework-core
 - https://enterprisecraftsmanship.com/posts/validation-and-ddd/
+
+Shared content between domains:
+- https://martinfowler.com/bliki/BoundedContext.html
+- https://www.oreilly.com/library/view/what-is-domain-driven/9781492057802/ch04.html
+- https://deviq.com/domain-driven-design/shared-kernel/
+- https://medium.com/@iamprovidence/relationships-between-bounded-contexts-in-ddd-ce5cfe3aaa04

@@ -1,3 +1,4 @@
+using CSharpFunctionalExtensions;
 using DragonBilling.Application;
 using DragonBilling.Application.BillableHoursGeneration;
 using DragonPlacementApi.Poco;
@@ -18,14 +19,11 @@ public class BillingEndpoints
             [FromQuery(Name = "endDate")] string endDateString
         )
     {
-        var payPeriodsResult = PayPeriodBillingQuerier.GetSubmittedPayPeriodsForBilling(
-            timekeepingUnitOfWork, startDateString, endDateString);
-        if (payPeriodsResult.IsFailure)
-            return TypedResults.BadRequest(new ValidatedResponse { ValidationFailures = [payPeriodsResult.Error] });
-        var submittedPayPeriods = payPeriodsResult.Value;
-
-        await BillableHoursGenerationService.GenerateBillableHoursAsync(unitOfWork, submittedPayPeriods);
-
-        return TypedResults.Ok(ValidatedResponse.Success);
+        var workflowResult = await PayPeriodBillingQuerier
+            .GetSubmittedPayPeriodsForBilling(timekeepingUnitOfWork, startDateString, endDateString)
+            .Tap(submittedPayPeriods => BillableHoursGenerationService.GenerateBillableHoursAsync(unitOfWork, submittedPayPeriods));
+        return workflowResult.IsSuccess
+            ? TypedResults.Ok(ValidatedResponse.Success)
+            : TypedResults.BadRequest(new ValidatedResponse { ValidationFailures = [workflowResult.Error] });
     }
 }
