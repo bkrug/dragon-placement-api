@@ -27,10 +27,12 @@ builder.Services
     .AddDbContext<DragonPlacementContext>(options =>
     {
         options.UseSqlite(connectionString);
+        //"queryDelaySeconds" is a way to test CancellationTokens
         if (queryDelaySeconds > 0)
             options.AddInterceptors(new SlowQueryInterceptor(TimeSpan.FromSeconds(queryDelaySeconds)));
     })
-    .AddDbContext<TimekeepingContext>(options => options.UseSqlite(connectionString));
+    .AddDbContext<TimekeepingContext>(options => options.UseSqlite(connectionString))
+    .AddDbContext<BillingContext>(options => options.UseSqlite(connectionString));
 builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(o => o.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 builder.Services.AddLogging();
