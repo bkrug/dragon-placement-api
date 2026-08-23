@@ -15,8 +15,17 @@ public static class BillableHoursGenerationService
             .Get(filter: cr => assignmentIds.Contains(cr.AssignmentId))
             .ToDictionary(cr => cr.AssignmentId);
 
+        var payPeriodIds = submittedPayPeriods.Select(pp => pp.PayPeriodId).Distinct();
+        var previouslyProcessedPayPeriodIds = unitOfWork.BillableHoursRepository
+            .Get(filter: bh => payPeriodIds.Contains(bh.PayPeriodId))
+            .Select(bh => bh.PayPeriodId)
+            .ToHashSet();
+
         foreach (var payPeriod in submittedPayPeriods)
         {
+            if (previouslyProcessedPayPeriodIds.Contains(payPeriod.PayPeriodId))
+                continue;
+
             if (!chargeRatesByAssignment.TryGetValue(payPeriod.AssignmentId, out var chargeRate))
                 continue;
 
