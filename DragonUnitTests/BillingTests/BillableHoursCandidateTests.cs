@@ -165,7 +165,7 @@ public class BillableHoursCandidateTests
                 PayPeriodId = SUBMITTED_PAY_PERIOD_ID_1,
                 HourlyRate = 60m,
                 TotalHours = 0m,
-                Status = BillingStatus.Draft
+                BillingStatus = BillingStatus.Draft
             },
             new()
             {
@@ -174,7 +174,7 @@ public class BillableHoursCandidateTests
                 PayPeriodId = SUBMITTED_PAY_PERIOD_ID_2,
                 HourlyRate = 65m,
                 TotalHours = 0m,
-                Status = BillingStatus.Draft
+                BillingStatus = BillingStatus.Draft
             },
         };
 

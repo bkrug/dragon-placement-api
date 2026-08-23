@@ -9,7 +9,7 @@ public partial class BillableHours
     public int PayPeriodId { get; set; }
     public decimal HourlyRate { get; set; }
     public decimal TotalHours { get; set; }
-    public BillingStatus Status { get; set; }
+    public BillingStatus BillingStatus { get; set; }
 
     public virtual ChargeRate ChargeRate { get; set; } = null!;
 

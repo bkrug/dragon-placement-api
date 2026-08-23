@@ -35,7 +35,7 @@ public static class BillableHoursGenerationService
                 PayPeriodId = payPeriod.PayPeriodId,
                 HourlyRate = chargeRate.HourlyRate,
                 TotalHours = payPeriod.TotalHoursWorked,
-                Status = BillingStatus.Draft
+                BillingStatus = BillingStatus.Draft
             });
         }
 
