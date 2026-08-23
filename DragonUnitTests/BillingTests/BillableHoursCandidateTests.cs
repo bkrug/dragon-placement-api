@@ -40,8 +40,8 @@ public class BillableHoursCandidateTests
     private const int ASSIGNMENT_ID_ENDS_BEFORE_RANGE = 109;
     private const int ASSIGNMENT_ID_ENDS_AFTER_RANGE = 110;
 
-    private static readonly DateTime WEEK_START = new(1970, 1, 5); //Monday
-    private static readonly DateTime WEEK_END = new(1970, 1, 11); //Sunday
+    private static readonly DateTime WEEK_START = new(2026, 8, 10); //Monday
+    private static readonly DateTime WEEK_END = new(2026, 8, 16); //Sunday
 
     [Fact]
     public async Task BuildBillableHoursCandidates_MixOfPayPeriodStatuses_ExpectBillableHoursOnlyForSubmitted()
