@@ -4,11 +4,12 @@ using DragonBilling.Domain.Models;
 using DragonPlacementApi.Endpoints;
 using DragonPlacementApi.Poco;
 using DragonTimekeeping.Application;
+using DragonTimekeeping.Domain.Enums;
 using DragonTimekeeping.Domain.Models;
+using DragonUnitTests.PayPeriodTests;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Moq;
 using Shouldly;
-using DragonUnitTests.PayPeriodTests;
 
 namespace DragonUnitTests.BillingTests;
 
@@ -37,28 +38,28 @@ public class BillableHoursCandidateTests
                 .WithAssignmentId(DRAFT_ASSIGNMENT_ID)
                 .WithStartDate(WEEK_START)
                 .WithEndDate(WEEK_END)
-                .WithSubmissionStatus(DragonTimekeeping.Domain.Enums.PayPeriodStatus.Draft)
+                .WithSubmissionStatus(PayPeriodStatus.Draft)
                 .Build(),
             new PayPeriodBuilder()
                 .WithPayPeriodId(BILLED_PAY_PERIOD_ID)
                 .WithAssignmentId(BILLED_ASSIGNMENT_ID)
                 .WithStartDate(WEEK_START)
                 .WithEndDate(WEEK_END)
-                .WithSubmissionStatus(DragonTimekeeping.Domain.Enums.PayPeriodStatus.Billed)
+                .WithSubmissionStatus(PayPeriodStatus.Billed)
                 .Build(),
             new PayPeriodBuilder()
                 .WithPayPeriodId(SUBMITTED_PAY_PERIOD_ID_1)
                 .WithAssignmentId(SUBMITTED_ASSIGNMENT_ID_1)
                 .WithStartDate(WEEK_START)
                 .WithEndDate(WEEK_END)
-                .WithSubmissionStatus(DragonTimekeeping.Domain.Enums.PayPeriodStatus.Submitted)
+                .WithSubmissionStatus(PayPeriodStatus.Submitted)
                 .Build(),
             new PayPeriodBuilder()
                 .WithPayPeriodId(SUBMITTED_PAY_PERIOD_ID_2)
                 .WithAssignmentId(SUBMITTED_ASSIGNMENT_ID_2)
                 .WithStartDate(WEEK_START)
                 .WithEndDate(WEEK_END)
-                .WithSubmissionStatus(DragonTimekeeping.Domain.Enums.PayPeriodStatus.Submitted)
+                .WithSubmissionStatus(PayPeriodStatus.Submitted)
                 .Build(),
         };
         var chargeRates = new List<ChargeRate>
