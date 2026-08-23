@@ -2,11 +2,13 @@ using DragonCommon.Data.Repositories;
 using DragonCommon.Application.Repositories;
 using DragonBilling.Domain.Models;
 
+using DragonBilling.Application;
+
 namespace DragonBilling.Data;
 
 //TODO: Reduce the duplicate logic for SaveAsync() and the Dispose() methods in the various UnitOfWork classes.
 
-public class BillingUnitOfWork(BillingContext context) : IDisposable
+public class BillingUnitOfWork(BillingContext context) : IDisposable, IBillingUnitOfWork
 {
     private readonly BillingContext _context = context;
     public IGenericRepository<ChargeRate> ChargeRateRepository { get; } = new GenericRepository<ChargeRate>(context);

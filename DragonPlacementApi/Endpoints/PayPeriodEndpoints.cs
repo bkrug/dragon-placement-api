@@ -10,6 +10,7 @@ using DragonTimekeeping.Domain.Models;
 using DragonCommon.Domain.Poco;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using CSharpFunctionalExtensions;
 
 namespace DragonPlacementApi.Endpoints;
 

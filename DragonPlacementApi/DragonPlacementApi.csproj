@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../DragonAssignment/DragonAssignment.csproj" />
+    <ProjectReference Include="../DragonBilling/DragonBilling.csproj" />
     <ProjectReference Include="../DragonTimekeeping/DragonTimekeeping.csproj" />
   </ItemGroup>
 

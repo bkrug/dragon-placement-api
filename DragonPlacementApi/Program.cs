@@ -1,6 +1,8 @@
 using System.Text.Json.Serialization;
 using DragonAssignment.Application;
 using DragonAssignment.Data;
+using DragonBilling.Application;
+using DragonBilling.Data;
 using DragonPlacementApi.Endpoints;
 using DragonTimekeeping.Application;
 using DragonTimekeeping.Data;
@@ -34,6 +36,7 @@ builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(o => o.Se
 builder.Services.AddLogging();
 builder.Services.AddScoped<IDragonPlacementUnitOfWork, DragonPlacementUnitOfWork>();
 builder.Services.AddScoped<ITimekeepingUnitOfWork, TimekeepingUnitOfWork>();
+builder.Services.AddScoped<IBillingUnitOfWork, BillingUnitOfWork>();
 
 var app = builder.Build();
 app.UseCors(allowedOriginsPolicy);
@@ -64,5 +67,7 @@ app.MapGet("/v2/payperiod/{payPeriodId}", PayPeriodEndpoints.GetPayPeriodAsync);
 app.MapPost("/v2/payperiod", PayPeriodEndpoints.CreatePayPeriodAsync);
 app.MapPut("/v2/payperiod/{payPeriodId}", PayPeriodEndpoints.UpdatePayPeriodAsync);
 app.MapDelete("/payperiod/{payPeriodId}", PayPeriodEndpoints.DeletePayPeriodAsync);
+
+app.MapPost("/billing/payperiod", BillingEndpoints.BuildBillableHoursCandidatesAsync);
 
 app.Run();

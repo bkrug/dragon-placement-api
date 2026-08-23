@@ -45,6 +45,7 @@ public partial class BillingContext : DbContext
             entity.Property(e => e.TotalHours).HasColumnType("NUMERIC");
             entity.Property(e => e.PeriodStart).IsUnixSecondsType("PeriodStartUnix");
             entity.Property(e => e.PeriodEnd).IsUnixSecondsType("PeriodEndUnix");
+            entity.Property(e => e.Status).IsEnumNameType("Status");
 
             entity.HasOne(e => e.ChargeRate)
                 .WithMany()
