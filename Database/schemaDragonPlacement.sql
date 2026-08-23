@@ -72,10 +72,10 @@ CREATE TABLE IF NOT EXISTS "ChargeRate" (
 CREATE TABLE IF NOT EXISTS "BillableHours" (
     BillableHoursId INTEGER NOT NULL,
     ChargeRateId    INTEGER NOT NULL,
+    PayPeriodId     INTEGER NOT NULL,
     HourlyRate      NUMERIC NOT NULL,
     TotalHours      NUMERIC NOT NULL,
-    PeriodStartUnix INTEGER NOT NULL,
-    PeriodEndUnix   INTEGER NOT NULL,
     CONSTRAINT PK_BillableHours PRIMARY KEY (BillableHoursId),
-    CONSTRAINT FK_BillableHours_ChargeRate FOREIGN KEY (ChargeRateId) REFERENCES "ChargeRate"(ChargeRateId)
+    CONSTRAINT FK_BillableHours_ChargeRate FOREIGN KEY (ChargeRateId) REFERENCES "ChargeRate"(ChargeRateId),
+    CONSTRAINT FK_BillableHours_PayPeriod FOREIGN KEY (PayPeriodId) REFERENCES "PayPeriod"
 );
