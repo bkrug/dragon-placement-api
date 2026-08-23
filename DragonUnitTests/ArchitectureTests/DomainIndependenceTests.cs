@@ -13,7 +13,7 @@ public class DomainIndependenceTests
     // Each of the projects in DomainAssemblies has its own business domain.
     // None of them should reference another.
     // If you ever need to write an endpoint that deals with more than one domain,
-    // then in display layer will have the code to piece the domains together.
+    // then use the display layer to piece respones the domains together.
     // See GetPayPeriodAsync() for an example.
     private static readonly Dictionary<string, Assembly> DomainAssemblies = new()
     {
