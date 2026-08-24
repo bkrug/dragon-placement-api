@@ -50,7 +50,7 @@ public class DragonUpsertTests
         //Assert
         response.Result.ShouldBeOfType<Ok<ValidatedPayload<Dragon>>>();
         insertedDragon.Get().ShouldBeEquivalentTo(expectedDragon);
-        unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Once);
+        unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Once);
     }
 
     [Theory]
@@ -167,7 +167,7 @@ public class DragonUpsertTests
         //Assert
         response.Result.ShouldBeOfType<Ok<ValidatedPayload<Dragon>>>();
         existingDragon.ShouldBeEquivalentTo(expectedDragon);
-        unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Once);
+        unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Once);
     }
 
     [Fact]
@@ -181,7 +181,7 @@ public class DragonUpsertTests
 
         //Assert
         response.Result.ShouldBeOfType<NotFound<ValidatedResponse>>();
-        unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Never);
+        unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Never);
     }
 
     [Theory]

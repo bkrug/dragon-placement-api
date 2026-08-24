@@ -21,7 +21,7 @@ public static class PayPeriodDeleteService
             .Tap(() =>
             {
                 unitOfWork.PayPeriodRepository.Delete(payPeriodId);
-                return unitOfWork.SaveAsync();
+                return unitOfWork.SaveChangesAsync();
             })
             .MapError(e => (PayPeriodDeleteFailure)new PayPeriodDeleteInvalid(e))
             .ConfigureAwait(false);

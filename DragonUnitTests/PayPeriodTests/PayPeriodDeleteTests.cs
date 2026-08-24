@@ -30,7 +30,7 @@ public class PayPeriodDeleteTests
 
         //Assert
         response.Result.ShouldBeOfType<Ok<ValidatedResponse>>();
-        unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Once);
+        unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Once);
     }
 
     [Fact]
@@ -50,7 +50,7 @@ public class PayPeriodDeleteTests
         //Assert
         response.Result.ShouldBeOfType<Conflict<ValidatedResponse>>();
         unitOfWorkMock.Verify(u => u.PayPeriodRepository.Delete(It.IsAny<int>()), Times.Never);
-        unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Never);
+        unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Never);
     }
 
     [Fact]
@@ -65,6 +65,6 @@ public class PayPeriodDeleteTests
 
         //Assert
         response.Result.ShouldBeOfType<NotFound<ValidatedResponse>>();
-        unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Never);
+        unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Never);
     }    
 }

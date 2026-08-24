@@ -20,7 +20,7 @@ public static class DragonUpsertService
         if (result.IsSuccess)
         {
             unitOfWork.DragonRepository.Insert(result.Value);
-            await unitOfWork.SaveAsync().ConfigureAwait(false);
+            await unitOfWork.SaveChangesAsync().ConfigureAwait(false);
         }
 
         return result;
@@ -36,6 +36,6 @@ public static class DragonUpsertService
         return await DragonCreateEditMapper.ApplyTo(input, existing, skillTags)
             .Bind(d => d.Validate())
             .MapError(e => (DragonUpdateFailure)new DragonInvalid(e))
-            .Tap(async _ => await unitOfWork.SaveAsync().ConfigureAwait(false));
+            .Tap(async _ => await unitOfWork.SaveChangesAsync().ConfigureAwait(false));
     }
 }

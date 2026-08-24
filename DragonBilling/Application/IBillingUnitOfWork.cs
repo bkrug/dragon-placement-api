@@ -9,5 +9,5 @@ public interface IBillingUnitOfWork
     IGenericRepository<BillableHours> BillableHoursRepository { get; }
 
     void Dispose();
-    Task SaveAsync();
+    Task SaveChangesAsync();
 }

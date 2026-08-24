@@ -18,7 +18,7 @@ public static class JobDeleteService
         if (deleteResult == DeleteResult.NotFound)
             return UnitResult.Failure<JobDeleteFailure>(new JobDeleteNotFound());
 
-        await unitOfWork.SaveAsync().ConfigureAwait(false);
+        await unitOfWork.SaveChangesAsync().ConfigureAwait(false);
         return UnitResult.Success<JobDeleteFailure>();
     }
 }

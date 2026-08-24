@@ -51,7 +51,7 @@ public class JobTests
         //Assert
         response.Result.ShouldBeOfType<Ok<ValidatedPayload<Job>>>();
         insertedJob.Get().ShouldBeEquivalentTo(expectedJob);
-        unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Once);
+        unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Once);
     }
 
     [Theory]
@@ -172,7 +172,7 @@ public class JobTests
         //Assert
         response.Result.ShouldBeOfType<Ok<ValidatedPayload<Job>>>();
         existingJob.ShouldBeEquivalentTo(expectedJob);
-        unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Once);
+        unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Once);
     }
 
     [Fact]
@@ -186,7 +186,7 @@ public class JobTests
 
         //Assert
         response.Result.ShouldBeOfType<NotFound<ValidatedResponse>>();
-        unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Never);
+        unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Never);
     }
 
     [Theory]
@@ -283,7 +283,7 @@ public class JobTests
 
         //Assert
         response.Result.ShouldBeOfType<Ok<ValidatedResponse>>();
-        unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Once);
+        unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Once);
     }
 
     [Fact]
@@ -298,7 +298,7 @@ public class JobTests
 
         //Assert
         response.Result.ShouldBeOfType<NotFound<ValidatedResponse>>();
-        unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Never);
+        unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Never);
     }
 
     [Fact]
@@ -314,6 +314,6 @@ public class JobTests
 
         //Assert
         response.Result.ShouldBeOfType<Conflict<ValidatedResponse>>();
-        unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Never);
+        unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Never);
     }
 }

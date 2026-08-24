@@ -112,7 +112,7 @@ public class BillableHoursCandidateTests
             SUBMITTED_PAY_PERIOD_ID_1,
             SUBMITTED_PAY_PERIOD_ID_2
         });
-        billingUnitOfWorkMock.Verify(u => u.SaveAsync(), Times.Once);
+        billingUnitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Once);
     }
 
     [Fact]
@@ -208,7 +208,7 @@ public class BillableHoursCandidateTests
             SUBMITTED_PAY_PERIOD_ID_3,
             SUBMITTED_PAY_PERIOD_ID_4
         });
-        billingUnitOfWorkMock.Verify(u => u.SaveAsync(), Times.Once);
+        billingUnitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Once);
     }
 
     [Fact]
@@ -289,6 +289,6 @@ public class BillableHoursCandidateTests
             PAY_PERIOD_ID_FULLY_IN_RANGE,
             PAY_PERIOD_ID_END_DATE_IN_RANGE
         });
-        billingUnitOfWorkMock.Verify(u => u.SaveAsync(), Times.Once);
+        billingUnitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Once);
     }
 }

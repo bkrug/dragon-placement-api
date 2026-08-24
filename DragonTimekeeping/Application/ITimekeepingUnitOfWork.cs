@@ -9,7 +9,7 @@ public interface ITimekeepingUnitOfWork
     IGenericRepository<PayPeriod> PayPeriodRepository { get; }
 
     void Dispose();
-    Task SaveAsync();
+    Task SaveChangesAsync();
 
     Task<PayPeriod?> GetPayPeriodWithHoursWorkedAsync(int payPeriodId);
 }

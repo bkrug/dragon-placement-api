@@ -42,7 +42,7 @@ public class PayPeriodCrudTests
         //Assert
         response.Result.ShouldBeOfType<Ok<ValidatedPayload<PayPeriod>>>();
         insertedPayPeriod.Get().ShouldBeEquivalentTo(expectedPayPeriod);
-        unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Once);
+        unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Once);
     }
 
     [Theory]
@@ -260,7 +260,7 @@ public class PayPeriodCrudTests
         //Assert
         response.Result.ShouldBeOfType<Ok<ValidatedPayload<PayPeriod>>>();
         existingEntry.ShouldBeEquivalentTo(expectedEntry);
-        unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Once);
+        unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Once);
     }
 
     [Fact]
@@ -306,7 +306,7 @@ public class PayPeriodCrudTests
         //Assert
         response.Result.ShouldBeOfType<Ok<ValidatedPayload<PayPeriod>>>();
         existingEntry.HoursWorked.ShouldBeEquivalentTo(expectedHoursWorked);
-        unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Once);
+        unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Once);
     }
 
     [Fact]
@@ -321,7 +321,7 @@ public class PayPeriodCrudTests
 
         //Assert
         response.Result.ShouldBeOfType<NotFound<ValidatedResponse>>();
-        unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Never);
+        unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Never);
     }
 
     [Theory]
@@ -359,7 +359,7 @@ public class PayPeriodCrudTests
         response.Result.ShouldBeOfType<BadRequest<ValidatedForm<ValidationFailures>>>();
         var failures = ((BadRequest<ValidatedForm<ValidationFailures>>)response.Result).Value!.ValidationFailures;
         failures.FieldFailures[expectedFailureField].ShouldBe(expectedFailureMessage);
-        unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Never);
+        unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Never);
     }
 
     [Theory]
@@ -388,7 +388,7 @@ public class PayPeriodCrudTests
         response.Result.ShouldBeOfType<BadRequest<ValidatedForm<ValidationFailures>>>();
         var failures = ((BadRequest<ValidatedForm<ValidationFailures>>)response.Result).Value!.ValidationFailures;
         failures.ModelLevelFailure.ShouldBe("Cannot edit a pay period unless it is in status 'Draft'");
-        unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Never);
+        unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Never);
     }
 
     [Fact]

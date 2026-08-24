@@ -18,7 +18,7 @@ public static class PayPeriodSubmitService
             return UnitResult.Failure<PayPeriodSubmitFailure>(new PayPeriodSubmitNotFound());
 
         return await existing.Submit()
-            .Tap(() => unitOfWork.SaveAsync())
+            .Tap(() => unitOfWork.SaveChangesAsync())
             .MapError(e => (PayPeriodSubmitFailure)new PayPeriodSubmitInvalid(e))
             .ConfigureAwait(false);
     }

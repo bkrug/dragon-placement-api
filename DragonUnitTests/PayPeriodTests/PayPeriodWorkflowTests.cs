@@ -27,7 +27,7 @@ public class PayPeriodWorkflowTests
         //Assert
         response.Result.ShouldBeOfType<Ok<ValidatedResponse>>();
         payPeriod.SubmissionStatus.ShouldBe(PayPeriodStatus.Submitted);
-        unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Once);
+        unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Once);
     }
 
     [Theory]
@@ -49,6 +49,6 @@ public class PayPeriodWorkflowTests
         //Assert
         response.Result.ShouldBeOfType<Conflict<ValidatedResponse>>();
         payPeriod.SubmissionStatus.ShouldBe(existingStatus);
-        unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Never);
+        unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Never);
     }
 }

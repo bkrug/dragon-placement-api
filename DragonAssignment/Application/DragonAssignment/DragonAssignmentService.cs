@@ -25,7 +25,7 @@ public static class DragonAssignmentService
 
         var assignment = job.Assign(dragonId);
         unitOfWork.AssignmentRepository.Insert(assignment);
-        await unitOfWork.SaveAsync().ConfigureAwait(false);
+        await unitOfWork.SaveChangesAsync().ConfigureAwait(false);
 
         return Result.Success<Assignment, AssignmentFailure>(assignment);
     }
@@ -40,7 +40,7 @@ public static class DragonAssignmentService
             return UnitResult.Failure<AssignmentFailure>(new AssignmentNotFound());
 
         unitOfWork.AssignmentRepository.Delete(assignment);
-        await unitOfWork.SaveAsync().ConfigureAwait(false);
+        await unitOfWork.SaveChangesAsync().ConfigureAwait(false);
         return UnitResult.Success<AssignmentFailure>();
     }
 }

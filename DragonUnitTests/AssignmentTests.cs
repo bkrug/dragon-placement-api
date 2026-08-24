@@ -48,7 +48,7 @@ public class AssignmentTests
             StartDate = jobModel.StartDate,
             EndDate = jobModel.EndDate
         });
-        unitOfWorkMock.Verify(m => m.SaveAsync(), Times.Once);
+        unitOfWorkMock.Verify(m => m.SaveChangesAsync(), Times.Once);
     }
 
     [Fact]
@@ -86,6 +86,6 @@ public class AssignmentTests
         var badResult = (BadRequest<ValidatedResponse>)response.Result;
         var validationMessage = badResult?.Value?.ValidationFailures.Single();
         validationMessage.ShouldStartWith("Overlaps with at least one job");
-        unitOfWorkMock.Verify(m => m.SaveAsync(), Times.Never);
+        unitOfWorkMock.Verify(m => m.SaveChangesAsync(), Times.Never);
     }
 }

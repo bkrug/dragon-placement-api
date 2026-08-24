@@ -23,7 +23,7 @@ public interface IDragonPlacementUnitOfWork
     IGenericRepository<Assignment> AssignmentRepository { get; }
     IGenericRepository<SkillTag> SkillTagRespository { get; }
     void Dispose();
-    Task SaveAsync();
+    Task SaveChangesAsync();
 
     // Many results
     IEnumerable<Assignment> GetOverlappingAssignments(int dragonId, DateTime periodStartUnix, DateTime periodEndUnix);

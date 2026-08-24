@@ -22,7 +22,7 @@ public class DragonDeleteTests
 
         //Assert
         response.Result.ShouldBeOfType<Ok<ValidatedResponse>>();
-        unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Once);
+        unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Once);
     }
 
     [Fact]
@@ -37,7 +37,7 @@ public class DragonDeleteTests
 
         //Assert
         response.Result.ShouldBeOfType<NotFound<ValidatedResponse>>();
-        unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Never);
+        unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Never);
     }
 
     [Fact]
@@ -53,6 +53,6 @@ public class DragonDeleteTests
 
         //Assert
         response.Result.ShouldBeOfType<Conflict<ValidatedResponse>>();
-        unitOfWorkMock.Verify(u => u.SaveAsync(), Times.Never);
+        unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Never);
     }
 }

@@ -39,6 +39,6 @@ public static class BillableHoursGenerationService
             });
         }
 
-        await unitOfWork.SaveAsync();
+        await unitOfWork.SaveChangesAsync();
     }
 }

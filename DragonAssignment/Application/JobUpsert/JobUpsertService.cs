@@ -19,7 +19,7 @@ public static class JobUpsertService
         if (result.IsSuccess)
         {
             unitOfWork.JobRepository.Insert(result.Value);
-            await unitOfWork.SaveAsync().ConfigureAwait(false);
+            await unitOfWork.SaveChangesAsync().ConfigureAwait(false);
         }
 
         return result;
@@ -35,6 +35,6 @@ public static class JobUpsertService
         return await JobCreateEditMapper.ApplyTo(input, existing, skillTags)
             .Bind(j => j.Validate())
             .MapError(e => (JobUpdateFailure)new JobInvalid(e))
-            .Tap(async _ => await unitOfWork.SaveAsync().ConfigureAwait(false));
+            .Tap(async _ => await unitOfWork.SaveChangesAsync().ConfigureAwait(false));
     }
 }

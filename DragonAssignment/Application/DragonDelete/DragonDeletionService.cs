@@ -18,7 +18,7 @@ public static class DragonDeletionService
         if (deleteResult == DeleteResult.NotFound)
             return UnitResult.Failure<DragonDeleteFailure>(new DragonDeleteNotFound());
 
-        await unitOfWork.SaveAsync().ConfigureAwait(false);
+        await unitOfWork.SaveChangesAsync().ConfigureAwait(false);
         return UnitResult.Success<DragonDeleteFailure>();
     }
 }

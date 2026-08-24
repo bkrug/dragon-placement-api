@@ -19,7 +19,7 @@ public static class PayPeriodUpsertService
             .Tap(async payPeriod =>
             {
                 unitOfWork.PayPeriodRepository.Insert(payPeriod);
-                await unitOfWork.SaveAsync().ConfigureAwait(false);
+                await unitOfWork.SaveChangesAsync().ConfigureAwait(false);
             });
     }
 
@@ -37,7 +37,7 @@ public static class PayPeriodUpsertService
             .Bind(pp => pp.Validate())
             .Bind(existing.ApplyEdit)
             .Map(() => existing)
-            .Tap(async _ => await unitOfWork.SaveAsync().ConfigureAwait(false))
+            .Tap(async _ => await unitOfWork.SaveChangesAsync().ConfigureAwait(false))
             .MapError(e => (PayPeriodUpdateFailure)new PayPeriodInvalid(e));
     }
 }
