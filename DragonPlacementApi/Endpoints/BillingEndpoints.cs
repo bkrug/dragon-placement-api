@@ -13,7 +13,7 @@ public class BillingEndpoints
 {
     public static async Task<Results<Ok<ValidatedResponse>, BadRequest<ValidatedResponse>>>
         BuildBillableHoursCandidatesAsync(
-            IBillingUnitOfWork unitOfWork,
+            IBillingUnitOfWork billingUnitOfWork,
             ITimekeepingUnitOfWork timekeepingUnitOfWork,
             [FromQuery(Name = "startDate")] string startDateString,
             [FromQuery(Name = "endDate")] string endDateString
@@ -21,7 +21,7 @@ public class BillingEndpoints
     {
         var workflowResult = await PayPeriodBillingQuerier
             .GetSubmittedPayPeriodsForBilling(timekeepingUnitOfWork, startDateString, endDateString)
-            .Tap(submittedPayPeriods => BillableHoursGenerationService.GenerateBillableHoursAsync(unitOfWork, submittedPayPeriods));
+            .Tap(submittedPayPeriods => BillableHoursGenerationService.GenerateBillableHoursAsync(billingUnitOfWork, submittedPayPeriods));
         return workflowResult.IsSuccess
             ? TypedResults.Ok(ValidatedResponse.Success)
             : TypedResults.BadRequest(new ValidatedResponse { ValidationFailures = [workflowResult.Error] });
