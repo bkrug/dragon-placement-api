@@ -8,7 +8,7 @@ public static class BillableHoursGenerationService
 {
     public static async Task GenerateBillableHoursAsync(
         IBillingUnitOfWork unitOfWork,
-        List<PayPeriodDataForBilling> submittedPayPeriods)
+        IEnumerable<PayPeriodDataForBilling> submittedPayPeriods)
     {
         var assignmentIds = submittedPayPeriods.Select(pp => pp.AssignmentId).Distinct();
         var chargeRatesByAssignment = unitOfWork.ChargeRateRepository

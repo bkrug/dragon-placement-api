@@ -14,7 +14,7 @@ using CSharpFunctionalExtensions;
 
 namespace DragonPlacementApi.Endpoints;
 
-public class PayPeriodEndpoints
+public static class PayPeriodEndpoints
 {
     public static PagedData<PayPeriod> GetPayPeriods(
             ITimekeepingUnitOfWork unitOfWork,

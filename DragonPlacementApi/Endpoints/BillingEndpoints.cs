@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DragonPlacementApi.Endpoints;
 
-public class BillingEndpoints
+public static class BillingEndpoints
 {
     public static async Task<Results<Ok<ValidatedResponse>, BadRequest<ValidatedResponse>>>
         BuildBillableHoursCandidatesAsync(

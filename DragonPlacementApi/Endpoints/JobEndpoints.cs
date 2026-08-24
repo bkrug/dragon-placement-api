@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DragonPlacementApi.Endpoints;
 
-public class JobEndpoints
+public static class JobEndpoints
 {
     public static async Task<Results<Ok<ValidatedPayload<Job>>, NotFound<ValidatedResponse>>>
         GetJob(

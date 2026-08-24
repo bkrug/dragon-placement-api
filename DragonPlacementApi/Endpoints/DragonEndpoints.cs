@@ -11,7 +11,7 @@ using DragonAssignment.Application.DragonDelete;
 
 namespace DragonPlacementApi.Endpoints;
 
-public class DragonEndpoints
+public static class DragonEndpoints
 {
     /// <summary>
     /// 

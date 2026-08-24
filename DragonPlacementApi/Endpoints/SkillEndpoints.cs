@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DragonPlacementApi.Endpoints;
 
-public class SkillEndpoints
+public static class SkillEndpoints
 {
     public static PagedData<SkillTag> GetSkillTagsAsync(IDragonPlacementUnitOfWork unitOfWork, [FromQuery(Name="offset")] int offset = 0, [FromQuery(Name="limit")] int limit = 20)
     {

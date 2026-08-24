@@ -39,6 +39,8 @@ public class PayPeriod
             });
     }
 
+    // TODO: Add a way to un-submit a pay period that hasn't yet been billed to the customer/employer.
+    // TODO: Add a way to signal to other data-domains that this pay period has changed. Old billable hour records may no longer be accurate.
     public UnitResult<ValidationFailures> Submit()
     {
         if (SubmissionStatus != PayPeriodStatus.Draft)
