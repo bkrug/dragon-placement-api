@@ -72,4 +72,8 @@ app.MapDelete("/payperiod/{payPeriodId}", PayPeriodEndpoints.DeletePayPeriodAsyn
 
 app.MapPost("/billing/payperiod", BillingEndpoints.BuildBillableHoursCandidatesAsync);
 
+app.MapPost("/customer", WorkRequestEndpoints.CreateCutomerWithWorkRequetAsync);
+app.MapPost("/customer/{customerId}/workrequest", WorkRequestEndpoints.CreateWorkRequetAsync);
+app.MapPut("/customer/{customerId}/workrequest", WorkRequestEndpoints.EditWorkRequetAsync);
+
 app.Run();
