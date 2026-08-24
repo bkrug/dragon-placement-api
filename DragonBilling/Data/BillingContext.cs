@@ -24,8 +24,26 @@ public partial class BillingContext : DbContext
 
     public virtual DbSet<BillableHours> BillableHours { get; set; }
 
+    public virtual DbSet<Customer> Customers { get; set; }
+
+    public virtual DbSet<WorkRequest> WorkRequests { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Customer>(entity =>
+        {
+            entity.ToTable("Customer");
+
+            entity.HasKey(e => e.CustomerId);
+        });
+
+        modelBuilder.Entity<WorkRequest>(entity =>
+        {
+            entity.ToTable("WorkRequest");
+
+            entity.HasKey(e => e.WorkRequestId);
+        });
+
         modelBuilder.Entity<ChargeRate>(entity =>
         {
             entity.ToTable("ChargeRate");

@@ -12,8 +12,8 @@ public static class BillableHoursGenerationService
     {
         var assignmentIds = submittedPayPeriods.Select(pp => pp.AssignmentId).Distinct();
         var chargeRatesByAssignment = unitOfWork.ChargeRateRepository
-            .Get(filter: cr => assignmentIds.Contains(cr.AssignmentId))
-            .ToDictionary(cr => cr.AssignmentId);
+            .Get(filter: cr => assignmentIds.Contains(cr.WorkRequestId))
+            .ToDictionary(cr => cr.WorkRequestId);
 
         var payPeriodIds = submittedPayPeriods.Select(pp => pp.PayPeriodId).Distinct();
         var previouslyProcessedPayPeriodIds = unitOfWork.BillableHoursRepository

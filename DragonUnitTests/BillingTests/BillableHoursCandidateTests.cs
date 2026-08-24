@@ -79,10 +79,10 @@ public class BillableHoursCandidateTests
         };
         var chargeRates = new List<ChargeRate>
         {
-            new() { ChargeRateId = 501, AssignmentId = DRAFT_ASSIGNMENT_ID, HourlyRate = 50m },
-            new() { ChargeRateId = 502, AssignmentId = BILLED_ASSIGNMENT_ID, HourlyRate = 55m },
-            new() { ChargeRateId = 503, AssignmentId = SUBMITTED_ASSIGNMENT_ID_1, HourlyRate = 60m },
-            new() { ChargeRateId = 504, AssignmentId = SUBMITTED_ASSIGNMENT_ID_2, HourlyRate = 65m },
+            new() { ChargeRateId = 501, WorkRequestId = DRAFT_ASSIGNMENT_ID, HourlyRate = 50m },
+            new() { ChargeRateId = 502, WorkRequestId = BILLED_ASSIGNMENT_ID, HourlyRate = 55m },
+            new() { ChargeRateId = 503, WorkRequestId = SUBMITTED_ASSIGNMENT_ID_1, HourlyRate = 60m },
+            new() { ChargeRateId = 504, WorkRequestId = SUBMITTED_ASSIGNMENT_ID_2, HourlyRate = 65m },
         };
 
         var timekeepingUnitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
@@ -151,10 +151,10 @@ public class BillableHoursCandidateTests
         };
         var chargeRates = new List<ChargeRate>
         {
-            new() { ChargeRateId = 503, AssignmentId = SUBMITTED_ASSIGNMENT_ID_1, HourlyRate = 60m },
-            new() { ChargeRateId = 504, AssignmentId = SUBMITTED_ASSIGNMENT_ID_2, HourlyRate = 65m },
-            new() { ChargeRateId = 505, AssignmentId = SUBMITTED_ASSIGNMENT_ID_3, HourlyRate = 70m },
-            new() { ChargeRateId = 506, AssignmentId = SUBMITTED_ASSIGNMENT_ID_4, HourlyRate = 75m },
+            new() { ChargeRateId = 503, WorkRequestId = SUBMITTED_ASSIGNMENT_ID_1, HourlyRate = 60m },
+            new() { ChargeRateId = 504, WorkRequestId = SUBMITTED_ASSIGNMENT_ID_2, HourlyRate = 65m },
+            new() { ChargeRateId = 505, WorkRequestId = SUBMITTED_ASSIGNMENT_ID_3, HourlyRate = 70m },
+            new() { ChargeRateId = 506, WorkRequestId = SUBMITTED_ASSIGNMENT_ID_4, HourlyRate = 75m },
         };
         var existingBillableHours = new List<BillableHours>
         {
@@ -251,10 +251,10 @@ public class BillableHoursCandidateTests
         };
         var chargeRates = new List<ChargeRate>
         {
-            new() { ChargeRateId = 601, AssignmentId = ASSIGNMENT_ID_FULLY_IN_RANGE, HourlyRate = 60m },
-            new() { ChargeRateId = 602, AssignmentId = ASSIGNMENT_ID_END_DATE_IN_RANGE, HourlyRate = 65m },
-            new() { ChargeRateId = 603, AssignmentId = ASSIGNMENT_ID_ENDS_BEFORE_RANGE, HourlyRate = 70m },
-            new() { ChargeRateId = 604, AssignmentId = ASSIGNMENT_ID_ENDS_AFTER_RANGE, HourlyRate = 75m },
+            new() { ChargeRateId = 601, WorkRequestId = ASSIGNMENT_ID_FULLY_IN_RANGE, HourlyRate = 60m },
+            new() { ChargeRateId = 602, WorkRequestId = ASSIGNMENT_ID_END_DATE_IN_RANGE, HourlyRate = 65m },
+            new() { ChargeRateId = 603, WorkRequestId = ASSIGNMENT_ID_ENDS_BEFORE_RANGE, HourlyRate = 70m },
+            new() { ChargeRateId = 604, WorkRequestId = ASSIGNMENT_ID_ENDS_AFTER_RANGE, HourlyRate = 75m },
         };
 
         var timekeepingUnitOfWorkMock = new Mock<ITimekeepingUnitOfWork>();
