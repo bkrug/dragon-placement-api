@@ -1,5 +1,5 @@
 using CSharpFunctionalExtensions;
-using DragonCommon.Domain;
+using DragonCommon.DomainBinding;
 
 namespace DragonTimekeeping.Application.PayPeriodBillingQuery;
 

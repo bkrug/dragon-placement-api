@@ -1,4 +1,4 @@
-namespace DragonCommon.Domain;
+namespace DragonCommon.DomainBinding;
 
 public class PayPeriodDataForBilling
 {

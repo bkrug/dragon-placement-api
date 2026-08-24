@@ -1,6 +1,6 @@
 using DragonBilling.Domain.Enum;
 using DragonBilling.Domain.Models;
-using DragonCommon.Domain;
+using DragonCommon.DomainBinding;
 
 namespace DragonBilling.Application.BillableHoursGeneration;
 
