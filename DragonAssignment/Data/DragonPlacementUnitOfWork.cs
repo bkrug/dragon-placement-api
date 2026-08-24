@@ -50,6 +50,8 @@ public class DragonPlacementUnitOfWork(DragonPlacementContext context, ILogger<D
     public IEnumerable<JobWithCapacity> GetJobsWithCapacity(JobInclusions jobInclusions)
     {
         var todayUnix = new DateTimeOffset(DateTime.UtcNow.Date, TimeSpan.Zero).ToUnixTimeSeconds();
+        //TODO: Test if we still need to use Raw SQL here.
+        //This code may have been written before we created the configuration method IsUnixSecondsType().
         IQueryable<Job> queryable = jobInclusions switch
         {
             JobInclusions.Past => _context.Jobs
