@@ -19,6 +19,5 @@ public interface IGenericRepository<TEntity> where TEntity : class
     );
     Task<TEntity?> GetByID(object id);
     void Insert(TEntity entity);
-    Task<int> SaveChangesAsync();
     void Update(TEntity entityToUpdate);
 }

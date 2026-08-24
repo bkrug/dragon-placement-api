@@ -6,7 +6,7 @@ using DragonCommon.Data.Repositories;
 
 namespace DragonBilling.Data;
 
-public class BillingUnitOfWork(BillingContext context) : BaseUnitOfWork<BillingContext>(context), IDisposable, IBillingUnitOfWork
+public class BillingUnitOfWork(BillingContext context) : BaseUnitOfWork<BillingContext>(context), IBillingUnitOfWork
 {
     public IGenericRepository<ChargeRate> ChargeRateRepository { get; } = new GenericRepository<ChargeRate>(context);
     public IGenericRepository<BillableHours> BillableHoursRepository { get; } = new GenericRepository<BillableHours>(context);

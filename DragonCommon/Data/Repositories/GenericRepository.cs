@@ -69,9 +69,4 @@ public class GenericRepository<TEntity>(DbContext context) : IGenericRepository<
         _dbSet.Attach(entityToUpdate);
         _context.Entry(entityToUpdate).State = EntityState.Modified;
     }
-
-    public async Task<int> SaveChangesAsync()
-    {
-        return await _context.SaveChangesAsync();
-    }
 }

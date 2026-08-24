@@ -21,12 +21,12 @@ public interface IDragonPlacementUnitOfWork
     IGenericRepository<Dragon> DragonRepository { get; }
     IGenericRepository<Job> JobRepository { get; }
     IGenericRepository<Assignment> AssignmentRepository { get; }
-    IGenericRepository<SkillTag> SkillTagRespository { get; }
+    IGenericRepository<SkillTag> SkillTagRepository { get; }
     void Dispose();
     Task SaveChangesAsync();
 
     // Many results
-    IEnumerable<Assignment> GetOverlappingAssignments(int dragonId, DateTime periodStartUnix, DateTime periodEndUnix);
+    IEnumerable<Assignment> GetOverlappingAssignments(int dragonId, DateTime periodStart, DateTime periodEnd);
     IEnumerable<Dragon> GetDragonsWithoutOverlappingAssignments(int jobId, int[] skillTagIds, string? fightingSkill);
     IEnumerable<Dragon> GetAssignedDragons(int jobId);
     IEnumerable<JobWithCapacity> GetJobsWithCapacity(JobInclusions jobInclusions);

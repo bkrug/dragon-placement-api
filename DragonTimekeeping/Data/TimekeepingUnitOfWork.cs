@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DragonTimekeeping.Data;
 
-public class TimekeepingUnitOfWork(TimekeepingContext context) : BaseUnitOfWork<TimekeepingContext>(context), IDisposable, ITimekeepingUnitOfWork
+public class TimekeepingUnitOfWork(TimekeepingContext context) : BaseUnitOfWork<TimekeepingContext>(context), ITimekeepingUnitOfWork
 {
     public IGenericRepository<HoursWorked> HoursWorkedRepository { get; } = new GenericRepository<HoursWorked>(context);
     public IGenericRepository<PayPeriod> PayPeriodRepository { get; } = new GenericRepository<PayPeriod>(context);

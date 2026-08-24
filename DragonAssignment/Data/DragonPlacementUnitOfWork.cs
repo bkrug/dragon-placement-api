@@ -11,19 +11,19 @@ using Microsoft.Extensions.Logging;
 
 namespace DragonAssignment.Data;
 
-public class DragonPlacementUnitOfWork(DragonPlacementContext context, ILogger<DragonPlacementUnitOfWork> logger) : BaseUnitOfWork<DragonPlacementContext>(context), IDisposable, IDragonPlacementUnitOfWork
+public class DragonPlacementUnitOfWork(DragonPlacementContext context, ILogger<DragonPlacementUnitOfWork> logger) : BaseUnitOfWork<DragonPlacementContext>(context), IDragonPlacementUnitOfWork
 {
     public IGenericRepository<Dragon> DragonRepository { get; } = new GenericRepository<Dragon>(context);
     public IGenericRepository<Job> JobRepository { get; } = new GenericRepository<Job>(context);
     public IGenericRepository<Assignment> AssignmentRepository { get; } = new GenericRepository<Assignment>(context);
-    public IGenericRepository<SkillTag> SkillTagRespository { get; } = new GenericRepository<SkillTag>(context);
+    public IGenericRepository<SkillTag> SkillTagRepository { get; } = new GenericRepository<SkillTag>(context);
     private readonly ILogger<DragonPlacementUnitOfWork> _logger = logger;
 
-    public IEnumerable<Assignment> GetOverlappingAssignments(int dragonId, DateTime periodStartUnix, DateTime periodEndUnix)
+    public IEnumerable<Assignment> GetOverlappingAssignments(int dragonId, DateTime periodStart, DateTime periodEnd)
     {
         return _context.Assignments
             .Where(a => a.DragonId == dragonId)
-            .Where(a => periodStartUnix <= a.EndDate && periodEndUnix >= a.StartDate);
+            .Where(a => periodStart <= a.EndDate && periodEnd >= a.StartDate);
     }
 
     public IEnumerable<Dragon> GetDragonsWithoutOverlappingAssignments(int jobId, int[] skillTagIds, string? fightingSkill)
