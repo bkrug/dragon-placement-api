@@ -37,7 +37,7 @@ public partial class WorkRequest
             new List<(string, string)>()
             {
                 ( nameof(EstimatedWorkforceSize), ValidateEstimatedWorkforceSize() ),
-                ( nameof(EstimatedEndDate), ValidateEstimatedEndDate() )
+                ( nameof(EstimatedStartDate), ValidateEstimatedStartDate() )
             }
             .Where(tuple => tuple.Item2 != string.Empty)
             .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
@@ -50,8 +50,8 @@ public partial class WorkRequest
     private string ValidateEstimatedWorkforceSize() =>
         EstimatedWorkforceSize < 0 ? ValidationMessages.MUST_BE_A_NON_NEGATIVE_NUMBER : string.Empty;
 
-    private string ValidateEstimatedEndDate() =>
+    private string ValidateEstimatedStartDate() =>
         EstimatedStartDate.HasValue && EstimatedEndDate.HasValue && EstimatedEndDate < EstimatedStartDate
-            ? "must be later than start date"
+            ? ValidationMessages.START_DATE_BEFORE_END_DATE
             : string.Empty;
 }

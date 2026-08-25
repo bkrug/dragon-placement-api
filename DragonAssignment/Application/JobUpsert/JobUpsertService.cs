@@ -10,19 +10,14 @@ public record JobInvalid(ValidationFailures Failures) : JobUpdateFailure;
 
 public static class JobUpsertService
 {
-    public static async Task<Result<Job, ValidationFailures>> CreateJob(JobCreateEdit input, IDragonPlacementUnitOfWork unitOfWork)
+    public static async Task<Result<Job, ValidationFailures>> CreateJob(
+        JobCreateEdit input, IDragonPlacementUnitOfWork unitOfWork)
     {
         var skillTags = unitOfWork.GetSkillTagsById(input.SkillTagIds);
-        var result = JobCreateEditMapper.ToJob(input, skillTags)
-            .Bind(j => j.Validate());
-
-        if (result.IsSuccess)
-        {
-            unitOfWork.JobRepository.Insert(result.Value);
-            await unitOfWork.SaveChangesAsync().ConfigureAwait(false);
-        }
-
-        return result;
+        return await JobCreateEditMapper.ToJob(input, skillTags)
+            .Bind(j => j.Validate())
+            .Tap(job => unitOfWork.JobRepository.Insert(job))
+            .Tap(async _ => await unitOfWork.SaveChangesAsync().ConfigureAwait(false));
     }
 
     public static async Task<Result<Job, JobUpdateFailure>> UpdateJob(JobCreateEdit input, int jobId, IDragonPlacementUnitOfWork unitOfWork)

@@ -60,7 +60,7 @@ public class CreateCustomerWithWorkRequetTests
     [InlineData("not-a-date",   "1970-02-01", 4,  "EstimatedStartDate",     "must be an ISO Date")]
     [InlineData("1970-01-02",   "not-a-date", 4,  "EstimatedEndDate",       "must be an ISO Date")]
     [InlineData("1970-01-02",   "1970-02-01", -7, "EstimatedWorkforceSize", "must be a non-negative number")]
-    [InlineData("1970-02-01",   "1970-01-02", 4,  "EstimatedEndDate",       "must be later than start date")]
+    [InlineData("1970-02-01",   "1970-01-02", 4,  "EstimatedStartDate",     "start date must preceed end date")]
     public async Task CreateCustomerWithWorkRequet_InvalidInput_ExpectBadRequestAndDoesNotInsertOrSave(
         string estimatedStartDate,
         string estimatedEndDate,

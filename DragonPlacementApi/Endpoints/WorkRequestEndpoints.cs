@@ -16,14 +16,14 @@ public static class WorkRequestEndpoints
         )
     {
         var result = await CustomerCreationService.CreateCustomerWithWorkRequest(createCustomer, unitOfWork).ConfigureAwait(false);
-        if (result.IsFailure)
-            return TypedResults.BadRequest(new ValidatedForm<ValidationFailures>
+        return result.IsSuccess
+            ? TypedResults.Ok(ValidatedResponse.Success)
+            : TypedResults.BadRequest(new ValidatedForm<ValidationFailures>
             {
                 IsSuccess = false,
                 IsInternalError = false,
                 ValidationFailures = result.Error
             });
-        return TypedResults.Ok(ValidatedResponse.Success);
     }
 
     public static async Task<Results<Ok<ValidatedResponse>, BadRequest<ValidatedResponse>>>
