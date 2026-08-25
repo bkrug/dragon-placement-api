@@ -1,4 +1,5 @@
 using DragonBilling.Application;
+using DragonCommon.Domain.Poco;
 using DragonPlacementApi.Poco;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +8,7 @@ namespace DragonPlacementApi.Endpoints;
 
 public static class WorkRequestEndpoints
 {
-    public static async Task<Results<Ok<ValidatedResponse>, BadRequest<ValidatedResponse>>>
+    public static async Task<Results<Ok<ValidatedResponse>, BadRequest<ValidatedForm<ValidationFailures>>>>
         CreateCustomerWithWorkRequetAsync(
             IBillingUnitOfWork unitOfWork,
             [FromBody] CreateCustomerAndWorkRequest createCustomer
