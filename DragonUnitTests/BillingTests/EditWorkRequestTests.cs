@@ -2,9 +2,11 @@ using DragonBilling.Application;
 using DragonBilling.Application.WorkRequestUpsert;
 using DragonBilling.Domain.Enum;
 using DragonBilling.Domain.Models;
+using DragonCommon.Domain;
 using DragonCommon.Domain.Poco;
 using DragonPlacementApi.Endpoints;
 using DragonPlacementApi.Poco;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Moq;
 using Shouldly;
@@ -138,7 +140,32 @@ public class EditWorkRequestTests
         var response = await WorkRequestEndpoints.EditWorkRequestAsync(unitOfWorkMock.Object, WORK_REQUEST_ID, input);
 
         //Assert
-        response.Result.ShouldBeOfType<Conflict<ValidatedResponse>>();
+        response.Result.ShouldBeOfType<Conflict<ValidatedForm<ValidationFailures>>>();
+        var badResult = (Conflict<ValidatedForm<ValidationFailures>>)response.Result;
+        var failures = badResult.Value!.ValidationFailures;
+        failures.ModelLevelFailure.ShouldBe(ValidationMessages.MOST_BE_IN_DRAFT_STATUS_TO_EDIT);
+        unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Never);
+    }
+
+    [Fact]
+    public async Task EditWorkRequests_WorkRequestDoesNotExist_ExpectNotFoundAndDoesNotSave()
+    {
+        var input = new WorkRequestCreateEdit
+        {
+            Name = "Moat Excavation and Drawbridge",
+            Description = "Dig a defensive moat and install a drawbridge",
+            EstimatedStartDate = "2026-03-01",
+            EstimatedEndDate = "2026-04-01",
+            EstimatedWorkforceSize = 6
+        };
+        var unitOfWorkMock = new Mock<IBillingUnitOfWork>();
+        unitOfWorkMock.Setup(u => u.WorkRequestRepository.GetByID(WORK_REQUEST_ID)).ReturnsAsync((WorkRequest?)null);
+
+        //Act
+        var response = await WorkRequestEndpoints.EditWorkRequestAsync(unitOfWorkMock.Object, WORK_REQUEST_ID, input);
+
+        //Assert
+        response.Result.ShouldBeOfType<NotFound<ValidatedResponse>>();
         unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Never);
     }
 }
