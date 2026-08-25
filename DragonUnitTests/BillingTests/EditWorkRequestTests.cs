@@ -17,7 +17,7 @@ public class EditWorkRequestTests
     private const int WORK_REQUEST_ID = 77;
 
     [Fact]
-    public async Task EditWorkRequet_WorkRequestExists_ExpectWorkRequestUpdatedAndSavesOnce()
+    public async Task EditWorkRequests_WorkRequestExists_ExpectWorkRequestUpdatedAndSavesOnce()
     {
         var existingWorkRequest = new WorkRequest
         {
@@ -66,7 +66,7 @@ public class EditWorkRequestTests
     [InlineData("2026-01-02", "not-a-date", 4,  "EstimatedEndDate",       "must be an ISO Date")]
     [InlineData("2026-01-02", "2026-02-01", -7, "EstimatedWorkforceSize", "must be a non-negative number")]
     [InlineData("2026-02-01", "2026-01-02", 4,  "EstimatedStartDate",     "start date must preceed end date")]
-    public async Task EditWorkRequet_InvalidInput_ExpectBadRequestAndDoesNotSave(
+    public async Task EditWorkRequests_InvalidInput_ExpectBadRequestAndDoesNotSave(
         string estimatedStartDate,
         string estimatedEndDate,
         int estimatedWorkforceSize,
@@ -109,7 +109,7 @@ public class EditWorkRequestTests
     [Theory]
     [InlineData(WorkRequestStatus.Approved)]
     [InlineData(WorkRequestStatus.Completed)]
-    public async Task EditWorkRequet_WorkRequestNotInDraftStatus_ExpectConflictAndDoesNotSave(
+    public async Task EditWorkRequests_WorkRequestNotInDraftStatus_ExpectConflictAndDoesNotSave(
         WorkRequestStatus workRequestStatus)
     {
         var existingWorkRequest = new WorkRequest

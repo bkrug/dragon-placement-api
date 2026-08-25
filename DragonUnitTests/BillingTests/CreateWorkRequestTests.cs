@@ -16,10 +16,10 @@ public class CreateWorkRequestTests
     private const int CUSTOMER_ID = 55;
 
     [Fact]
-    public async Task CreateWorkRequet_CustomerExists_ExpectWorkRequestInsertedAndSavesOnce()
+    public async Task CreateWorkRequests_CustomerExists_ExpectWorkRequestInsertedAndSavesOnce()
     {
         // The customer already has one work request on file; this call adds a second one.
-        // CreateWorkRequetAsync only checks existence by id, so the existing WorkRequest
+        // CreateWorkRequestAsync only checks existence by id, so the existing WorkRequest
         // itself isn't referenced by the mock setup below.
         var input = new WorkRequestCreateEdit
         {
@@ -54,7 +54,7 @@ public class CreateWorkRequestTests
     }
 
     [Fact]
-    public async Task CreateWorkRequet_CustomerDoesNotExist_ExpectNotFoundAndDoesNotInsertOrSave()
+    public async Task CreateWorkRequests_CustomerDoesNotExist_ExpectNotFoundAndDoesNotInsertOrSave()
     {
         var input = new WorkRequestCreateEdit
         {
@@ -82,7 +82,7 @@ public class CreateWorkRequestTests
     [InlineData("2026-01-02", "not-a-date", 4,  "EstimatedEndDate",       "must be an ISO Date")]
     [InlineData("2026-01-02", "2026-02-01", -7, "EstimatedWorkforceSize", "must be a non-negative number")]
     [InlineData("2026-02-01", "2026-01-02", 4,  "EstimatedStartDate",     "start date must preceed end date")]
-    public async Task CreateWorkRequet_InvalidInput_ExpectBadRequestAndDoesNotInsertOrSave(
+    public async Task CreateWorkRequests_InvalidInput_ExpectBadRequestAndDoesNotInsertOrSave(
         string estimatedStartDate,
         string estimatedEndDate,
         int estimatedWorkforceSize,

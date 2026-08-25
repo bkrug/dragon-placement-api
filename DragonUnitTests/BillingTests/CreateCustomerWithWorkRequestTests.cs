@@ -14,7 +14,7 @@ namespace DragonUnitTests.BillingTests;
 public class CreateCustomerWithWorkRequestTests
 {
     [Fact]
-    public async Task CreateCustomerWithWorkRequet_ValidInput_ExpectCustomerInsertedWithOneWorkRequestAndSavesOnce()
+    public async Task CreateCustomerWithWorkRequests_ValidInput_ExpectCustomerInsertedWithOneWorkRequestAndSavesOnce()
     {
         var input = new CreateCustomerAndWorkRequest
         {
@@ -61,7 +61,7 @@ public class CreateCustomerWithWorkRequestTests
     [InlineData("2026-01-02",   "not-a-date", 4,  "EstimatedEndDate",       "must be an ISO Date")]
     [InlineData("2026-01-02",   "2026-02-01", -7, "EstimatedWorkforceSize", "must be a non-negative number")]
     [InlineData("2026-02-01",   "2026-01-02", 4,  "EstimatedStartDate",     "start date must preceed end date")]
-    public async Task CreateCustomerWithWorkRequet_InvalidInput_ExpectBadRequestAndDoesNotInsertOrSave(
+    public async Task CreateCustomerWithWorkRequests_InvalidInput_ExpectBadRequestAndDoesNotInsertOrSave(
         string estimatedStartDate,
         string estimatedEndDate,
         int estimatedWorkforceSize,
