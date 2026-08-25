@@ -1,6 +1,7 @@
 using DragonBilling.Application;
 using DragonBilling.Application.CustomerCreation;
 using DragonBilling.Application.WorkRequestUpsert;
+using DragonBilling.Domain.Models;
 using DragonCommon.Domain.Poco;
 using DragonPlacementApi.Poco;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -10,6 +11,25 @@ namespace DragonPlacementApi.Endpoints;
 
 public static class WorkRequestEndpoints
 {
+    public static PagedData<WorkRequest> GetWorkRequests(
+            IBillingUnitOfWork unitOfWork,
+            [FromQuery(Name = "offset")] int offset = 0,
+            [FromQuery(Name = "limit")] int limit = 20)
+    {
+        var results = unitOfWork.WorkRequestRepository
+            .Get(
+                orderBy: q => q.OrderBy(wr => wr.Customer.Name).ThenBy(wr => wr.EstimatedStartDate),
+                includeProperties: nameof(WorkRequest.Customer)
+            );
+        return new()
+        {
+            Offset = offset,
+            Limit = limit,
+            TotalRecords = results.Count(),
+            Data = results.Skip(offset).Take(limit).ToList()
+        };
+    }
+
     public static async Task<Results<Ok<ValidatedResponse>, BadRequest<ValidatedForm<ValidationFailures>>>>
         CreateCustomerWithWorkRequestAsync(
             IBillingUnitOfWork unitOfWork,
