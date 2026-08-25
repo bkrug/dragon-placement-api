@@ -8,7 +8,7 @@ namespace DragonPlacementApi.Endpoints;
 public static class WorkRequestEndpoints
 {
     public static async Task<Results<Ok<ValidatedResponse>, BadRequest<ValidatedResponse>>>
-        CreateCutomerWithWorkRequetAsync(
+        CreateCustomerWithWorkRequetAsync(
             IBillingUnitOfWork unitOfWork,
             [FromBody] CreateCustomerAndWorkRequest createCustomer
         )
