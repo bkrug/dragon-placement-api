@@ -1,5 +1,6 @@
 using DragonBilling.Application;
 using DragonBilling.Application.WorkRequestUpsert;
+using DragonBilling.Domain.Enum;
 using DragonBilling.Domain.Models;
 using DragonCommon.Domain.Poco;
 using DragonPlacementApi.Endpoints;
@@ -22,6 +23,7 @@ public class EditWorkRequestTests
         {
             WorkRequestId = WORK_REQUEST_ID,
             CustomerId = CUSTOMER_ID,
+            WorkRequestStatus = WorkRequestStatus.Draft,
             Name = "Moat Excavation",
             Description = "Dig a defensive moat",
             EstimatedStartDate = new DateTime(2026, 1, 1),
@@ -40,6 +42,7 @@ public class EditWorkRequestTests
         {
             WorkRequestId = WORK_REQUEST_ID,
             CustomerId = CUSTOMER_ID,
+            WorkRequestStatus = WorkRequestStatus.Draft,
             Name = "Moat Excavation and Drawbridge",
             Description = "Dig a defensive moat and install a drawbridge",
             EstimatedStartDate = new DateTime(2026, 3, 1),
@@ -74,6 +77,7 @@ public class EditWorkRequestTests
         {
             WorkRequestId = WORK_REQUEST_ID,
             CustomerId = CUSTOMER_ID,
+            WorkRequestStatus = WorkRequestStatus.Draft,
             Name = "Moat Excavation",
             Description = "Dig a defensive moat",
             EstimatedStartDate = new DateTime(2026, 1, 1),
@@ -99,6 +103,42 @@ public class EditWorkRequestTests
         var badResult = (BadRequest<ValidatedForm<ValidationFailures>>)response.Result;
         var failures = badResult.Value!.ValidationFailures.FieldFailures;
         failures[expectedFailureField].ShouldBe(expectedFailureMessage);
+        unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Never);
+    }
+
+    [Theory]
+    [InlineData(WorkRequestStatus.Approved)]
+    [InlineData(WorkRequestStatus.Completed)]
+    public async Task EditWorkRequet_WorkRequestNotInDraftStatus_ExpectConflictAndDoesNotSave(
+        WorkRequestStatus workRequestStatus)
+    {
+        var existingWorkRequest = new WorkRequest
+        {
+            WorkRequestId = WORK_REQUEST_ID,
+            CustomerId = CUSTOMER_ID,
+            WorkRequestStatus = workRequestStatus,
+            Name = "Moat Excavation",
+            Description = "Dig a defensive moat",
+            EstimatedStartDate = new DateTime(2026, 1, 1),
+            EstimatedEndDate = new DateTime(2026, 2, 1),
+            EstimatedWorkforceSize = 3
+        };
+        var input = new WorkRequestCreateEdit
+        {
+            Name = "Moat Excavation and Drawbridge",
+            Description = "Dig a defensive moat and install a drawbridge",
+            EstimatedStartDate = "2026-03-01",
+            EstimatedEndDate = "2026-04-01",
+            EstimatedWorkforceSize = 6
+        };
+        var unitOfWorkMock = new Mock<IBillingUnitOfWork>();
+        unitOfWorkMock.Setup(u => u.WorkRequestRepository.GetByID(WORK_REQUEST_ID)).ReturnsAsync(existingWorkRequest);
+
+        //Act
+        var response = await WorkRequestEndpoints.EditWorkRequestAsync(unitOfWorkMock.Object, WORK_REQUEST_ID, input);
+
+        //Assert
+        response.Result.ShouldBeOfType<Conflict<ValidatedResponse>>();
         unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Never);
     }
 }
