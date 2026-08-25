@@ -62,21 +62,38 @@ CREATE TABLE PayPeriod (
 	CONSTRAINT PK_PayPeriodId PRIMARY KEY (PayPeriodId),
 	CONSTRAINT FK_AssignmentId FOREIGN KEY (AssignmentId) REFERENCES "Assignment"(AssignmentId)
 );
-CREATE TABLE IF NOT EXISTS "ChargeRate" (
-    ChargeRateId INTEGER NOT NULL,
-    AssignmentId INTEGER NOT NULL,
-    HourlyRate   NUMERIC NOT NULL,
-    CONSTRAINT PK_ChargeRate PRIMARY KEY (ChargeRateId),
-    CONSTRAINT FK_ChargeRate_Assignment FOREIGN KEY (AssignmentId) REFERENCES "Assignment"(AssignmentId)
+CREATE TABLE Customer (
+    CustomerId INTEGER NOT NULL,
+    Name TEXT NOT NULL,
+    CONSTRAINT PK_Customer PRIMARY KEY (CustomerId)
 );
-CREATE TABLE IF NOT EXISTS "BillableHours" (
+CREATE TABLE WorkRequest (
+    WorkRequestId INTEGER NOT NULL,
+    CustomerId INTEGER NOT NULL,
+    Name TEXT NOT NULL,
+    Description TEXT NOT NULL,
+    WorkRequestStatus INTEGER NOT NULL,
+    EstimatedStartDate TEXT,
+    EstimatedEndDate TEXT,
+    EstimatedWorkforceSize INTEGER NOT NULL,
+    CONSTRAINT PK_WorkRequest PRIMARY KEY (WorkRequestId),
+    CONSTRAINT FK_WorkRequest_Customer FOREIGN KEY (CustomerId) REFERENCES Customer(CustomerId)
+);
+CREATE TABLE ChargeRate (
+    ChargeRateId INTEGER NOT NULL,
+    WorkRequestId INTEGER NOT NULL,
+    HourlyRate NUMERIC NOT NULL,
+    CONSTRAINT PK_ChargeRate PRIMARY KEY (ChargeRateId),
+    CONSTRAINT FK_ChargeRate_WorkRequest FOREIGN KEY (WorkRequestId) REFERENCES WorkRequest(WorkRequestId)
+);
+CREATE TABLE BillableHours (
     BillableHoursId INTEGER NOT NULL,
-    ChargeRateId    INTEGER NOT NULL,
-    PayPeriodId     INTEGER NOT NULL,
-    HourlyRate      NUMERIC NOT NULL,
-    TotalHours      NUMERIC NOT NULL,
-    BillingStatus   TEXT    NOT NULL,
+    ChargeRateId INTEGER NOT NULL,
+    PayPeriodId INTEGER NOT NULL,
+    HourlyRate NUMERIC NOT NULL,
+    TotalHours NUMERIC NOT NULL,
+    BillingStatus TEXT NOT NULL,
     CONSTRAINT PK_BillableHours PRIMARY KEY (BillableHoursId),
-    CONSTRAINT FK_BillableHours_ChargeRate FOREIGN KEY (ChargeRateId) REFERENCES "ChargeRate"(ChargeRateId),
-    CONSTRAINT FK_BillableHours_PayPeriod FOREIGN KEY (PayPeriodId) REFERENCES "PayPeriod"
+    CONSTRAINT FK_BillableHours_ChargeRate FOREIGN KEY (ChargeRateId) REFERENCES ChargeRate(ChargeRateId),
+    CONSTRAINT FK_BillableHours_PayPeriod FOREIGN KEY (PayPeriodId) REFERENCES PayPeriod(PayPeriodId)
 );
