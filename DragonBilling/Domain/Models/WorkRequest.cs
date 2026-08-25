@@ -31,6 +31,8 @@ public partial class WorkRequest
     public virtual Customer Customer { get; set; } = null!;
     public ICollection<ChargeRate> ChargeRates { get; set; } = [];
 
+    public bool IsEditable => WorkRequestStatus == WorkRequestStatus.Draft;
+
     public Result<WorkRequest, ValidationFailures> Validate()
     {
         Dictionary<string, string> failures =

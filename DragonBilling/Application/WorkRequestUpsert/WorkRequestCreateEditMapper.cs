@@ -25,6 +25,20 @@ public static class WorkRequestCreateEditMapper
         return Result.Success<WorkRequest, ValidationFailures>(workRequest);
     }
 
+    public static Result<WorkRequest, ValidationFailures> ApplyTo(WorkRequestCreateEdit input, WorkRequest existing)
+    {
+        var parsingFailures = TryParseDates(input, out var startDate, out var endDate);
+        if (parsingFailures.FieldFailures.Count > 0)
+            return Result.Failure<WorkRequest, ValidationFailures>(parsingFailures);
+
+        existing.Name = input.Name;
+        existing.Description = input.Description;
+        existing.EstimatedStartDate = startDate;
+        existing.EstimatedEndDate = endDate;
+        existing.EstimatedWorkforceSize = input.EstimatedWorkforceSize;
+        return Result.Success<WorkRequest, ValidationFailures>(existing);
+    }
+
     private static ValidationFailures TryParseDates(
         WorkRequestCreateEdit input, out DateTime? startDate, out DateTime? endDate)
     {

@@ -50,13 +50,30 @@ public static class WorkRequestEndpoints
         return TypedResults.Ok(ValidatedResponse.Success);
     }
 
-    public static async Task<Results<Ok<ValidatedResponse>, BadRequest<ValidatedResponse>>>
+    public static async Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>, Conflict<ValidatedResponse>, BadRequest<ValidatedForm<ValidationFailures>>>>
         EditWorkRequestAsync(
             IBillingUnitOfWork unitOfWork,
             [FromQuery(Name = "workRequestId")] int workRequestId,
             [FromBody] WorkRequestCreateEdit editWorkRequest
         )
     {
+        var result = await WorkRequestUpsertService.EditWorkRequest(unitOfWork, editWorkRequest, workRequestId).ConfigureAwait(false);
+        if (result.IsFailure)
+            return result.Error switch
+            {
+                WorkRequestNotFound => TypedResults.NotFound(ValidatedResponse.NotFound),
+                WorkRequestNotInDraftStatus => TypedResults.Conflict(new ValidatedResponse
+                {
+                    ValidationFailures = ["Work request must be in Draft status to be edited"]
+                }),
+                WorkRequestEditInvalid e => TypedResults.BadRequest(new ValidatedForm<ValidationFailures>
+                {
+                    IsSuccess = false,
+                    IsInternalError = false,
+                    ValidationFailures = e.Failures
+                }),
+                _ => throw new InvalidOperationException()
+            };
         return TypedResults.Ok(ValidatedResponse.Success);
     }
 }
