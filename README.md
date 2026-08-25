@@ -52,8 +52,8 @@ Note to self: Reference these every once in a while
 - https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/infrastructure-persistence-layer-implementation-entity-framework-core
 - https://enterprisecraftsmanship.com/posts/validation-and-ddd/
 
-Shared content between domains:
-- https://martinfowler.com/bliki/BoundedContext.html
-- https://www.oreilly.com/library/view/what-is-domain-driven/9781492057802/ch04.html
-- https://deviq.com/domain-driven-design/shared-kernel/
-- https://medium.com/@iamprovidence/relationships-between-bounded-contexts-in-ddd-ce5cfe3aaa04
+## Authentication/Authorization
+
+This application currently lacks any sort of security.
+That's becaue I wanted to focus on training myself to learn DDD and clean architecture.
+A production ready application would absolutely need authentication and authorization policies.
