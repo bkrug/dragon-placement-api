@@ -30,6 +30,19 @@ public static class WorkRequestEndpoints
         };
     }
 
+    public static Results<Ok<ValidatedPayload<WorkRequest>>, NotFound<ValidatedResponse>>
+        GetWorkRequest(
+            IBillingUnitOfWork unitOfWork,
+            [FromRoute(Name = "workRequestId")] int workRequestId)
+    {
+        var workRequest = unitOfWork.WorkRequestRepository
+            .Get(filter: wr => wr.WorkRequestId == workRequestId, includeProperties: nameof(WorkRequest.Customer))
+            .FirstOrDefault();
+        return workRequest == null
+            ? TypedResults.NotFound(ValidatedResponse.NotFound)
+            : TypedResults.Ok(ValidatedPayload<WorkRequest>.FromPayload(workRequest));
+    }
+    
     public static async Task<Results<Ok<ValidatedResponse>, BadRequest<ValidatedForm<ValidationFailures>>>>
         CreateCustomerWithWorkRequestAsync(
             IBillingUnitOfWork unitOfWork,
