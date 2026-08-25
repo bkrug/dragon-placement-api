@@ -11,7 +11,7 @@ public record WorkRequestInvalid(ValidationFailures Failures) : WorkRequestCreat
 public static class WorkRequestUpsertService
 {
     public static async Task<Result<WorkRequest, WorkRequestCreateFailure>> CreateWorkRequest(
-        WorkRequestCreateEdit input, int customerId, IBillingUnitOfWork unitOfWork)
+        IBillingUnitOfWork unitOfWork, WorkRequestCreateEdit input, int customerId)
     {
         if (!await unitOfWork.CustomerExists(customerId).ConfigureAwait(false))
             return Result.Failure<WorkRequest, WorkRequestCreateFailure>(new CustomerNotFound());

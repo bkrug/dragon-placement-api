@@ -63,7 +63,7 @@ public static class JobEndpoints
     public static async Task<Results<Ok<ValidatedResponse>, BadRequest<ValidatedResponse>, NotFound<ValidatedResponse>>>
         AssignDragonToJobAsync(IDragonPlacementUnitOfWork unitOfWork, [FromRoute(Name="dragonId")] int dragonId, [FromRoute(Name="jobId")] int jobId)
     {
-        var result = await DragonAssignmentService.AssignDragonToJob(dragonId, jobId, unitOfWork).ConfigureAwait(false);
+        var result = await DragonAssignmentService.AssignDragonToJob(unitOfWork, dragonId, jobId).ConfigureAwait(false);
         if (result.IsFailure)
             return result.Error switch
             {
@@ -85,7 +85,7 @@ public static class JobEndpoints
             IDragonPlacementUnitOfWork unitOfWork,
             [FromBody] JobCreateEdit inputJob)
     {
-        var result = await JobUpsertService.CreateJob(inputJob, unitOfWork).ConfigureAwait(false);
+        var result = await JobUpsertService.CreateJob(unitOfWork, inputJob).ConfigureAwait(false);
         if (result.IsFailure)
             return TypedResults.BadRequest(new ValidatedForm<ValidationFailures>
             {
@@ -102,7 +102,7 @@ public static class JobEndpoints
             [FromRoute(Name="jobId")] int jobId,
             [FromBody] JobCreateEdit inputJob)
     {
-        var result = await JobUpsertService.UpdateJob(inputJob, jobId, unitOfWork).ConfigureAwait(false);
+        var result = await JobUpsertService.UpdateJob(unitOfWork, inputJob, jobId).ConfigureAwait(false);
         if (result.IsFailure)
             return result.Error switch
             {
@@ -123,7 +123,7 @@ public static class JobEndpoints
             IDragonPlacementUnitOfWork unitOfWork,
             [FromRoute(Name="jobId")] int jobId)
     {
-        var result = await JobDeleteService.DeleteJob(jobId, unitOfWork).ConfigureAwait(false);
+        var result = await JobDeleteService.DeleteJob(unitOfWork, jobId).ConfigureAwait(false);
         if (result.IsFailure)
             return result.Error switch
             {
@@ -140,7 +140,7 @@ public static class JobEndpoints
             [FromRoute(Name="jobId")] int jobId,
             [FromRoute(Name="dragonId")] int dragonId)
     {
-        var result = await DragonAssignmentService.UnassignDragonFromJob(dragonId, jobId, unitOfWork).ConfigureAwait(false);
+        var result = await DragonAssignmentService.UnassignDragonFromJob(unitOfWork, dragonId, jobId).ConfigureAwait(false);
         if (result.IsFailure)
             return TypedResults.NotFound(ValidatedResponse.NotFound);
         return TypedResults.Ok(ValidatedResponse.Success);

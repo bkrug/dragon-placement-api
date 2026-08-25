@@ -9,7 +9,7 @@ public record DragonDeleteHasAssignment : DragonDeleteFailure;
 
 public static class DragonDeletionService
 {
-    public static async Task<UnitResult<DragonDeleteFailure>> DeleteDragon(int dragonId, IDragonPlacementUnitOfWork unitOfWork)
+    public static async Task<UnitResult<DragonDeleteFailure>> DeleteDragon(IDragonPlacementUnitOfWork unitOfWork, int dragonId)
     {
         if (await unitOfWork.DragonHasAnAssignment(dragonId).ConfigureAwait(false))
             return UnitResult.Failure<DragonDeleteFailure>(new DragonDeleteHasAssignment());

@@ -11,7 +11,7 @@ public record AssignmentNotFound : AssignmentFailure;
 public static class DragonAssignmentService
 {
     public static async Task<Result<Assignment, AssignmentFailure>> AssignDragonToJob(
-        int dragonId, int jobId, IDragonPlacementUnitOfWork unitOfWork)
+        IDragonPlacementUnitOfWork unitOfWork, int dragonId, int jobId)
     {
         var job = await unitOfWork.JobRepository.GetByID(jobId).ConfigureAwait(false);
         if (job == null)
@@ -31,7 +31,7 @@ public static class DragonAssignmentService
     }
 
     public static async Task<UnitResult<AssignmentFailure>> UnassignDragonFromJob(
-        int dragonId, int jobId, IDragonPlacementUnitOfWork unitOfWork)
+        IDragonPlacementUnitOfWork unitOfWork, int dragonId, int jobId)
     {
         var assignment = unitOfWork.AssignmentRepository
             .Get(a => a.JobId == jobId && a.DragonId == dragonId)

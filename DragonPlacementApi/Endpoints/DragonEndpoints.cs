@@ -71,7 +71,7 @@ public static class DragonEndpoints
             IDragonPlacementUnitOfWork unitOfWork,
             [FromBody] DragonCreateEdit inputDragon)
     {
-        var result = await DragonUpsertService.CreateDragon(inputDragon, unitOfWork).ConfigureAwait(false);
+        var result = await DragonUpsertService.CreateDragon(unitOfWork, inputDragon).ConfigureAwait(false);
         if (result.IsFailure)
             return TypedResults.BadRequest(new ValidatedForm<ValidationFailures>
             {
@@ -89,7 +89,7 @@ public static class DragonEndpoints
             [FromBody] DragonCreateEdit inputDragon,
             CancellationToken cancellationToken)
     {
-        var result = await DragonUpsertService.UpdateDragon(inputDragon, dragonId, unitOfWork, cancellationToken).ConfigureAwait(false);
+        var result = await DragonUpsertService.UpdateDragon(unitOfWork, inputDragon, dragonId, cancellationToken).ConfigureAwait(false);
         if (result.IsFailure)
             return result.Error switch
             {
@@ -110,7 +110,7 @@ public static class DragonEndpoints
             IDragonPlacementUnitOfWork unitOfWork,
             [FromRoute(Name="dragonId")] int dragonId)
     {
-        var result = await DragonDeletionService.DeleteDragon(dragonId, unitOfWork).ConfigureAwait(false);
+        var result = await DragonDeletionService.DeleteDragon(unitOfWork, dragonId).ConfigureAwait(false);
         if (result.IsFailure)
             return result.Error switch
             {

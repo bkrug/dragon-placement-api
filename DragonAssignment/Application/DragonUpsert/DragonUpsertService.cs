@@ -11,7 +11,7 @@ public record DragonInvalid(ValidationFailures Failures) : DragonUpdateFailure;
 
 public static class DragonUpsertService
 {
-    public static async Task<Result<Dragon, ValidationFailures>> CreateDragon(DragonCreateEdit input, IDragonPlacementUnitOfWork unitOfWork)
+    public static async Task<Result<Dragon, ValidationFailures>> CreateDragon(IDragonPlacementUnitOfWork unitOfWork, DragonCreateEdit input)
     {
         var skillTags = unitOfWork.GetSkillTagsById(input.SkillTagIds);
         var result = DragonCreateEditMapper.ToDragon(input, skillTags)
@@ -26,7 +26,7 @@ public static class DragonUpsertService
         return result;
     }
 
-    public static async Task<Result<Dragon, DragonUpdateFailure>> UpdateDragon(DragonCreateEdit input, int dragonId, IDragonPlacementUnitOfWork unitOfWork, CancellationToken cancellationToken)
+    public static async Task<Result<Dragon, DragonUpdateFailure>> UpdateDragon(IDragonPlacementUnitOfWork unitOfWork, DragonCreateEdit input, int dragonId, CancellationToken cancellationToken)
     {
         var existing = await unitOfWork.GetDragonWithJobAsync(dragonId, JobInclusions.None, cancellationToken).ConfigureAwait(false);
         if (existing == null)

@@ -9,7 +9,7 @@ public record JobDeleteHasAssignment : JobDeleteFailure;
 
 public static class JobDeleteService
 {
-    public static async Task<UnitResult<JobDeleteFailure>> DeleteJob(int jobId, IDragonPlacementUnitOfWork unitOfWork)
+    public static async Task<UnitResult<JobDeleteFailure>> DeleteJob(IDragonPlacementUnitOfWork unitOfWork, int jobId)
     {
         if (await unitOfWork.JobHasAnAssignment(jobId).ConfigureAwait(false))
             return UnitResult.Failure<JobDeleteFailure>(new JobDeleteHasAssignment());

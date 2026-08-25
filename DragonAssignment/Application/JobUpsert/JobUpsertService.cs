@@ -11,7 +11,7 @@ public record JobInvalid(ValidationFailures Failures) : JobUpdateFailure;
 public static class JobUpsertService
 {
     public static async Task<Result<Job, ValidationFailures>> CreateJob(
-        JobCreateEdit input, IDragonPlacementUnitOfWork unitOfWork)
+        IDragonPlacementUnitOfWork unitOfWork, JobCreateEdit input)
     {
         var skillTags = unitOfWork.GetSkillTagsById(input.SkillTagIds);
         return await JobCreateEditMapper.ToJob(input, skillTags)
@@ -20,7 +20,7 @@ public static class JobUpsertService
             .Tap(async _ => await unitOfWork.SaveChangesAsync().ConfigureAwait(false));
     }
 
-    public static async Task<Result<Job, JobUpdateFailure>> UpdateJob(JobCreateEdit input, int jobId, IDragonPlacementUnitOfWork unitOfWork)
+    public static async Task<Result<Job, JobUpdateFailure>> UpdateJob(IDragonPlacementUnitOfWork unitOfWork, JobCreateEdit input, int jobId)
     {
         var existing = await unitOfWork.GetJobWithSkillsAsync(jobId).ConfigureAwait(false);
         if (existing == null)

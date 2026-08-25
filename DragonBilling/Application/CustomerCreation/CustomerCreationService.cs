@@ -7,7 +7,7 @@ namespace DragonBilling.Application.CustomerCreation;
 public static class CustomerCreationService
 {
     public static Task<Result<Customer, ValidationFailures>> CreateCustomerWithWorkRequest(
-        CreateCustomerAndWorkRequest input, IBillingUnitOfWork unitOfWork)
+        IBillingUnitOfWork unitOfWork, CreateCustomerAndWorkRequest input)
     {
         return CreateCustomerAndWorkRequestMapper.ToCustomer(input)
             .Bind(customer => customer.WorkRequests.Single().Validate().Map(_ => customer))

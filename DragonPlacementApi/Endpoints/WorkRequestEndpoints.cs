@@ -16,7 +16,7 @@ public static class WorkRequestEndpoints
             [FromBody] CreateCustomerAndWorkRequest createCustomer
         )
     {
-        var result = await CustomerCreationService.CreateCustomerWithWorkRequest(createCustomer, unitOfWork).ConfigureAwait(false);
+        var result = await CustomerCreationService.CreateCustomerWithWorkRequest(unitOfWork, createCustomer).ConfigureAwait(false);
         return result.IsSuccess
             ? TypedResults.Ok(ValidatedResponse.Success)
             : TypedResults.BadRequest(new ValidatedForm<ValidationFailures>
@@ -34,7 +34,7 @@ public static class WorkRequestEndpoints
             [FromBody] WorkRequestCreateEdit createWorkRequest
         )
     {
-        var result = await WorkRequestUpsertService.CreateWorkRequest(createWorkRequest, customerId, unitOfWork).ConfigureAwait(false);
+        var result = await WorkRequestUpsertService.CreateWorkRequest(unitOfWork, createWorkRequest, customerId).ConfigureAwait(false);
         if (result.IsFailure)
             return result.Error switch
             {
