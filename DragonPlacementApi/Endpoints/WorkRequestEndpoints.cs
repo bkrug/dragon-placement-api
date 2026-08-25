@@ -50,7 +50,7 @@ public static class WorkRequestEndpoints
         return TypedResults.Ok(ValidatedResponse.Success);
     }
 
-    public static async Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>, Conflict<ValidatedResponse>, BadRequest<ValidatedForm<ValidationFailures>>>>
+    public static async Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>, Conflict<ValidatedForm<ValidationFailures>>, BadRequest<ValidatedForm<ValidationFailures>>>>
         EditWorkRequestAsync(
             IBillingUnitOfWork unitOfWork,
             [FromQuery(Name = "workRequestId")] int workRequestId,
@@ -62,9 +62,11 @@ public static class WorkRequestEndpoints
             return result.Error switch
             {
                 WorkRequestNotFound => TypedResults.NotFound(ValidatedResponse.NotFound),
-                WorkRequestNotInDraftStatus => TypedResults.Conflict(new ValidatedResponse
+                WorkRequestNotInDraftStatus e => TypedResults.Conflict(new ValidatedForm<ValidationFailures>
                 {
-                    ValidationFailures = ["Work request must be in Draft status to be edited"]
+                    IsSuccess = false,
+                    IsInternalError = false,
+                    ValidationFailures = e.Failures
                 }),
                 WorkRequestEditInvalid e => TypedResults.BadRequest(new ValidatedForm<ValidationFailures>
                 {

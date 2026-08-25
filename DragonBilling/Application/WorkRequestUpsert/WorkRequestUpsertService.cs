@@ -1,5 +1,6 @@
 using CSharpFunctionalExtensions;
 using DragonBilling.Domain.Models;
+using DragonCommon.Domain;
 using DragonCommon.Domain.Poco;
 
 namespace DragonBilling.Application.WorkRequestUpsert;
@@ -10,7 +11,7 @@ public record WorkRequestInvalid(ValidationFailures Failures) : WorkRequestCreat
 
 public abstract record WorkRequestEditFailure;
 public record WorkRequestNotFound : WorkRequestEditFailure;
-public record WorkRequestNotInDraftStatus : WorkRequestEditFailure;
+public record WorkRequestNotInDraftStatus(ValidationFailures Failures) : WorkRequestEditFailure;
 public record WorkRequestEditInvalid(ValidationFailures Failures) : WorkRequestEditFailure;
 
 public static class WorkRequestUpsertService
@@ -35,7 +36,11 @@ public static class WorkRequestUpsertService
         if (existing == null)
             return Result.Failure<WorkRequest, WorkRequestEditFailure>(new WorkRequestNotFound());
         if (!existing.IsEditable)
-            return Result.Failure<WorkRequest, WorkRequestEditFailure>(new WorkRequestNotInDraftStatus());
+            return Result.Failure<WorkRequest, WorkRequestEditFailure>(
+                new WorkRequestNotInDraftStatus(new ValidationFailures {
+                    ModelLevelFailure = ValidationMessages.MOST_BE_IN_DRAFT_STATUS_TO_EDIT
+                })
+            );
 
         return await WorkRequestCreateEditMapper.ApplyTo(input, existing)
             .Bind(workRequest => workRequest.Validate())
