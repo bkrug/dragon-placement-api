@@ -48,7 +48,7 @@ public class CreateWorkRequestTests
         var response = await WorkRequestEndpoints.CreateWorkRequestAsync(unitOfWorkMock.Object, CUSTOMER_ID, input);
 
         //Assert
-        response.Result.ShouldBeOfType<Ok<ValidatedResponse>>();
+        response.Result.ShouldBeOfType<Ok<ValidatedPayload<WorkRequest>>>();
         insertedWorkRequest.Get().ShouldBeEquivalentTo(expectedWorkRequest);
         unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Once);
     }

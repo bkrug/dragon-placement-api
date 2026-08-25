@@ -58,7 +58,7 @@ public class EditWorkRequestTests
         var response = await WorkRequestEndpoints.EditWorkRequestAsync(unitOfWorkMock.Object, WORK_REQUEST_ID, input);
 
         //Assert
-        response.Result.ShouldBeOfType<Ok<ValidatedResponse>>();
+        response.Result.ShouldBeOfType<Ok<ValidatedPayload<WorkRequest>>>();
         existingWorkRequest.ShouldBeEquivalentTo(expectedWorkRequest);
         unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Once);
     }

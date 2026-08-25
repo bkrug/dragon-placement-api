@@ -43,7 +43,7 @@ public static class WorkRequestEndpoints
             : TypedResults.Ok(ValidatedPayload<WorkRequest>.FromPayload(workRequest));
     }
     
-    public static async Task<Results<Ok<ValidatedResponse>, BadRequest<ValidatedForm<ValidationFailures>>>>
+    public static async Task<Results<Ok<ValidatedPayload<Customer>>, BadRequest<ValidatedForm<ValidationFailures>>>>
         CreateCustomerWithWorkRequestAsync(
             IBillingUnitOfWork unitOfWork,
             [FromBody] CreateCustomerAndWorkRequest createCustomer
@@ -51,7 +51,7 @@ public static class WorkRequestEndpoints
     {
         var result = await CustomerCreationService.CreateCustomerWithWorkRequest(unitOfWork, createCustomer).ConfigureAwait(false);
         return result.IsSuccess
-            ? TypedResults.Ok(ValidatedResponse.Success)
+            ? TypedResults.Ok(ValidatedPayload<Customer>.FromPayload(result.Value))
             : TypedResults.BadRequest(new ValidatedForm<ValidationFailures>
             {
                 IsSuccess = false,
@@ -60,7 +60,7 @@ public static class WorkRequestEndpoints
             });
     }
 
-    public static async Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<ValidationFailures>>>>
+    public static async Task<Results<Ok<ValidatedPayload<WorkRequest>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<ValidationFailures>>>>
         CreateWorkRequestAsync(
             IBillingUnitOfWork unitOfWork,
             [FromQuery(Name = "customerId")] int customerId,
@@ -80,10 +80,10 @@ public static class WorkRequestEndpoints
                 }),
                 _ => throw new InvalidOperationException()
             };
-        return TypedResults.Ok(ValidatedResponse.Success);
+        return TypedResults.Ok(ValidatedPayload<WorkRequest>.FromPayload(result.Value));
     }
 
-    public static async Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>, Conflict<ValidatedForm<ValidationFailures>>, BadRequest<ValidatedForm<ValidationFailures>>>>
+    public static async Task<Results<Ok<ValidatedPayload<WorkRequest>>, NotFound<ValidatedResponse>, Conflict<ValidatedForm<ValidationFailures>>, BadRequest<ValidatedForm<ValidationFailures>>>>
         EditWorkRequestAsync(
             IBillingUnitOfWork unitOfWork,
             [FromQuery(Name = "workRequestId")] int workRequestId,
@@ -109,6 +109,6 @@ public static class WorkRequestEndpoints
                 }),
                 _ => throw new InvalidOperationException()
             };
-        return TypedResults.Ok(ValidatedResponse.Success);
+        return TypedResults.Ok(ValidatedPayload<WorkRequest>.FromPayload(result.Value));
     }
 }

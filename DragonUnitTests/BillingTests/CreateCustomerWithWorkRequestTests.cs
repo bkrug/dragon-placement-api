@@ -49,7 +49,7 @@ public class CreateCustomerWithWorkRequestTests
         var response = await WorkRequestEndpoints.CreateCustomerWithWorkRequestAsync(unitOfWorkMock.Object, input);
 
         //Assert
-        response.Result.ShouldBeOfType<Ok<ValidatedResponse>>();
+        response.Result.ShouldBeOfType<Ok<ValidatedPayload<Customer>>>();
         insertedCustomer.Get().ShouldBeEquivalentTo(expectedCustomer);
         insertedCustomer.Get()!.WorkRequests.Count.ShouldBe(1);
         unitOfWorkMock.Verify(u => u.WorkRequestRepository.Insert(It.IsAny<WorkRequest>()), Times.Never);
