@@ -50,7 +50,7 @@ public class EditWorkRequestTests
         unitOfWorkMock.Setup(u => u.WorkRequestRepository.GetByID(WORK_REQUEST_ID)).ReturnsAsync(existingWorkRequest);
 
         //Act
-        var response = await WorkRequestEndpoints.EditWorkRequetAsync(unitOfWorkMock.Object, WORK_REQUEST_ID, input);
+        var response = await WorkRequestEndpoints.EditWorkRequestAsync(unitOfWorkMock.Object, WORK_REQUEST_ID, input);
 
         //Assert
         response.Result.ShouldBeOfType<Ok<ValidatedResponse>>();
@@ -92,7 +92,7 @@ public class EditWorkRequestTests
         unitOfWorkMock.Setup(u => u.WorkRequestRepository.GetByID(WORK_REQUEST_ID)).ReturnsAsync(existingWorkRequest);
 
         //Act
-        var response = await WorkRequestEndpoints.EditWorkRequetAsync(unitOfWorkMock.Object, WORK_REQUEST_ID, input);
+        var response = await WorkRequestEndpoints.EditWorkRequestAsync(unitOfWorkMock.Object, WORK_REQUEST_ID, input);
 
         //Assert
         response.Result.ShouldBeOfType<BadRequest<ValidatedForm<ValidationFailures>>>();

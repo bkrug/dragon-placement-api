@@ -11,7 +11,7 @@ namespace DragonPlacementApi.Endpoints;
 public static class WorkRequestEndpoints
 {
     public static async Task<Results<Ok<ValidatedResponse>, BadRequest<ValidatedForm<ValidationFailures>>>>
-        CreateCustomerWithWorkRequetAsync(
+        CreateCustomerWithWorkRequestAsync(
             IBillingUnitOfWork unitOfWork,
             [FromBody] CreateCustomerAndWorkRequest createCustomer
         )
@@ -28,7 +28,7 @@ public static class WorkRequestEndpoints
     }
 
     public static async Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<ValidationFailures>>>>
-        CreateWorkRequetAsync(
+        CreateWorkRequestAsync(
             IBillingUnitOfWork unitOfWork,
             [FromQuery(Name = "customerId")] int customerId,
             [FromBody] WorkRequestCreateEdit createWorkRequest
@@ -51,7 +51,7 @@ public static class WorkRequestEndpoints
     }
 
     public static async Task<Results<Ok<ValidatedResponse>, BadRequest<ValidatedResponse>>>
-        EditWorkRequetAsync(
+        EditWorkRequestAsync(
             IBillingUnitOfWork unitOfWork,
             [FromQuery(Name = "workRequestId")] int workRequestId,
             [FromBody] WorkRequestCreateEdit editWorkRequest

@@ -46,7 +46,7 @@ public class CreateCustomerWithWorkRequestTests
             .Callback<Customer>(insertedCustomer.Set);
 
         //Act
-        var response = await WorkRequestEndpoints.CreateCustomerWithWorkRequetAsync(unitOfWorkMock.Object, input);
+        var response = await WorkRequestEndpoints.CreateCustomerWithWorkRequestAsync(unitOfWorkMock.Object, input);
 
         //Assert
         response.Result.ShouldBeOfType<Ok<ValidatedResponse>>();
@@ -81,7 +81,7 @@ public class CreateCustomerWithWorkRequestTests
         unitOfWorkMock.Setup(m => m.CustomerRepository).Returns(new Mock<IGenericRepository<Customer>>().Object);
 
         //Act
-        var response = await WorkRequestEndpoints.CreateCustomerWithWorkRequetAsync(unitOfWorkMock.Object, input);
+        var response = await WorkRequestEndpoints.CreateCustomerWithWorkRequestAsync(unitOfWorkMock.Object, input);
 
         //Assert
         response.Result.ShouldBeOfType<BadRequest<ValidatedForm<ValidationFailures>>>();

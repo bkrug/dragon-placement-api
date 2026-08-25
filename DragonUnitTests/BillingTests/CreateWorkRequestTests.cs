@@ -45,7 +45,7 @@ public class CreateWorkRequestTests
             .Callback<WorkRequest>(insertedWorkRequest.Set);
 
         //Act
-        var response = await WorkRequestEndpoints.CreateWorkRequetAsync(unitOfWorkMock.Object, CUSTOMER_ID, input);
+        var response = await WorkRequestEndpoints.CreateWorkRequestAsync(unitOfWorkMock.Object, CUSTOMER_ID, input);
 
         //Assert
         response.Result.ShouldBeOfType<Ok<ValidatedResponse>>();
@@ -69,7 +69,7 @@ public class CreateWorkRequestTests
         unitOfWorkMock.Setup(m => m.WorkRequestRepository).Returns(new Mock<IGenericRepository<WorkRequest>>().Object);
 
         //Act
-        var response = await WorkRequestEndpoints.CreateWorkRequetAsync(unitOfWorkMock.Object, CUSTOMER_ID, input);
+        var response = await WorkRequestEndpoints.CreateWorkRequestAsync(unitOfWorkMock.Object, CUSTOMER_ID, input);
 
         //Assert
         response.Result.ShouldBeOfType<NotFound<ValidatedResponse>>();
@@ -102,7 +102,7 @@ public class CreateWorkRequestTests
         unitOfWorkMock.Setup(m => m.WorkRequestRepository).Returns(new Mock<IGenericRepository<WorkRequest>>().Object);
 
         //Act
-        var response = await WorkRequestEndpoints.CreateWorkRequetAsync(unitOfWorkMock.Object, CUSTOMER_ID, input);
+        var response = await WorkRequestEndpoints.CreateWorkRequestAsync(unitOfWorkMock.Object, CUSTOMER_ID, input);
 
         //Assert
         response.Result.ShouldBeOfType<BadRequest<ValidatedForm<ValidationFailures>>>();
