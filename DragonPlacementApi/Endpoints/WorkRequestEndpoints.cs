@@ -19,8 +19,8 @@ public static class WorkRequestEndpoints
     public static async Task<Results<Ok<ValidatedResponse>, BadRequest<ValidatedResponse>>>
         CreateWorkRequetAsync(
             IBillingUnitOfWork unitOfWork,
-            [FromQuery] int customerId,
-            [FromBody] WorkRequestCreateEdit createEditWorkRequest
+            [FromQuery(Name = "customerId")] int customerId,
+            [FromBody] WorkRequestCreateEdit createWorkRequest
         )
     {
         return TypedResults.Ok(ValidatedResponse.Success);
@@ -29,8 +29,8 @@ public static class WorkRequestEndpoints
     public static async Task<Results<Ok<ValidatedResponse>, BadRequest<ValidatedResponse>>>
         EditWorkRequetAsync(
             IBillingUnitOfWork unitOfWork,
-            [FromQuery] int customerId,
-            [FromBody] WorkRequestCreateEdit createEditWorkRequest
+            [FromQuery(Name = "workRequestId")] int workRequestId,
+            [FromBody] WorkRequestCreateEdit editWorkRequest
         )
     {
         return TypedResults.Ok(ValidatedResponse.Success);
