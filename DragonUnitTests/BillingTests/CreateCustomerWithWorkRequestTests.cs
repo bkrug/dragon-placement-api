@@ -11,7 +11,7 @@ using Shouldly;
 
 namespace DragonUnitTests.BillingTests;
 
-public class CreateCustomerWithWorkRequetTests
+public class CreateCustomerWithWorkRequestTests
 {
     [Fact]
     public async Task CreateCustomerWithWorkRequet_ValidInput_ExpectCustomerInsertedWithOneWorkRequestAndSavesOnce()

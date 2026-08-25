@@ -11,7 +11,7 @@ using Shouldly;
 
 namespace DragonUnitTests.BillingTests;
 
-public class CreateWorkRequetTests
+public class CreateWorkRequestTests
 {
     private const int CUSTOMER_ID = 55;
 
