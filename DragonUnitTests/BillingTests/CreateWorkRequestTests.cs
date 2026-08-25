@@ -25,8 +25,8 @@ public class CreateWorkRequestTests
         {
             Name = "Moat Excavation",
             Description = "Dig a defensive moat",
-            EstimatedStartDate = "1970-03-01",
-            EstimatedEndDate = "1970-04-01",
+            EstimatedStartDate = "2026-03-01",
+            EstimatedEndDate = "2026-04-01",
             EstimatedWorkforceSize = 6
         };
         var expectedWorkRequest = new WorkRequest
@@ -34,8 +34,8 @@ public class CreateWorkRequestTests
             CustomerId = CUSTOMER_ID,
             Name = "Moat Excavation",
             Description = "Dig a defensive moat",
-            EstimatedStartDate = new DateTime(1970, 3, 1),
-            EstimatedEndDate = new DateTime(1970, 4, 1),
+            EstimatedStartDate = new DateTime(2026, 3, 1),
+            EstimatedEndDate = new DateTime(2026, 4, 1),
             EstimatedWorkforceSize = 6
         };
         var insertedWorkRequest = new Immutable<WorkRequest>();
@@ -60,8 +60,8 @@ public class CreateWorkRequestTests
         {
             Name = "Moat Excavation",
             Description = "Dig a defensive moat",
-            EstimatedStartDate = "1970-03-01",
-            EstimatedEndDate = "1970-04-01",
+            EstimatedStartDate = "2026-03-01",
+            EstimatedEndDate = "2026-04-01",
             EstimatedWorkforceSize = 6
         };
         var unitOfWorkMock = new Mock<IBillingUnitOfWork>();
@@ -78,10 +78,10 @@ public class CreateWorkRequestTests
     }
 
     [Theory]
-    [InlineData("not-a-date", "1970-02-01", 4,  "EstimatedStartDate",     "must be an ISO Date")]
-    [InlineData("1970-01-02", "not-a-date", 4,  "EstimatedEndDate",       "must be an ISO Date")]
-    [InlineData("1970-01-02", "1970-02-01", -7, "EstimatedWorkforceSize", "must be a non-negative number")]
-    [InlineData("1970-02-01", "1970-01-02", 4,  "EstimatedStartDate",     "start date must preceed end date")]
+    [InlineData("not-a-date", "2026-02-01", 4,  "EstimatedStartDate",     "must be an ISO Date")]
+    [InlineData("2026-01-02", "not-a-date", 4,  "EstimatedEndDate",       "must be an ISO Date")]
+    [InlineData("2026-01-02", "2026-02-01", -7, "EstimatedWorkforceSize", "must be a non-negative number")]
+    [InlineData("2026-02-01", "2026-01-02", 4,  "EstimatedStartDate",     "start date must preceed end date")]
     public async Task CreateWorkRequet_InvalidInput_ExpectBadRequestAndDoesNotInsertOrSave(
         string estimatedStartDate,
         string estimatedEndDate,
