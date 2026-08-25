@@ -1,4 +1,7 @@
+using CSharpFunctionalExtensions;
 using DragonBilling.Domain.Enum;
+using DragonCommon.Domain;
+using DragonCommon.Domain.Poco;
 
 namespace DragonBilling.Domain.Models;
 
@@ -27,4 +30,28 @@ public partial class WorkRequest
 
     public virtual Customer Customer { get; set; } = null!;
     public ICollection<ChargeRate> ChargeRates { get; set; } = [];
+
+    public Result<WorkRequest, ValidationFailures> Validate()
+    {
+        Dictionary<string, string> failures =
+            new List<(string, string)>()
+            {
+                ( nameof(EstimatedWorkforceSize), ValidateEstimatedWorkforceSize() ),
+                ( nameof(EstimatedEndDate), ValidateEstimatedEndDate() )
+            }
+            .Where(tuple => tuple.Item2 != string.Empty)
+            .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
+
+        return failures.Count == 0
+            ? Result.Success<WorkRequest, ValidationFailures>(this)
+            : Result.Failure<WorkRequest, ValidationFailures>(new ValidationFailures { FieldFailures = failures });
+    }
+
+    private string ValidateEstimatedWorkforceSize() =>
+        EstimatedWorkforceSize < 0 ? ValidationMessages.MUST_BE_A_NON_NEGATIVE_NUMBER : string.Empty;
+
+    private string ValidateEstimatedEndDate() =>
+        EstimatedStartDate.HasValue && EstimatedEndDate.HasValue && EstimatedEndDate < EstimatedStartDate
+            ? "must be later than start date"
+            : string.Empty;
 }

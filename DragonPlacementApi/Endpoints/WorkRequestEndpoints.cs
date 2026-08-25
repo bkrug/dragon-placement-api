@@ -1,4 +1,5 @@
 using DragonBilling.Application;
+using DragonBilling.Application.CustomerCreation;
 using DragonCommon.Domain.Poco;
 using DragonPlacementApi.Poco;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -14,6 +15,14 @@ public static class WorkRequestEndpoints
             [FromBody] CreateCustomerAndWorkRequest createCustomer
         )
     {
+        var result = await CustomerCreationService.CreateCustomerWithWorkRequest(createCustomer, unitOfWork).ConfigureAwait(false);
+        if (result.IsFailure)
+            return TypedResults.BadRequest(new ValidatedForm<ValidationFailures>
+            {
+                IsSuccess = false,
+                IsInternalError = false,
+                ValidationFailures = result.Error
+            });
         return TypedResults.Ok(ValidatedResponse.Success);
     }
 
@@ -36,20 +45,6 @@ public static class WorkRequestEndpoints
     {
         return TypedResults.Ok(ValidatedResponse.Success);
     }
-}
-
-/// <summary>
-/// A new customer's first work request is created in the same call as the customer,
-/// so this is a flat representation of the Customer and WorkRequest domain models combined.
-/// </summary>
-public class CreateCustomerAndWorkRequest
-{
-    public string CustomerName { get; set; } = null!;
-    public string WorkRequestName { get; set; } = null!;
-    public string Description { get; set; } = null!;
-    public string EstimatedStartDate { get; set; } = string.Empty;
-    public string EstimatedEndDate { get; set; } = string.Empty;
-    public int EstimatedWorkforceSize { get; set; }
 }
 
 public class WorkRequestCreateEdit
