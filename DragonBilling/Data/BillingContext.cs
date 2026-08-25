@@ -42,6 +42,11 @@ public partial class BillingContext : DbContext
             entity.ToTable("WorkRequest");
 
             entity.HasKey(e => e.WorkRequestId);
+
+            entity.HasOne(e => e.Customer)
+                .WithMany(e => e.WorkRequests)
+                .HasForeignKey(e => e.CustomerId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<ChargeRate>(entity =>
@@ -51,6 +56,11 @@ public partial class BillingContext : DbContext
             entity.HasKey(e => e.ChargeRateId);
 
             entity.Property(e => e.HourlyRate).HasColumnType("NUMERIC");
+
+            entity.HasOne(e => e.WorkRequest)
+                .WithMany(e => e.ChargeRates)
+                .HasForeignKey(e => e.WorkRequestId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<BillableHours>(entity =>
@@ -64,7 +74,7 @@ public partial class BillingContext : DbContext
             entity.Property(e => e.BillingStatus).IsEnumNameType("BillingStatus");
 
             entity.HasOne(e => e.ChargeRate)
-                .WithMany()
+                .WithMany(e => e.BillableHours)
                 .HasForeignKey(e => e.ChargeRateId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
