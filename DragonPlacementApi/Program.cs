@@ -74,6 +74,7 @@ app.MapPost("/billing/payperiod", BillingEndpoints.BuildBillableHoursCandidatesA
 
 app.MapGet("/workrequest", WorkRequestEndpoints.GetWorkRequests);
 app.MapGet("/workrequest/{workRequestId}", WorkRequestEndpoints.GetWorkRequest);
+app.MapGet("/customer", WorkRequestEndpoints.SearchCustomersByName);
 app.MapPost("/customer", WorkRequestEndpoints.CreateCustomerWithWorkRequestAsync);
 app.MapPost("/customer/{customerId}/workrequest", WorkRequestEndpoints.CreateWorkRequestAsync);
 app.MapPut("/workrequest/{workRequestId}", WorkRequestEndpoints.EditWorkRequestAsync);

@@ -30,6 +30,21 @@ public static class WorkRequestEndpoints
         };
     }
 
+    public static Ok<ValidatedPayload<List<Customer>>> SearchCustomersByName(
+            IBillingUnitOfWork unitOfWork,
+            [FromQuery(Name = "name")] string name,
+            [FromQuery(Name = "count")] int count)
+    {
+        var customerList = unitOfWork.CustomerRepository
+            .Get(
+                filter: c => c.Name.Contains(name),
+                orderBy: q => q.OrderByDescending(c => c.CustomerId)
+            )
+            .Take(count)
+            .ToList();
+        return TypedResults.Ok(ValidatedPayload<List<Customer>>.FromPayload(customerList));
+    }
+
     public static Results<Ok<ValidatedPayload<WorkRequest>>, NotFound<ValidatedResponse>>
         GetWorkRequest(
             IBillingUnitOfWork unitOfWork,
