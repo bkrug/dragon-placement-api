@@ -12,4 +12,7 @@ public interface IBillingUnitOfWork
 
     void Dispose();
     Task SaveChangesAsync();
+
+    // boolean results
+    Task<bool> CustomerExists(int customerId);
 }

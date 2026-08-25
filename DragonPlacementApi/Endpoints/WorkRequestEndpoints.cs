@@ -1,5 +1,6 @@
 using DragonBilling.Application;
 using DragonBilling.Application.CustomerCreation;
+using DragonBilling.Application.WorkRequestUpsert;
 using DragonCommon.Domain.Poco;
 using DragonPlacementApi.Poco;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -26,13 +27,26 @@ public static class WorkRequestEndpoints
             });
     }
 
-    public static async Task<Results<Ok<ValidatedResponse>, BadRequest<ValidatedResponse>>>
+    public static async Task<Results<Ok<ValidatedResponse>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<ValidationFailures>>>>
         CreateWorkRequetAsync(
             IBillingUnitOfWork unitOfWork,
             [FromQuery(Name = "customerId")] int customerId,
             [FromBody] WorkRequestCreateEdit createWorkRequest
         )
     {
+        var result = await WorkRequestUpsertService.CreateWorkRequest(createWorkRequest, customerId, unitOfWork).ConfigureAwait(false);
+        if (result.IsFailure)
+            return result.Error switch
+            {
+                CustomerNotFound => TypedResults.NotFound(ValidatedResponse.NotFound),
+                WorkRequestInvalid e => TypedResults.BadRequest(new ValidatedForm<ValidationFailures>
+                {
+                    IsSuccess = false,
+                    IsInternalError = false,
+                    ValidationFailures = e.Failures
+                }),
+                _ => throw new InvalidOperationException()
+            };
         return TypedResults.Ok(ValidatedResponse.Success);
     }
 
@@ -45,13 +59,4 @@ public static class WorkRequestEndpoints
     {
         return TypedResults.Ok(ValidatedResponse.Success);
     }
-}
-
-public class WorkRequestCreateEdit
-{
-    public string Name { get; set; } = null!;
-    public string Description { get; set; } = null!;
-    public string EstimatedStartDate { get; set; } = string.Empty;
-    public string EstimatedEndDate { get; set; } = string.Empty;
-    public int EstimatedWorkforceSize { get; set; }
 }
