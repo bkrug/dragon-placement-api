@@ -57,3 +57,11 @@ Note to self: Reference these every once in a while
 This application currently lacks any sort of security.
 That's becaue I wanted to focus on training myself to learn DDD and clean architecture.
 A production ready application would absolutely need authentication and authorization policies.
+
+## Future Work
+
+- Allow a user to select an existing Work Request and approve it. This will result in creating a new Job, in the Assignment Domain.
+- Need to record agreed-upon wages for the dragons, and agreed-upon charge rates for the customers. What does that workflow look like?
+- Rethink the "/billing/payperiod" endpoint. Instead of creating all of the billing candidates at once, just create a BillableHours model when the payperiod is submitted. Delete it if the payperiod is moved backwards to "Draft".
+- Create a way to move pay periods back into draft status, if they are not yet billed.
+- Allow users to approve draft billable hours. This will somehow result in a bill being generated in PDF format. But remember that one customer may have multiple work requests and multiple billable hours at a time.
