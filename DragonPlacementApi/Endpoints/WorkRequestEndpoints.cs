@@ -35,9 +35,10 @@ public static class WorkRequestEndpoints
             [FromQuery(Name = "name")] string name,
             [FromQuery(Name = "count")] int count)
     {
+        var allNames = string.IsNullOrWhiteSpace(name);
         var customerList = unitOfWork.CustomerRepository
             .Get(
-                filter: c => c.Name.Contains(name),
+                filter: c => allNames || c.Name.Contains(name),
                 orderBy: q => q.OrderByDescending(c => c.CustomerId)
             )
             .Take(count)
@@ -78,7 +79,7 @@ public static class WorkRequestEndpoints
     public static async Task<Results<Ok<ValidatedPayload<WorkRequest>>, NotFound<ValidatedResponse>, BadRequest<ValidatedForm<ValidationFailures>>>>
         CreateWorkRequestAsync(
             IBillingUnitOfWork unitOfWork,
-            [FromQuery(Name = "customerId")] int customerId,
+            [FromRoute(Name = "customerId")] int customerId,
             [FromBody] WorkRequestCreateEdit createWorkRequest
         )
     {
@@ -101,7 +102,7 @@ public static class WorkRequestEndpoints
     public static async Task<Results<Ok<ValidatedPayload<WorkRequest>>, NotFound<ValidatedResponse>, Conflict<ValidatedForm<ValidationFailures>>, BadRequest<ValidatedForm<ValidationFailures>>>>
         EditWorkRequestAsync(
             IBillingUnitOfWork unitOfWork,
-            [FromQuery(Name = "workRequestId")] int workRequestId,
+            [FromRoute(Name = "workRequestId")] int workRequestId,
             [FromBody] WorkRequestCreateEdit editWorkRequest
         )
     {
