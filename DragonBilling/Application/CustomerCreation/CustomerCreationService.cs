@@ -6,12 +6,13 @@ namespace DragonBilling.Application.CustomerCreation;
 
 public static class CustomerCreationService
 {
-    public static Task<Result<Customer, ValidationFailures>> CreateCustomerWithWorkRequest(
+    public static Task<Result<WorkRequest, ValidationFailures>> CreateCustomerWithWorkRequest(
         IBillingUnitOfWork unitOfWork, CreateCustomerAndWorkRequest input)
     {
         return CreateCustomerAndWorkRequestMapper.ToCustomer(input)
             .Bind(customer => customer.WorkRequests.Single().Validate().Map(_ => customer))
             .Tap(customer => unitOfWork.CustomerRepository.Insert(customer))
-            .Tap(async _ => await unitOfWork.SaveChangesAsync().ConfigureAwait(false));
+            .Tap(async _ => await unitOfWork.SaveChangesAsync().ConfigureAwait(false))
+            .Map(customer => customer.WorkRequests.Single());
     }
 }

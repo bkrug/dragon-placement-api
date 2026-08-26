@@ -25,21 +25,17 @@ public class CreateCustomerWithWorkRequestTests
             EstimatedEndDate = "2026-02-01",
             EstimatedWorkforceSize = 4
         };
-        var expectedCustomer = new Customer
+        var expectedCustomer = new Customer { Name = "Acme Kingdom" };
+        var expectedWorkRequest = new WorkRequest
         {
-            Name = "Acme Kingdom",
-            WorkRequests =
-            [
-                new WorkRequest
-                {
-                    Name = "Castle Renovation",
-                    Description = "Reinforce the east wall",
-                    EstimatedStartDate = new DateTime(2026, 1, 2),
-                    EstimatedEndDate = new DateTime(2026, 2, 1),
-                    EstimatedWorkforceSize = 4
-                }
-            ]
+            Name = "Castle Renovation",
+            Description = "Reinforce the east wall",
+            EstimatedStartDate = new DateTime(2026, 1, 2),
+            EstimatedEndDate = new DateTime(2026, 2, 1),
+            EstimatedWorkforceSize = 4,
+            Customer = expectedCustomer
         };
+        expectedCustomer.WorkRequests = [expectedWorkRequest];
         var insertedCustomer = new Immutable<Customer>();
         var unitOfWorkMock = new Mock<IBillingUnitOfWork>();
         unitOfWorkMock.Setup(u => u.CustomerRepository.Insert(It.IsAny<Customer>()))
@@ -49,9 +45,11 @@ public class CreateCustomerWithWorkRequestTests
         var response = await WorkRequestEndpoints.CreateCustomerWithWorkRequestAsync(unitOfWorkMock.Object, input);
 
         //Assert
-        response.Result.ShouldBeOfType<Ok<ValidatedPayload<Customer>>>();
-        insertedCustomer.Get().ShouldBeEquivalentTo(expectedCustomer);
+        response.Result.ShouldBeOfType<Ok<ValidatedPayload<WorkRequest>>>();
+        var okResult = (Ok<ValidatedPayload<WorkRequest>>)response.Result;
+        okResult.Value!.Payload.ShouldBeEquivalentTo(expectedWorkRequest);
         insertedCustomer.Get()!.WorkRequests.Count.ShouldBe(1);
+        insertedCustomer.Get()!.WorkRequests.Single().ShouldBeSameAs(okResult.Value!.Payload);
         unitOfWorkMock.Verify(u => u.WorkRequestRepository.Insert(It.IsAny<WorkRequest>()), Times.Never);
         unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Once);
     }

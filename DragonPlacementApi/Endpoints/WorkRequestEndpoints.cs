@@ -59,7 +59,7 @@ public static class WorkRequestEndpoints
             : TypedResults.Ok(ValidatedPayload<WorkRequest>.FromPayload(workRequest));
     }
     
-    public static async Task<Results<Ok<ValidatedPayload<Customer>>, BadRequest<ValidatedForm<ValidationFailures>>>>
+    public static async Task<Results<Ok<ValidatedPayload<WorkRequest>>, BadRequest<ValidatedForm<ValidationFailures>>>>
         CreateCustomerWithWorkRequestAsync(
             IBillingUnitOfWork unitOfWork,
             [FromBody] CreateCustomerAndWorkRequest createCustomer
@@ -67,7 +67,7 @@ public static class WorkRequestEndpoints
     {
         var result = await CustomerCreationService.CreateCustomerWithWorkRequest(unitOfWork, createCustomer).ConfigureAwait(false);
         return result.IsSuccess
-            ? TypedResults.Ok(ValidatedPayload<Customer>.FromPayload(result.Value))
+            ? TypedResults.Ok(ValidatedPayload<WorkRequest>.FromPayload(result.Value))
             : TypedResults.BadRequest(new ValidatedForm<ValidationFailures>
             {
                 IsSuccess = false,

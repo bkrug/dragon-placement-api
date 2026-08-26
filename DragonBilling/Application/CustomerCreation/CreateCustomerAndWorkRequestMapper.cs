@@ -13,21 +13,20 @@ public static class CreateCustomerAndWorkRequestMapper
         if (parsingFailures.FieldFailures.Count > 0)
             return Result.Failure<Customer, ValidationFailures>(parsingFailures);
 
+        var workRequest = new WorkRequest
+        {
+            Name = input.WorkRequestName,
+            Description = input.Description,
+            EstimatedStartDate = startDate,
+            EstimatedEndDate = endDate,
+            EstimatedWorkforceSize = input.EstimatedWorkforceSize
+        };
         var customer = new Customer
         {
             Name = input.CustomerName,
-            WorkRequests =
-            [
-                new WorkRequest
-                {
-                    Name = input.WorkRequestName,
-                    Description = input.Description,
-                    EstimatedStartDate = startDate,
-                    EstimatedEndDate = endDate,
-                    EstimatedWorkforceSize = input.EstimatedWorkforceSize
-                }
-            ]
+            WorkRequests = [workRequest]
         };
+        workRequest.Customer = customer;
         return Result.Success<Customer, ValidationFailures>(customer);
     }
 
