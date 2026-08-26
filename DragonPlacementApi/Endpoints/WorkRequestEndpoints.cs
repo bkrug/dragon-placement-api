@@ -6,6 +6,7 @@ using DragonCommon.Domain.Poco;
 using DragonPlacementApi.Poco;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace DragonPlacementApi.Endpoints;
 
@@ -38,7 +39,7 @@ public static class WorkRequestEndpoints
         var allNames = string.IsNullOrWhiteSpace(name);
         var customerList = unitOfWork.CustomerRepository
             .Get(
-                filter: c => allNames || c.Name.Contains(name),
+                filter: c => allNames || EF.Functions.Like(c.Name, $"%{name}%"),
                 orderBy: q => q.OrderByDescending(c => c.CustomerId)
             )
             .Take(count)
