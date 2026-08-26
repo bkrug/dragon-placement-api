@@ -88,6 +88,8 @@ public class DragonPlacementUnitOfWork(DragonPlacementContext context, ILogger<D
         if (dragon == null || jobInclusions == JobInclusions.None)
             return dragon;
 
+        //TODO: Test if we still need to use Raw SQL here.
+        //This code may have been written before we created the configuration method IsUnixSecondsType().
         var todayUnix = new DateTimeOffset(DateTime.UtcNow.Date, TimeSpan.Zero).ToUnixTimeSeconds();
         IQueryable<Assignment> assignmentQuery = jobInclusions switch
         {
