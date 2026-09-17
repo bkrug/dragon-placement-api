@@ -60,6 +60,7 @@ A production ready application would absolutely need authentication and authoriz
 
 ## Future Work
 
+- Bug: When trying to unassign a dragon from a job for which they have already booked hours, the user does not receive a meaningful error message. Tell them the reason the action is impossible.
 - Allow a user to select an existing Work Request and approve it. This will result in creating a new Job, in the Assignment Domain.
 - Need to record agreed-upon wages for the dragons, and agreed-upon charge rates for the customers. What does that workflow look like?
 - Rethink the "/billing/payperiod" endpoint. Instead of creating all of the billing candidates at once, just create a BillableHours model when the payperiod is submitted. Delete it if the payperiod is moved backwards to "Draft".

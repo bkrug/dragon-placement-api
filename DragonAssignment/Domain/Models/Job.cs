@@ -14,8 +14,6 @@ public partial class Job
 
     public int NumberOfPositions { get; set; }
 
-    public int? WorkRequestId { get; set; }
-
     public DateTime StartDate { get; set; }
 
     public DateTime EndDate { get; set; }
